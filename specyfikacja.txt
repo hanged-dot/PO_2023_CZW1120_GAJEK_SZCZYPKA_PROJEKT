@@ -1,0 +1,33 @@
+Wariant B1
+ziemia ma tunele 
+1 mapa zawierająca obie opcje
+Z Mają Szczypką ^.^
+B- tunele
+dzien 1 rusza sie na pole z tunelem (zjada na wejsciu trawkę)
+dzien 2 zmienia kierunek lub nie i teleportuje sie tunelem (zjada na wyjsciu trawke)
+trawki rosną na wejsciach
+tunele są dwukierunkowe 
+czy dwa zwierzaki moga korzystac z tunelu równoczesnie - tak
+
+
+tworzymy dokumentacje 
+napisać testy
+
+PARAMETRY:
+
+wysokość i szerokość mapy - (min 10x10 max 200X200)
+wariant mapy (wyjaśnione w sekcji poniżej) - u nas caly czas 1
+startowa liczba roślin - (min tyle ile zwierzaków)
+energia zapewniana przez zjedzenie jednej rośliny (min 10% startowej max startowa zwierzecia)
+liczba roślin wyrastająca każdego dnia - (min tyle ile jeden wymiar mapy)
+wariant wzrostu roślin - (dżugla i pustynia)
+startowa liczba zwierzaków,
+startowa energia zwierzaków,
+energia konieczna, by uznać zwierzaka za najedzonego (i gotowego do rozmnażania),
+energia rodziców zużywana by stworzyć potomka,
+minimalna i maksymalna liczba mutacji u potomków (może być równa 0),
+wariant mutacji (wyjaśnione w sekcji poniżej),
+długość genomu zwierzaków,
+wariant zachowania zwierzaków (wyjaśnione w sekcji poniżej).
+
+
