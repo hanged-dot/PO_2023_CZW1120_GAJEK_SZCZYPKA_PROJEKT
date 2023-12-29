@@ -7,10 +7,10 @@ public class TunnelMap extends AbstractMap{
 
     private int tunnelCount;
     private HashMap<Vector2d, Vector2d> tunnels;
-    public TunnelMap(MapProperties mapProperties, AnimalProperties animalProperties, int tunnelCount) {
+    public TunnelMap(MapProperties mapProperties, AnimalProperties animalProperties) {
 
         super(mapProperties, animalProperties);
-        this.tunnelCount = tunnelCount;
+        this.tunnelCount = mapProperties.tunnelCount();
 
         while (tunnelCount > 0){
 
