@@ -74,7 +74,7 @@ public abstract class AbstractMap {
     }
 
 //    Skręt i przemieszczanie każdego zwierzaka
-    public void move(Animal animal) {
+    private void move(Animal animal) {
 
         Vector2d animalPosition = animal.getPosition();
         Vector2d targetPosition = getNextPosition(animal);
@@ -86,6 +86,15 @@ public abstract class AbstractMap {
 
             if (plants.contains(targetPosition)){
                 plantsToEat.add(targetPosition);
+            }
+        }
+    }
+
+    public void moveEveryAnimal(){
+
+        for (TreeSet<Animal> animals : animals.values()){
+            for (Animal animal : animals){
+                move(animal);
             }
         }
     }
