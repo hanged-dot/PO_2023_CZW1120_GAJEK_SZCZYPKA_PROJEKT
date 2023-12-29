@@ -3,10 +3,9 @@ package model;
 import java.util.*;
 
 
-public abstract class AbstractMap {
+public abstract class AbstractMap implements WorldMap {
 
-    protected Boundary mapBoundary;
-
+    protected final Boundary mapBoundary;
     protected HashMap<Vector2d, TreeSet<Animal>> animals;
 
 //    Rośliny nie mają żadnych cech poza położeniem, dlatego wystarczy przechowywać je jako
@@ -15,8 +14,8 @@ public abstract class AbstractMap {
 
 //    a tutaj na bieżąco dodajemy trawę do zjedzenia przez zwierzę
     private HashSet<Vector2d> plantsToEat;
-
-    private PlantPositionGenerator plantPositionGenerator;
+    private final PlantPositionGenerator plantPositionGenerator;
+    private int dailyPlantCount;
 
     public AbstractMap(MapProperties mapProperties, AnimalProperties animalProperties){
 
@@ -31,6 +30,8 @@ public abstract class AbstractMap {
             place(new Animal());
         }
 
+        dailyPlantCount = mapProperties.dailyPlantCount();
+
         plants = new HashSet<>();
         plantsToEat = new HashSet<>();
 
@@ -41,6 +42,7 @@ public abstract class AbstractMap {
 
 //    Usunięcie martwych zwierzaków z mapy
 
+    @Override
     public void removeDeadAnimals(){
 
         for (Vector2d key : animals.keySet()){
@@ -58,7 +60,7 @@ public abstract class AbstractMap {
         }
     }
 
-    public void place(Animal animal) {
+    private void place(Animal animal) {
 
         Vector2d animalPosition = animal.getPosition();
 //        jeśli już są jakieś zwierzęta na tej pozycji, to po prostu dodajemy danegp zwierzaka do setu
@@ -90,6 +92,7 @@ public abstract class AbstractMap {
         }
     }
 
+    @Override
     public void moveEveryAnimal(){
 
         for (TreeSet<Animal> animals : animals.values()){
@@ -173,6 +176,10 @@ public abstract class AbstractMap {
 
     //        Wzrastanie nowych roślin na wybranych polach mapy
 
+    @Override
+    public void growPlants(){
+        createNewPlants(dailyPlantCount);
+    }
     public void createNewPlants(int plantCount) {
 
 //        parametr plantCount to albo startowa ilość roślin, albo ilość roślin wyrastająca w 1 dzień
