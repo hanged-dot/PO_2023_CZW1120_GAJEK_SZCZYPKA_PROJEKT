@@ -11,10 +11,10 @@ public class Animal implements WorldElement{
     private int[] genome;
     private int energy;
     private int plants;
-    private ArrayList<Integer> kids;
+    private ArrayList<Animal> kids;
     private int death;
 
-    public Animal(Vector2d position, int energy,int[] genome){
+    public Animal(Vector2d position, int energy){
         this.id=1; // naprawic zeby dawalo nr zwierzecia z tabeli zwierzat
         this.orientation=MapDirection.NORTH;
         this.position=position;
@@ -23,7 +23,7 @@ public class Animal implements WorldElement{
         this.death=0;
         this.kids= new ArrayList<>();
         this.plants=0;
-        this.genome=genome;
+
 
     }
     public MapDirection getOrientation() { return orientation; }
@@ -32,8 +32,18 @@ public class Animal implements WorldElement{
         return position;
     }
 
+    public int getEnergy() {return energy;}
+
+    public void setGenome(int[] genome){this.genome=genome;}
+
+    public void setDeath(int day){this.death=day;}
+
+    public void addKid(Animal kid){ this.kids.add(kid);}
+
     public int getLife(){return life;}
     public void age(){this.life++;}
+
+    public void eat(int energy){this.energy=this.energy+energy;}
 
 
     @Override
@@ -99,6 +109,14 @@ public class Animal implements WorldElement{
         if (direction==MoveDirection.BACKWARD && map.canMoveTo(this.position.subtract(this.orientation.toUnitVector()))){
             this.position=this.position.subtract(this.orientation.toUnitVector());}
         */
+public Animal breed(Animal other){
+    Animal offspring = new Animal(this.getPosition(),0);
+    other.addKid(offspring);
+    this.addKid(offspring);
+// dodac random genracje genów narazie roboczo tak
+    offspring.setGenome(this.genome);
 
+return offspring;
+}
 
 }
