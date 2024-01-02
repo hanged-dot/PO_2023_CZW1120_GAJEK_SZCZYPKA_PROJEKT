@@ -17,8 +17,8 @@ public class Simulation implements Runnable{
         this.map=map;
         for(int i=0; i<vectors.size();i++){
             if (!(map.objectAt(vectors.get(i)) instanceof Animal)){
-                this.animals.add(new Animal(vectors.get(i),0));
-                try{ this.map.place(new Animal(vectors.get(i),0));}
+                this.animals.add(new Animal(vectors.get(i),0,20));
+                try{ this.map.place(new Animal(vectors.get(i),0,20));}
                 catch (PositionAlreadyOccupiedException p){
                         p.printStackTrace();
                 }

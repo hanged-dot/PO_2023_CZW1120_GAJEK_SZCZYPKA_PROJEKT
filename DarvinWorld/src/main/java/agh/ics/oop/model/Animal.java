@@ -2,8 +2,10 @@ package agh.ics.oop.model;
 
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Animal implements WorldElement{
+    private boolean transferedThroughtTunnel;
     private int id;
     private MapDirection orientation;
     private Vector2d position;
@@ -13,8 +15,9 @@ public class Animal implements WorldElement{
     private int plants;
     private ArrayList<Animal> kids;
     private int death;
+    private int genLen;
 
-    public Animal(Vector2d position, int energy){
+    public Animal(Vector2d position, int energy, int lenght){
         this.id=1; // naprawic zeby dawalo nr zwierzecia z tabeli zwierzat
         this.orientation=MapDirection.NORTH;
         this.position=position;
@@ -23,6 +26,8 @@ public class Animal implements WorldElement{
         this.death=0;
         this.kids= new ArrayList<>();
         this.plants=0;
+        this.genLen=lenght;
+        this.transferedThroughtTunnel=false;
 
 
     }
@@ -44,6 +49,12 @@ public class Animal implements WorldElement{
     public void age(){this.life++;}
 
     public void eat(int energy){this.energy=this.energy+energy;}
+
+    public void setTransferredThroughTunnel(boolean value){
+        this.transferedThroughtTunnel=value;
+    }
+    public boolean isTransferedThroughTunnel(){return this.transferedThroughtTunnel;}
+
 
 
     @Override
@@ -67,13 +78,10 @@ public class Animal implements WorldElement{
         return false;
     }
 
-    public Vector2d onTunel(MoveValidator map){
-        return null;
-    }
 
-
-    public void move(MoveDirection direction, WorldMap map){
-        if (this.onTunel(map)==null) {
+    public void move(MoveDirection direction, TunnelMap map){
+        Vector2d nextPosition = map.getNextPosition(this);
+        if (this.transferedThroughtTunnel==false) {
             MapDirection original= this.orientation;
             switch (direction) {
                 case LEFT -> this.orientation = this.orientation.previous().previous();
@@ -98,23 +106,40 @@ public class Animal implements WorldElement{
 
         }
         else{
-            this.position=this.onTunel(map);
+            this.position=nextPosition;
         }
     }
-/*
-        if (direction==MoveDirection.RIGHT){ this.orientation=this.orientation.next();}
-        if (direction==MoveDirection.FORWARD && map.canMoveTo(this.position.add(this.orientation.toUnitVector()))){
-            this.position=this.position.add(this.orientation.toUnitVector());
-        }
-        if (direction==MoveDirection.BACKWARD && map.canMoveTo(this.position.subtract(this.orientation.toUnitVector()))){
-            this.position=this.position.subtract(this.orientation.toUnitVector());}
-        */
-public Animal breed(Animal other){
-    Animal offspring = new Animal(this.getPosition(),0);
+
+    public boolean canProcreate(int min){ if (getEnergy()>=min) return true;
+    return false;}
+public Animal procreate(Animal other){
+    Animal offspring = new Animal(this.getPosition(),0, this.genLen);
     other.addKid(offspring);
     this.addKid(offspring);
-// dodac random genracje genów narazie roboczo tak
-    offspring.setGenome(this.genome);
+    int[] genes= new int[this.genLen];
+    int energySum= this.getEnergy()+other.getEnergy();
+    int thisToStart=(new Random()).nextInt(2);
+    if (thisToStart==1){
+        int i;
+        for(i=0; i<(int)Math.floor((this.getEnergy()/energySum)*this.genLen);i++){
+            genes[i]=this.genome[i];
+        }
+        while(i<other.genLen){
+            genes[i]=other.genome[i];
+            i++;
+        }
+    }
+    else{
+        int i;
+        for(i=0; i<(int)Math.floor((other.getEnergy()/energySum)*other.genLen);i++){
+            genes[i]=other.genome[i];
+        }
+        while(i<this.genLen){
+            genes[i]=this.genome[i];
+            i++;
+        }
+    }
+    offspring.setGenome(genes);
 
 return offspring;
 }
