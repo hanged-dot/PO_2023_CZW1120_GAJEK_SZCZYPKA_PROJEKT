@@ -4,8 +4,8 @@ package agh.ics.oop.model;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Animal implements WorldElement{
-    private boolean transferedThroughtTunnel;
+public class Animal{
+    private boolean transferedThroughTunnel;
     private int id;
     private MapDirection orientation;
     private Vector2d position;
@@ -27,37 +27,76 @@ public class Animal implements WorldElement{
         this.kids= new ArrayList<>();
         this.plants=0;
         this.genLen=lenght;
-        this.transferedThroughtTunnel=false;
+        this.transferedThroughTunnel=false;
 
 
     }
-    public MapDirection getOrientation() { return orientation; }
+    public MapDirection getOrientation() { return orientation; }  //zwraca orientacje zwierzaka
 
     public Vector2d getPosition() {
         return position;
+    }  //zwraca pozycję zwierzaka
+
+    public int getEnergy() {return energy;} //zwraca informację o energii zwierzaka
+
+    public void setGenome(int[] genome){this.genome=genome;} //przypisuje zwierzakowi listę ruchów
+
+    public void setDeath(int day){this.death=day;} // zwraca dzien smierci zwierzaka
+
+    public void addKid(Animal kid){ this.kids.add(kid);} // dodaje zwierzaka do listy dzieci rodzica zwierzaka
+
+    public int getAge(){return this.life;}; //zwraca dotychczasowa dlugosc zycia
+    public void age(){this.life++;} // postarza zwierzaka
+
+    public void eat(int energy){this.energy=this.energy+energy;} //zwerzak je
+
+    public void setTransferredThroughTunnel(boolean value){this.transferedThroughTunnel=value;} //zwierzak przeszedl wlasnie przez tunel, ma nim teraz nie wracac
+    public boolean isTransferedThroughTunnel(){return this.transferedThroughTunnel;} //zwraca czy zwierzak wlasnie przeszedl przez tunel
+
+
+    public int getNumberOfChildren();
+
+    private int compareEnergy(Animal a){
+
+    };
+    private int compareAge(Animal a){
+
+    };
+    private int compareNumberOfChildren(Animal a);
+
+
+//    Metoda greaterThan sprawdza, czy dany zwierzak spełnia warunki wygranej z innym zwierzakiem;
+//    jeśli tak, to zwraca 1; jeśli nie, to zwraca -1; a jeśli zwierzaki wszystkie warunki mają takie same,
+//    metoda zwraca 0 i wówczas w konkurencji zwierzaków będzie losowane, który z nich zje/rozmnoży się
+
+
+    public int greaterThan(Animal a){
+
+        int comparedEnergy = compareEnergy(a);
+
+        if (comparedEnergy > 0){
+            return 1;
+        } else if (comparedEnergy == 0) {
+
+            int comparedAge = compareAge(a);
+
+            if (comparedAge > 0){
+                return 1;
+            } else if (comparedAge == 0){
+
+                int comparedNumberOfChildren = compareNumberOfChildren(a);
+
+                if (comparedNumberOfChildren > 0){
+                    return 1;
+                } else if (comparedNumberOfChildren == 0) {
+                    return 0;
+                }
+            }
+            return -1;
+        }
+        return -1;
     }
 
-    public int getEnergy() {return energy;}
-
-    public void setGenome(int[] genome){this.genome=genome;}
-
-    public void setDeath(int day){this.death=day;}
-
-    public void addKid(Animal kid){ this.kids.add(kid);}
-
-    public int getLife(){return life;}
-    public void age(){this.life++;}
-
-    public void eat(int energy){this.energy=this.energy+energy;}
-
-    public void setTransferredThroughTunnel(boolean value){
-        this.transferedThroughtTunnel=value;
-    }
-    public boolean isTransferedThroughTunnel(){return this.transferedThroughtTunnel;}
-
-
-
-    @Override
     public String toString() {
         MapDirection w= this.getOrientation();
         String b = switch (w) {
@@ -81,7 +120,7 @@ public class Animal implements WorldElement{
 
     public void move(MoveDirection direction, TunnelMap map){
         Vector2d nextPosition = map.getNextPosition(this);
-        if (this.transferedThroughtTunnel==false) {
+        if (this.transferedThroughTunnel==false) {
             MapDirection original= this.orientation;
             switch (direction) {
                 case LEFT -> this.orientation = this.orientation.previous().previous();
@@ -111,8 +150,9 @@ public class Animal implements WorldElement{
     }
 
     public boolean canProcreate(int min){ if (getEnergy()>=min) return true;
-    return false;}
-public Animal procreate(Animal other){
+    return false;} //zwraca informację czy zwierzak da radę się rozmnożyć
+
+    public Animal procreate(Animal other){
     Animal offspring = new Animal(this.getPosition(),0, this.genLen);
     other.addKid(offspring);
     this.addKid(offspring);

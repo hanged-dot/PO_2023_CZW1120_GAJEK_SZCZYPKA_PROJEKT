@@ -1,4 +1,6 @@
-package model;
+package agh.ics.oop.model;
+
+import agh.ics.oop.model.util.MapVisualizer;
 
 import java.util.*;
 
@@ -7,6 +9,7 @@ public abstract class AbstractMap implements WorldMap {
 
     protected final Boundary mapBoundary;
     protected HashMap<Vector2d, PriorityQueue<Animal>> animals;
+    protected ArrayList<MapChangeListener> observers = new ArrayList<>();
 
 //    Rośliny nie mają żadnych cech poza położeniem, dlatego wystarczy przechowywać je jako
 //    ich współrzędne na mapie
@@ -237,4 +240,22 @@ public abstract class AbstractMap implements WorldMap {
         return new Vector2d(random.nextInt(boundary.leftX(), boundary.rightX()),
                 random.nextInt(boundary.lowerY(), boundary.upperY()));
     }
+    public String toString(){
+        MapVisualizer map = new MapVisualizer(this);
+        return map.draw(this.getCurrentBounds().lowerLeft(), this.getCurrentBounds().upperRight());
+    }
+    public Boundary getCurrentBounds(){return mapBoundary;}
+
+    public void mapChanged(String changeInfo){
+        for (int i=0; i <observers.size();i++) {
+            observers.get(i).mapChanged(this, changeInfo);
+        }
+    }
+    public void addObserver(MapChangeListener observer){
+        this.observers.add(observer);
+    }
+    public void removeObserver(MapChangeListener observer){
+        this.observers.remove(observer);
+    }
+
 }

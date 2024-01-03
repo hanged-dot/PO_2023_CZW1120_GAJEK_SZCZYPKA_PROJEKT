@@ -1,4 +1,4 @@
-package model;
+package agh.ics.oop.model;
 
 public record AnimalProperties(
         int startAnimalEnergy,

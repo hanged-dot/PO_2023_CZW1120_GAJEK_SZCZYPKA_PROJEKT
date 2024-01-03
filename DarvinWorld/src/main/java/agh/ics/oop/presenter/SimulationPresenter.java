@@ -105,7 +105,7 @@ public class SimulationPresenter implements MapChangeListener{
         List<MoveDirection> directions;
         try {directions = OptionsParser.parse(textField.getText().split(" "));}
         catch(IllegalArgumentException e){return;}
-        RectangularMap recmap = new RectangularMap(4,4);
+        TunnelMap recmap = new TunnelMap();
         SimulationPresenter presenter = this;
         recmap.addObserver(presenter);
 
