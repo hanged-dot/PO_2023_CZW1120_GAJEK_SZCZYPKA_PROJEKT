@@ -1,5 +1,6 @@
 package agh.ics.oop.presenter;
 
+import agh.ics.oop.model.MapProperties;
 import agh.ics.oop.model.SimulationChangeListener;
 import agh.ics.oop.model.SimulationStatistics;
 
@@ -18,12 +19,12 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     private HashMap<int[], Integer> allGenotypes;
     private HashMap<int[], Integer> aliveGenotypes;
 
-    public SimulationStatisticsGenerator(){
-        aliveAnimalCount = 0;
+    public SimulationStatisticsGenerator(MapProperties properties){
+        aliveAnimalCount = properties.startAnimalCount();
         deadAnimalCount = 0;
         deadAnimalLifeSpan = 0;
         plantCount = 0;
-        freePositionCount = 0;
+        freePositionCount = properties.mapWidth()*properties.mapHeight();
         totalAliveAnimalOffspringCount = 0;
         allGenotypes = new HashMap<>();
         aliveGenotypes = new HashMap<>();
