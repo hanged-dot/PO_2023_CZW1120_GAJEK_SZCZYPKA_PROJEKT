@@ -16,6 +16,7 @@ public class Animal{
     private ArrayList<Animal> kids;
     private int death;
     private int genLen;
+    protected ArrayList<MapChangeListener> observers = new ArrayList<>();
 
     public Animal(Vector2d position, int energy, int lenght){
         this.id=1; // naprawic zeby dawalo nr zwierzecia z tabeli zwierzat
@@ -185,5 +186,11 @@ public class Animal{
 
 return offspring;
 }
+    public void addObserver(MapChangeListener observer) {
+        this.observers.add(observer);
+    }
 
+    public void removeObserver(MapChangeListener observer) {
+        this.observers.remove(observer);
+    }
 }

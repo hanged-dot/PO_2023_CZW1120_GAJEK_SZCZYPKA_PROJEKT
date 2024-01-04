@@ -5,11 +5,9 @@ import javafx.application.Application;
 
 public class World {
 
-    public static void main(String[] args) {
+    public static void main(AnimalProperties animals, MapProperties mapProperties) {
 
-        Application.launch(SimulationApp.class, new String[]{"f","f","b","r","l","b"});
-
-        System.out.println("system zakonczył działanie");
+        Application.launch(SimulationApp.class, animals, mamProperties);
 
     }
 }

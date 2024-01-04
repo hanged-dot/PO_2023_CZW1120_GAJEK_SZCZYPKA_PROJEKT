@@ -37,7 +37,7 @@ public class TunnelMap extends AbstractMap {
     @Override
     protected Vector2d getNextPosition(Animal animal){
 
-        if (tunnels.containsKey(animal.getPosition()) && !animal.isTransferredThroughTunnel()){
+        if (tunnels.containsKey(animal.getPosition()) && !animal.isTransferedThroughTunnel()){
             Vector2d targetPosition = tunnels.get(animal.getPosition());
             animal.setTransferredThroughTunnel(true);
             return targetPosition;

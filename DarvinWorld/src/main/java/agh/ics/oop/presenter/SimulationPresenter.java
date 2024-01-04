@@ -36,17 +36,12 @@ public class SimulationPresenter implements MapChangeListener{
     private Button button = new Button("Start");
     public void setWorldMap (WorldMap map){ mapa=map;}
 
-    public void drawMap(WorldMap worldMap, String message){
+    public void drawMap(AbstractMap worldMap, String message){
         infoLabel2.setText(message);
-        //infoLabel.setText(worldMap.toString());
-        //<Label fx:id="infoLabel" text="All animals will be living here!" textAlignment="CENTER"/>
         clearGrid();
         mapGrid.getColumnConstraints().add(new ColumnConstraints(CELL_WIDTH));
         mapGrid.getRowConstraints().add(new RowConstraints(CELL_HEIGHT));
         mapGrid.setGridLinesVisible(true);
-        //mapGrid.setVgap(50);
-        //mapGrid.setHgap(50);
-       // GridPane.setHalignment(label, HPos.CENTER);
         Boundary bounds = worldMap.getCurrentBounds();
 
 
@@ -54,7 +49,6 @@ public class SimulationPresenter implements MapChangeListener{
         Label labelxy = new Label("y//x");
         labelxy.setMinSize(CELL_WIDTH,CELL_HEIGHT);
         labelxy.setAlignment(Pos.CENTER);
-        //GridPane.setHalignment(labelxy, HPos.CENTER);
         mapGrid.add(labelxy,0,0);
 
         for (int x=1;x<=abs(bounds.rightX()-bounds.leftX())+1;x++){
@@ -77,12 +71,12 @@ public class SimulationPresenter implements MapChangeListener{
         for (int x=1;x<=abs(bounds.rightX()-bounds.leftX())+1;x++){
             for (int y=1;y<=abs(bounds.upperY()-bounds.lowerY())+1;y++){
                 if (worldMap.isOccupied(new Vector2d(bounds.leftX()+x-1,bounds.upperY()-y+1))) {
-                    Label label3 = new Label(worldMap.objectAt(new Vector2d(bounds.leftX()+x-1,bounds.upperY()-y+1)).toString());
-                    label3.setMinSize(CELL_WIDTH, CELL_HEIGHT);
-                    label3.setAlignment(Pos.CENTER);
-                    GridPane.setHalignment(label3, HPos.CENTER);
+                    Button button1 = new Button(worldMap.objectAt(new Vector2d(bounds.leftX()+x-1,bounds.upperY()-y+1)).toString());
+                    button1.setMinSize(CELL_WIDTH, CELL_HEIGHT);
+                    button1.setAlignment(Pos.CENTER);
+                    GridPane.setHalignment(button1, HPos.CENTER);
 
-                    mapGrid.add(label3, x,y);
+                    mapGrid.add(button1, x,y);
                 }
             }
         }
