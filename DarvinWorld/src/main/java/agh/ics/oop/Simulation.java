@@ -7,20 +7,11 @@ import java.util.List;
 
 public class Simulation implements Runnable{
 
-    private final List<MoveDirection> dirs;
     private WorldMap map;
     private List<Animal> animals = new ArrayList<>();
-    //implementacja list jako array, przyda sie do getAnimal szczegolnie dla wiekszej liczby zwierzat
 
-    public Simulation(List<Vector2d> vectors, List<MoveDirection> directions, WorldMap map) {
-        this.dirs=directions;
+    public Simulation(WorldMap map) {
         this.map=map;
-        for(int i=0; i<vectors.size();i++){
-            if (!(map.objectAt(vectors.get(i)) instanceof Animal)){
-                this.animals.add(new Animal(vectors.get(i),0,20));
-                this.map.place(new Animal(vectors.get(i),0,20));}
-            }
-        }
 
     }
 

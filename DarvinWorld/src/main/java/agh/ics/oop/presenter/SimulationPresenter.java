@@ -5,14 +5,17 @@ import agh.ics.oop.Simulation;
 import agh.ics.oop.model.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +33,12 @@ public class SimulationPresenter implements MapChangeListener{
     private Label infoLabel2;
     @FXML private Label infoLabel;
 
-    @FXML
-    private TextField textField;
-    @FXML
-    private Button button = new Button("Start");
+
+//    @FXML
+ //   private Button button = new Button("Start");
     public void setWorldMap (WorldMap map){ mapa=map;}
 
-    public void drawMap(AbstractMap worldMap, String message){
+    public void drawMap(WorldMap worldMap, String message){
         infoLabel2.setText(message);
         clearGrid();
         mapGrid.getColumnConstraints().add(new ColumnConstraints(CELL_WIDTH));
@@ -70,8 +72,8 @@ public class SimulationPresenter implements MapChangeListener{
 // dodac wyświetlanie najsilnieszego zwierzaka z kolejki chyba ze umalo
         for (int x=1;x<=abs(bounds.rightX()-bounds.leftX())+1;x++){
             for (int y=1;y<=abs(bounds.upperY()-bounds.lowerY())+1;y++){
-                if (worldMap.isOccupied(new Vector2d(bounds.leftX()+x-1,bounds.upperY()-y+1))) {
-                    Button button1 = new Button(worldMap.objectAt(new Vector2d(bounds.leftX()+x-1,bounds.upperY()-y+1)).toString());
+                 {
+                    Button button1 = new Button();
                     button1.setMinSize(CELL_WIDTH, CELL_HEIGHT);
                     button1.setAlignment(Pos.CENTER);
                     GridPane.setHalignment(button1, HPos.CENTER);
@@ -93,19 +95,5 @@ public class SimulationPresenter implements MapChangeListener{
         Platform.runLater(() -> {drawMap(worldMap,message);});
     }
 // animalChanged
-    public void onSimulationStartClicked(){
-        // add map i animal properties
-        //List<Vector2d> positions1 = List.of(new Vector2d(2,2), new Vector2d(3,4));
-        ArrayList<Simulation> simulations= new ArrayList<>();
-        //List<MoveDirection> directions;
-        //try {directions = OptionsParser.parse(textField.getText().split(" "));}
-        //catch(IllegalArgumentException e){return;}
-        TunnelMap recmap = new TunnelMap();
-        SimulationPresenter presenter = this;
-        recmap.addObserver(presenter);
 
-        simulations.add(new Simulation());
-        new SimulationEngine(simulations).runAsyncInThreadPool();
-
-    }
 }

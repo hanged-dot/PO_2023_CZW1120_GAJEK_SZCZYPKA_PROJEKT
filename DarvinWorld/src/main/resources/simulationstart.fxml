@@ -11,25 +11,27 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             minHeight="550.0" minWidth="850.0"
-            fx:controller="agh.ics.oop.presenter.SimulationPresenter" >
+            fx:controller="agh.ics.oop.presenter.SimulationStart" >
     <top>
 
         <VBox>
-            <TextField fx:id="textField" />
             <HBox padding="">
-                <Text fx:id="hightText" text="Podaj Wysokosc mapy" />
-                <TextField fx:id="hight"  alignment="CENTER"/>
+                <Text fx:id="heightText" text="Podaj Wysokosc mapy" />
+                <TextField fx:id="height"  alignment="CENTER"/>
             </HBox>
             <TextField fx:id="width" text="Podaj szerokosc mapy"/>
             <TextField fx:id="startPlant" text="Podaj startową liczbę roślin"/>
             <TextField fx:id="energy1Plant" text="Podaj energie z jednej rosliny"/>
             <TextField fx:id="plantsPerDay" text="Podaj liczbe roslin wyrastajacych jednego dnia"/>
+            <TextField fx:id="tunnelCount" text="Podaj ilosc tuneli"/>
             <TextField fx:id="startAnimal" text="Podaj startowa liczbe zwierzakow"/>
+            <TextField fx:id="startAnimalEnergy" text="Podaj startowa energie zwierzakow"/>
             <TextField fx:id="minFedEnergy" text="Podaj energie minimalna do rozmnazania"/>
+            <TextField fx:id="procreateEnergy" text="Podaj energie tracona na rozmnazanie"/>
             <TextField fx:id="breedEnergy" text="Podaj energie tracona na rozmnazanie"/>
             <TextField fx:id="minMutationNumber" text="Podaj minimalna liczbe mutacji"/>
-            <TextField fx:id="maxMutationNuber" text="Podaj maksymalna liczbe mutacji"/>
-            <TextField fx:id="genomeLenght" text="Podaj liczbe genow w genomie" />
+            <TextField fx:id="maxMutationNumber" text="Podaj maksymalna liczbe mutacji"/>
+            <TextField fx:id="genomeLength" text="Podaj liczbe genow w genomie" />
             <Label fx:id="infoLabel2"  textAlignment="CENTER"/>
         </VBox>
     </top>

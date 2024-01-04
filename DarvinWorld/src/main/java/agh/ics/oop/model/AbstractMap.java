@@ -54,7 +54,7 @@ public abstract class AbstractMap implements WorldMap {
             PriorityQueue<Animal> animalQueue = animals.get(key);
 
 //            Usuwanie martwych zwierząt
-            
+
             animalQueue.removeIf(animal -> animal.getEnergy() == 0);
 
 
@@ -244,6 +244,7 @@ public abstract class AbstractMap implements WorldMap {
                 random.nextInt(boundary.lowerY(), boundary.upperY()));
     }
 
+    @Override
 
     public Boundary getCurrentBounds() {
         return mapBoundary;

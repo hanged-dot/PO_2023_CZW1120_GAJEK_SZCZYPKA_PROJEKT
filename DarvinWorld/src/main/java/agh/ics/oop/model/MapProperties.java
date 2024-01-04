@@ -6,6 +6,7 @@ public record MapProperties(
         int mapHeight,
         int startPlantCount,
         int dailyPlantCount,
+        int energyFromPlant,
         int startAnimalCount,
         boolean tunnelMode,
         int tunnelCount) {

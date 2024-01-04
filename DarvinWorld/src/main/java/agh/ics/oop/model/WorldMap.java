@@ -9,4 +9,5 @@ public interface WorldMap {
     void removeEatenPlants();
     void procreate();
     void growPlants();
+    Boundary getCurrentBounds();
 }
