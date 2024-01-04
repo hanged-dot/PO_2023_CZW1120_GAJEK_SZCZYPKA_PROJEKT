@@ -54,7 +54,9 @@ public abstract class AbstractMap implements WorldMap {
             PriorityQueue<Animal> animalQueue = animals.get(key);
 
 //            Usuwanie martwych zwierząt
+            
             animalQueue.removeIf(animal -> animal.getEnergy() == 0);
+
 
 //            Jeśli set został pusty, usuwamy go z hashmapy
             if (animalQueue.isEmpty()) {

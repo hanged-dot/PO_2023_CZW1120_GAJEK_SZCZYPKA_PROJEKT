@@ -19,7 +19,6 @@ public class Animal{
     protected ArrayList<MapChangeListener> observers = new ArrayList<>();
 
     public Animal(Vector2d position, int energy, int lenght){
-        this.id=1; // naprawic zeby dawalo nr zwierzecia z tabeli zwierzat
         this.orientation=MapDirection.NORTH;
         this.position=position;
         this.life=0;
@@ -120,11 +119,8 @@ public class Animal{
         return false;
     }
 
-
+// jest ok
     public void move(MoveDirection direction, TunnelMap map){
-        Vector2d nextPosition = map.getNextPosition(this);
-        if (this.transferedThroughTunnel==false) {
-            MapDirection original= this.orientation;
             switch (direction) {
                 case LEFT -> this.orientation = this.orientation.previous().previous();
                 case BACKWARDLEFT -> this.orientation = this.orientation.previous().previous().previous();
@@ -135,26 +131,13 @@ public class Animal{
                 case BACKWARD -> this.orientation = this.orientation.next().next().next().next();
                 case BACKWARDRIGHT -> this.orientation = this.orientation.next().next().next();
             };
-            if (!map.canMoveTo(this.position.add(this.orientation.toUnitVector()))){
-                this.orientation=original.next().next().next().next();
-            }
-            else{this.position=this.position.add(this.orientation.toUnitVector());}
-            if(this.position.getX()>map.getCurrentBounds().upperRight().getX()){
-                this.position=new Vector2d(map.getCurrentBounds().lowerLeft().getX(),this.position.getY());
-            }
-            if(this.position.getX()<map.getCurrentBounds().lowerLeft().getX()){
-                this.position=new Vector2d(map.getCurrentBounds().upperRight().getX(),this.position.getY());
-            }
-
-        }
-        else{
-            this.position=nextPosition;
-        }
+        Vector2d nextPosition = map.getNextPosition(this);
+        this.position=nextPosition;
     }
-
+//jest ok
     public boolean canProcreate(int min){ if (getEnergy()>=min) return true;
     return false;} //zwraca informację czy zwierzak da radę się rozmnożyć
-
+// jest ok chyba (MG)
     public Animal procreate(Animal other){
     Animal offspring = new Animal(this.getPosition(),0, this.genLen);
     other.addKid(offspring);
@@ -186,6 +169,7 @@ public class Animal{
 
 return offspring;
 }
+//nie jest ok dodac do observatora animala
     public void addObserver(MapChangeListener observer) {
         this.observers.add(observer);
     }

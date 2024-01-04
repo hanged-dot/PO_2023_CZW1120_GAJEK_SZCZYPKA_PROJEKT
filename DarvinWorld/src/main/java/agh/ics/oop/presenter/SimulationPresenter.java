@@ -94,16 +94,17 @@ public class SimulationPresenter implements MapChangeListener{
     }
 
     public void onSimulationStartClicked(){
-        List<Vector2d> positions1 = List.of(new Vector2d(2,2), new Vector2d(3,4));
+        // add map i animal properties
+        //List<Vector2d> positions1 = List.of(new Vector2d(2,2), new Vector2d(3,4));
         ArrayList<Simulation> simulations= new ArrayList<>();
-        List<MoveDirection> directions;
-        try {directions = OptionsParser.parse(textField.getText().split(" "));}
-        catch(IllegalArgumentException e){return;}
+        //List<MoveDirection> directions;
+        //try {directions = OptionsParser.parse(textField.getText().split(" "));}
+        //catch(IllegalArgumentException e){return;}
         TunnelMap recmap = new TunnelMap();
         SimulationPresenter presenter = this;
         recmap.addObserver(presenter);
 
-        simulations.add(new Simulation(positions1, directions,recmap ));
+        simulations.add(new Simulation());
         new SimulationEngine(simulations).runAsyncInThreadPool();
 
     }
