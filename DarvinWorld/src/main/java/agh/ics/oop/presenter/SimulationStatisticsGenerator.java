@@ -4,6 +4,7 @@ import agh.ics.oop.model.MapProperties;
 import agh.ics.oop.model.SimulationChangeListener;
 import agh.ics.oop.model.SimulationStatistics;
 
+import javax.management.AttributeChangeNotification;
 import java.util.HashMap;
 
 import static java.lang.Math.max;
@@ -56,22 +57,29 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     }
 
     @Override
-    public void allGenotypeCountUpdate(int[] genotype) {
-        genotypeCountUpdate(genotype, allGenotypes);
+    public void allGenotypeCountUpdate(int[] genotype, boolean up) {
+        genotypeCountUpdate(genotype, allGenotypes, up);
+        genotypeCountUpdate(genotype, aliveGenotypes, up);
     }
 
     // na razie bierze pod uwagę wszystkie genotypy, dorobię jeszcz osobno dla żyjących genotypów
-    public void aliveGenotypeCountUpdate(int[] genotype){
-        genotypeCountUpdate(genotype, aliveGenotypes);
+    public void aliveGenotypeCountUpdate(int[] genotype, boolean up){
+        genotypeCountUpdate(genotype, aliveGenotypes, up);
     }
 
-    private void genotypeCountUpdate(int[] genotype, HashMap<int[], Integer> genotypes) {
-        if (genotypes.containsKey(genotype)){
-            int n = genotypes.get(genotype);
-            genotypes.put(genotype, n + 1);
+    private void genotypeCountUpdate(int[] genotype, HashMap<int[], Integer> genotypes, boolean up) {
+        if (up){
+            if (genotypes.containsKey(genotype)){
+                int n = genotypes.get(genotype);
+                genotypes.put(genotype, n + 1);
+            } else {
+                genotypes.put(genotype, 1);
+            }
         } else {
-            genotypes.put(genotype, 1);
+            int n = genotypes.get(genotype);
+            genotypes.put(genotype, n - 1);
         }
+
     }
 
     @Override

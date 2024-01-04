@@ -1,6 +1,7 @@
 package agh.ics.oop.model;
 
 import agh.ics.oop.model.util.PlantPositionGenerator;
+import agh.ics.oop.presenter.SimulationStatisticsGenerator;
 
 import java.util.*;
 
@@ -9,18 +10,16 @@ public abstract class AbstractMap implements WorldMap {
 
     protected final Boundary mapBoundary;
     protected HashMap<Vector2d, PriorityQueue<Animal>> animals;
-    protected ArrayList<MapChangeListener> observers = new ArrayList<>();
-
-    //    Rośliny nie mają żadnych cech poza położeniem, dlatego wystarczy przechowywać je jako
-//    ich współrzędne na mapie
     private HashSet<Vector2d> plants;
-
-    //    a tutaj na bieżąco dodajemy trawę do zjedzenia przez zwierzę
     private HashSet<Vector2d> plantsToEat;
     private final PlantPositionGenerator plantPositionGenerator;
     private int dailyPlantCount;
+    protected ArrayList<MapChangeListener> observers = new ArrayList<>();
+    protected SimulationStatisticsGenerator statisticsGenerator;
 
     public AbstractMap(MapProperties mapProperties, AnimalProperties animalProperties) {
+
+        statisticsGenerator = new SimulationStatisticsGenerator(mapProperties);
 
         mapBoundary = new Boundary(0, mapProperties.mapWidth() - 1,
                 0, mapProperties.mapHeight() - 1);
@@ -54,9 +53,14 @@ public abstract class AbstractMap implements WorldMap {
             PriorityQueue<Animal> animalQueue = animals.get(key);
 
 //            Usuwanie martwych zwierząt
-            
+            for (Animal animal:animalQueue){
+                if (animal.getEnergy()==0){
+                    // usuniecie zwierzaka
+                    statisticsGenerator.deadAnimalCountUpdate(animal.getAge());
+                    statisticsGenerator.aliveGenotypeCountUpdate(animal.getGenome(), false);
+                }
+            }
             animalQueue.removeIf(animal -> animal.getEnergy() == 0);
-
 
 //            Jeśli set został pusty, usuwamy go z hashmapy
             if (animalQueue.isEmpty()) {
@@ -145,8 +149,8 @@ public abstract class AbstractMap implements WorldMap {
             eatingAnimal.eat();
 //             zwracamy najedzonego zwierzaka do listy
             animals.get(plantPosition).add(eatingAnimal);
-
             plantsToEat.remove(plantPosition);
+            statisticsGenerator.plantCountUpdate(false);
         }
         plantsToEat = new HashSet<>();
     }
@@ -209,7 +213,10 @@ public abstract class AbstractMap implements WorldMap {
             }
 
             for (int i = 0; i < procreatingAnimals.size() - 1; i += 2) {
-                children.add(procreatingAnimals.get(i).procreate(procreatingAnimals.get(i + 1)));
+                Animal kid = procreatingAnimals.get(i).procreate(procreatingAnimals.get(i + 1));
+                children.add(kid);
+                statisticsGenerator.aliveAnimalCountUpdate(true);
+                statisticsGenerator.allGenotypeCountUpdate(kid.getGenome(), true);
             }
 
             for (Animal animal : procreatingAnimals) {
@@ -232,9 +239,11 @@ public abstract class AbstractMap implements WorldMap {
     public void createNewPlants(int plantCount) {
 
 //        parametr plantCount to albo startowa ilość roślin, albo ilość roślin wyrastająca w 1 dzień
-
-        plants.addAll(plantPositionGenerator.getPositions(plants, plantCount));
-
+        ArrayList<Vector2d> positions = plantPositionGenerator.getPositions(plants, plantCount);
+        for (Vector2d position: positions){
+            plants.add(position);
+            statisticsGenerator.plantCountUpdate(true);
+        }
     }
 
     protected Vector2d createRandomPosition(Boundary boundary) {

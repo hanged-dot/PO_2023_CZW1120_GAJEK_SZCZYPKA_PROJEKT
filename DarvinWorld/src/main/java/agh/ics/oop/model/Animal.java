@@ -40,6 +40,7 @@ public class Animal{
     public int getEnergy() {return energy;} //zwraca informację o energii zwierzaka
 
     public void setGenome(int[] genome){this.genome=genome;} //przypisuje zwierzakowi listę ruchów
+    public int[] getGenome(){return this.genome;}
 
     public void setDeath(int day){this.death=day;} // zwraca dzien smierci zwierzaka
 
