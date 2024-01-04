@@ -1,6 +1,6 @@
 package agh.ics.oop.model;
 
-import agh.ics.oop.model.util.MapVisualizer;
+import agh.ics.oop.model.util.PlantPositionGenerator;
 
 import java.util.*;
 
@@ -242,7 +242,7 @@ public abstract class AbstractMap implements WorldMap {
     }
     public String toString(){
         MapVisualizer map = new MapVisualizer(this);
-        return map.draw(this.getCurrentBounds().lowerLeft(), this.getCurrentBounds().upperRight());
+        return map.draw(this.getCurrentBounds().lowerY(), this.getCurrentBounds().rightX());
     }
     public Boundary getCurrentBounds(){return mapBoundary;}
 
@@ -257,5 +257,9 @@ public abstract class AbstractMap implements WorldMap {
     public void removeObserver(MapChangeListener observer){
         this.observers.remove(observer);
     }
+
+    public boolean canMoveTo(Vector2d position) {
+        if (position.getY()<= mapBoundary.upperY() && position.getY()>=(this.mapBoundary.lowerY())){return true;}
+        return false;
 
 }

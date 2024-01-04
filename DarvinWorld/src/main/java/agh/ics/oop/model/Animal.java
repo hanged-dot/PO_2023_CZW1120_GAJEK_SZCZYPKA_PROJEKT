@@ -54,15 +54,17 @@ public class Animal{
     public boolean isTransferedThroughTunnel(){return this.transferedThroughTunnel;} //zwraca czy zwierzak wlasnie przeszedl przez tunel
 
 
-    public int getNumberOfChildren();
-
-    private int compareEnergy(Animal a){
-
+    public int getNumberOfChildren(){
+        int children=0;
+        for (int i=0; i<this.kids.size();i++){
+            children+= this.kids.get(i).getNumberOfChildren()+1;
+        }
+        return children;
     };
-    private int compareAge(Animal a){
 
-    };
-    private int compareNumberOfChildren(Animal a);
+    private int compareEnergy(Animal a){return this.getEnergy()-a.getEnergy();};
+    private int compareAge(Animal a){return this.getAge()-a.getAge();};
+    private int compareNumberOfChildren(Animal a){return this.getNumberOfChildren()-a.getNumberOfChildren();};
 
 
 //    Metoda greaterThan sprawdza, czy dany zwierzak spełnia warunki wygranej z innym zwierzakiem;

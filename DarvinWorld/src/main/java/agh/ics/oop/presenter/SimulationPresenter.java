@@ -57,16 +57,16 @@ public class SimulationPresenter implements MapChangeListener{
         //GridPane.setHalignment(labelxy, HPos.CENTER);
         mapGrid.add(labelxy,0,0);
 
-        for (int x=1;x<=abs(bounds.upperRight().getX()-bounds.lowerLeft().getX())+1;x++){
-            Label label2 = new Label(Integer.toString(bounds.lowerLeft().getX()+x-1));
+        for (int x=1;x<=abs(bounds.rightX()-bounds.leftX())+1;x++){
+            Label label2 = new Label(Integer.toString(bounds.leftX()+x-1));
             label2.setMinSize(CELL_WIDTH,CELL_HEIGHT);
             label2.setAlignment(Pos.CENTER);
             GridPane.setHalignment(label2, HPos.CENTER);
 
             mapGrid.add(label2,x,0);
         }
-        for (int y=1;y<=abs(bounds.upperRight().getY()-bounds.lowerLeft().getY())+1;y++){
-            Label label2 = new Label(Integer.toString(bounds.upperRight().getY()-y+1));
+        for (int y=1;y<=abs(bounds.upperY()-bounds.lowerY())+1;y++){
+            Label label2 = new Label(Integer.toString(bounds.upperY()-y+1));
             label2.setMinSize(CELL_WIDTH,CELL_HEIGHT);
             label2.setAlignment(Pos.CENTER);
             GridPane.setHalignment(label2, HPos.CENTER);
@@ -74,10 +74,10 @@ public class SimulationPresenter implements MapChangeListener{
             mapGrid.add(label2,0,y);
         }
 
-        for (int x=1;x<=abs(bounds.upperRight().getX()-bounds.lowerLeft().getX())+1;x++){
-            for (int y=1;y<=abs(bounds.upperRight().getY()-bounds.lowerLeft().getY())+1;y++){
-                if (worldMap.isOccupied(new Vector2d(bounds.lowerLeft().getX()+x-1,bounds.upperRight().getY()-y+1))) {
-                    Label label3 = new Label(worldMap.objectAt(new Vector2d(bounds.lowerLeft().getX()+x-1,bounds.upperRight().getY()-y+1)).toString());
+        for (int x=1;x<=abs(bounds.rightX()-bounds.leftX())+1;x++){
+            for (int y=1;y<=abs(bounds.upperY()-bounds.lowerY())+1;y++){
+                if (worldMap.isOccupied(new Vector2d(bounds.leftX()+x-1,bounds.upperY()-y+1))) {
+                    Label label3 = new Label(worldMap.objectAt(new Vector2d(bounds.leftX()+x-1,bounds.upperY()-y+1)).toString());
                     label3.setMinSize(CELL_WIDTH, CELL_HEIGHT);
                     label3.setAlignment(Pos.CENTER);
                     GridPane.setHalignment(label3, HPos.CENTER);
