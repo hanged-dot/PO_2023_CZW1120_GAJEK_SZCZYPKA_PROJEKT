@@ -67,7 +67,7 @@ public class SimulationPresenter implements MapChangeListener{
 
             mapGrid.add(label2,0,y);
         }
-
+// dodac wyświetlanie najsilnieszego zwierzaka z kolejki chyba ze umalo
         for (int x=1;x<=abs(bounds.rightX()-bounds.leftX())+1;x++){
             for (int y=1;y<=abs(bounds.upperY()-bounds.lowerY())+1;y++){
                 if (worldMap.isOccupied(new Vector2d(bounds.leftX()+x-1,bounds.upperY()-y+1))) {
@@ -92,7 +92,7 @@ public class SimulationPresenter implements MapChangeListener{
     public void mapChanged(WorldMap worldMap, String message) {
         Platform.runLater(() -> {drawMap(worldMap,message);});
     }
-
+// animalChanged
     public void onSimulationStartClicked(){
         // add map i animal properties
         //List<Vector2d> positions1 = List.of(new Vector2d(2,2), new Vector2d(3,4));
