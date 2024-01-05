@@ -17,11 +17,13 @@ public abstract class AbstractMap implements WorldMap {
     private final int dailyPlantCount;
     protected SimulationStatisticsGenerator statisticsGenerator;
     private final AnimalComparator animalComparator;
+    int day; // current map day
 
     public AbstractMap(MapProperties mapProperties, AnimalProperties animalProperties) {
 
         statisticsGenerator = new SimulationStatisticsGenerator(mapProperties);
         animalComparator = new AnimalComparator();
+        day = 1;
 
         mapBoundary = new Boundary(0, mapProperties.mapWidth() - 1,
                 0, mapProperties.mapHeight() - 1);
@@ -94,17 +96,13 @@ public abstract class AbstractMap implements WorldMap {
     //    Skręt i przemieszczanie każdego zwierzaka
     private void move(Animal animal) {
 
-        Vector2d animalPosition = animal.getPosition();
         Vector2d targetPosition = getNextPosition(animal);
-
-        if (!targetPosition.equals(animalPosition)) {
 //            animal.move();
-            animals.get(animalPosition).remove(animal);
-            this.place(animal);
+        this.place(animal);
+//        TODO poinformuj wizualizację że zwierzak zmienił pozycję (fizycznie musi teraz zmienić pozycję)
 
-            if (plants.contains(targetPosition)) {
-                plantsToEat.add(targetPosition);
-            }
+        if (plants.contains(targetPosition)) {
+            plantsToEat.add(targetPosition);
         }
     }
 
@@ -112,17 +110,19 @@ public abstract class AbstractMap implements WorldMap {
     public void moveEveryAnimal() {
 
         for (List<Animal> animalList : animals.values()) {
-            for (Animal animal : animalList) {
-                move(animal);
+
+            while (!animalList.isEmpty()){
+                //usuwamy zwierzaka z listy, bo najprawdopodobniej i tak zmieni pozycję
+                move(animalList.remove(0));
             }
         }
     }
 
-
     protected Vector2d getNextPosition(Animal animal) {
 
 //        tutaj trzeba będzie pobrać kolejną pozycję zwierzaka
-        Vector2d targetPosition;
+
+        Vector2d targetPosition = animal.
 
         int x = targetPosition.getX();
         int y = targetPosition.getY();
@@ -246,7 +246,7 @@ public abstract class AbstractMap implements WorldMap {
 
     @Override
     public void refreshMap () {
-
+        ++day; // TODO zastanowić się czy nie przełożyć tego do symulacji
         createNewPlants(dailyPlantCount);
         for (List<Animal> animalList : animals.values()) {
             animalList.sort(animalComparator);
@@ -291,13 +291,4 @@ public abstract class AbstractMap implements WorldMap {
         this.observers.remove(observer);
     }
 
-    public boolean canMoveTo (Vector2d position){
-        if (position.getY() <= mapBoundary.upperY() && position.getY() >= (this.mapBoundary.lowerY())) {
-            return true;
-        }
-        return false;
-
-    }
-
-    public boolean isOccupied (Vector2d position){}
 }
