@@ -8,5 +8,7 @@ public interface WorldMap {
     void moveEveryAnimal();
     void removeEatenPlants();
     void procreate();
-    void growPlants();
+    void refreshMap();
+
+    Boundary getCurrentBounds();
 }
