@@ -1,5 +1,6 @@
 package agh.ics.oop.presenter;
 
+import agh.ics.oop.model.Animal;
 import agh.ics.oop.model.MapProperties;
 import agh.ics.oop.model.SimulationChangeListener;
 import agh.ics.oop.model.SimulationStatistics;
@@ -88,9 +89,21 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
         totalAliveAnimalOffspringCount = max(0, totalAliveAnimalOffspringCount + kidsCount);
     }
 
+    public void newbornAnimalUpdate(Animal newbornAnimal){
+        totalKidsCountUpdate(2);
+        aliveAnimalCountUpdate(true);
+        allGenotypeCountUpdate(newbornAnimal.getGenome(), true);
+    }
+
+    public void deadAnimalUpdate(Animal deadAnimal){
+        deadAnimalCountUpdate(deadAnimal.getAge());
+        aliveGenotypeCountUpdate(deadAnimal.getGenome(), false);
+        totalKidsCountUpdate(deadAnimal.getNumberOfChildren());
+    }
+
     private float getMeanLifeSpan(){
         if (deadAnimalCount != 0){
-            return (float) deadAnimalLifeSpan /deadAnimalCount;
+            return (float) deadAnimalLifeSpan / deadAnimalCount;
         } else {
             return 0;
         }
@@ -125,7 +138,5 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
                 getMeanLifeSpan(),
                 getMeanAliveAnimalOffspringCount()
         );
-
     }
-
 }
