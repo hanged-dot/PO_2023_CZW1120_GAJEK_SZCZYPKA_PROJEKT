@@ -3,8 +3,11 @@ package agh.ics.oop.model;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Vector;
 
 public class Animal{
+
+    private static final AnimalProperties properties;
     private boolean transferedThroughTunnel;
     private int id;
     private MapDirection orientation;
@@ -18,42 +21,34 @@ public class Animal{
     private int genLen;
     protected ArrayList<MapChangeListener> observers = new ArrayList<>();
 
-    public Animal(Vector2d position, int energy, int lenght){
+    public Animal(AnimalProperties properties, Vector2d position){
+
+        this.properties=properties;
+        this.genLen=properties.genomeLength();
+        this.energy=properties.startAnimalEnergy();
         this.orientation=MapDirection.NORTH;
         this.position=position;
         this.life=0;
-        this.energy=energy;
         this.death=0;
         this.kids= new ArrayList<>();
         this.plants=0;
-        this.genLen=lenght;
         this.transferedThroughTunnel=false;
-
 
     }
     public MapDirection getOrientation() { return orientation; }  //zwraca orientacje zwierzaka
-
     public Vector2d getPosition() {
         return position;
     }  //zwraca pozycję zwierzaka
-
     public int getEnergy() {return energy;} //zwraca informację o energii zwierzaka
-
     public void setGenome(int[] genome){this.genome=genome;} //przypisuje zwierzakowi listę ruchów
     public int[] getGenome(){return this.genome;}
-
     public void setDeath(int day){this.death=day;} // zwraca dzien smierci zwierzaka
-
     public void addKid(Animal kid){ this.kids.add(kid);} // dodaje zwierzaka do listy dzieci rodzica zwierzaka
-
     public int getAge(){return this.life;}; //zwraca dotychczasowa dlugosc zycia
     public void age(){this.life++;} // postarza zwierzaka
-
-    public void eat(int energy){this.energy=this.energy+energy;} //zwerzak je
-
+    public void eat(){this.energy=this.energy+properties.energyFromPlant();} //zwerzak je
     public void setTransferredThroughTunnel(boolean value){this.transferedThroughTunnel=value;} //zwierzak przeszedl wlasnie przez tunel, ma nim teraz nie wracac
     public boolean isTransferedThroughTunnel(){return this.transferedThroughTunnel;} //zwraca czy zwierzak wlasnie przeszedl przez tunel
-
 
     public int getNumberOfChildren(){
         int children=0;
@@ -101,7 +96,7 @@ public class Animal{
     }
 
     public String toString() {
-        MapDirection w= this.getOrientation();
+        MapDirection w = this.getOrientation();
         String b = switch (w) {
             case NORTH ->"N";
             case NORTHEAST -> "NE";
@@ -120,20 +115,48 @@ public class Animal{
         return false;
     }
 
-// jest ok
-    public void move(MoveDirection direction, TunnelMap map){
-            switch (direction) {
-                case LEFT -> this.orientation = this.orientation.previous().previous();
-                case BACKWARDLEFT -> this.orientation = this.orientation.previous().previous().previous();
-                case FORWARDLEFT -> this.orientation = this.orientation.previous();
-                case RIGHT -> this.orientation = this.orientation.next().next();
-                case FORWARDRIGHT -> this.orientation = this.orientation.next();
-                case FORWARD -> {}
-                case BACKWARD -> this.orientation = this.orientation.next().next().next().next();
-                case BACKWARDRIGHT -> this.orientation = this.orientation.next().next().next();
-            };
-        Vector2d nextPosition = map.getNextPosition(this);
-        this.position=nextPosition;
+// ANIMAL TURNING & MOVING
+
+    private MoveDirection getNextDirection(){
+
+        return switch (genome[life%genLen]){
+            case 0 -> MoveDirection.FORWARD;
+            case 1 -> MoveDirection.FORWARDRIGHT;
+            case 2 -> MoveDirection.RIGHT;
+            case 3 -> MoveDirection.BACKWARDRIGHT;
+            case 4 -> MoveDirection.BACKWARD;
+            case 5 -> MoveDirection.BACKWARDLEFT;
+            case 6 -> MoveDirection.LEFT;
+            case 7 -> MoveDirection.FORWARDLEFT;
+            default -> throw new IllegalStateException("Unexpected value: " + genome[life % genLen]);
+        };
+    }
+
+    public void move(Vector2d targetPosition){
+        this.position = targetPosition;
+    }
+    public Vector2d turn(){
+
+        MoveDirection direction = getNextDirection();
+
+        switch (direction) {
+            case LEFT -> this.orientation = this.orientation.previous().previous();
+            case BACKWARDLEFT -> this.orientation = this.orientation.previous().previous().previous();
+            case FORWARDLEFT -> this.orientation = this.orientation.previous();
+            case RIGHT -> this.orientation = this.orientation.next().next();
+            case FORWARDRIGHT -> this.orientation = this.orientation.next();
+            case FORWARD -> {}
+            case BACKWARD -> this.orientation = this.orientation.next().next().next().next();
+            case BACKWARDRIGHT -> this.orientation = this.orientation.next().next().next();
+        }
+
+        Vector2d movement = this.orientation.toUnitVector();
+//        Zwracamy docelową pozycję zwierzaka wynikającą z jego genomu
+        return this.position.add(movement);
+    }
+
+    public void reverseOrientation(){
+        this.orientation = this.orientation.previous().previous().previous().previous();
     }
 //jest ok
     public boolean canProcreate(int min){ if (getEnergy()>=min) return true;

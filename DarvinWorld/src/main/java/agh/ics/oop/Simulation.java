@@ -24,7 +24,7 @@ public class Simulation implements Runnable{
             int nr_a= counter%this.animals.size();
             if (nr_a==0) {try {Thread.sleep(500);}catch(InterruptedException e){e.printStackTrace();}}
             this.map.move(animals.get(nr_a), this.dirs.get(counter));
-            animals.get(nr_a).age();
+//            animals.get(nr_a).age();
             //System.out.println("Zwierzę " + nr_a +" : "+ this.animals.get(nr_a).toString());
             //System.out.println(map);
         }

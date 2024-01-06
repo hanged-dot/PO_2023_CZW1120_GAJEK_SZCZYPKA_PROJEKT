@@ -32,9 +32,8 @@ public abstract class AbstractMap implements WorldMap {
 
         for (int i = 0; i < mapProperties.startAnimalCount(); ++i) {
 
-            place(new Animal(createRandomPosition(mapBoundary),
-                    animalProperties.startAnimalEnergy(),
-                    animalProperties.genomeLength()));
+            place(new Animal(animalProperties,createRandomPosition(mapBoundary)));
+
         }
 
         dailyPlantCount = mapProperties.dailyPlantCount();
@@ -74,8 +73,10 @@ public abstract class AbstractMap implements WorldMap {
         }
     }
 
+//    Rozmieszczanie zwierzaków na mapie (zarówno przy budowaniu nowej mapy jak i po każdym ruchu zwierzęcia)
     private void place(Animal animal) {
 
+//        Pobieramy pozycję zwierzaka
         Vector2d animalPosition = animal.getPosition();
 //        jeśli już są jakieś zwierzęta na tej pozycji, to po prostu dodajemy danego zwierzaka do listy
         if (animals.containsKey(animalPosition)) {
@@ -87,8 +88,14 @@ public abstract class AbstractMap implements WorldMap {
             animalList.add(animal);
             animals.put(animalPosition, animalList);
 
-            if (!plants.contains(animalPosition)){
-                statisticsGenerator.freePositionCountUpdate(true);
+//        Jeśli na nowym miejscu zwierzaka znajduje się roślina, dołączamy ją do listy roślin do zjedzenia
+//        w następnym dniu
+        if (plants.contains(animalPosition)) {
+            plantsToEat.add(animalPosition);
+        } else {
+//            w przeciwnym wypadku pozycja ta do tej pory była wolna, zatem musimy zmniejszyć licznik wolnych
+//            pozycji
+            statisticsGenerator.freePositionCountUpdate(false);
             }
         }
     }
@@ -96,14 +103,14 @@ public abstract class AbstractMap implements WorldMap {
     //    Skręt i przemieszczanie każdego zwierzaka
     private void move(Animal animal) {
 
+//        Wyznaczamy docelową pozycję zwierzaka
         Vector2d targetPosition = getNextPosition(animal);
-//            animal.move();
+//        Informujemy zwierzaka o zmianie jego położenia
+        animal.move(targetPosition);
+//        Umieszczamy zwierzaka na odpowiednim miejscu na mapie
         this.place(animal);
 //        TODO poinformuj wizualizację że zwierzak zmienił pozycję (fizycznie musi teraz zmienić pozycję)
 
-        if (plants.contains(targetPosition)) {
-            plantsToEat.add(targetPosition);
-        }
     }
 
     @Override
@@ -112,38 +119,48 @@ public abstract class AbstractMap implements WorldMap {
         for (List<Animal> animalList : animals.values()) {
 
             while (!animalList.isEmpty()){
-                //usuwamy zwierzaka z listy, bo najprawdopodobniej i tak zmieni pozycję
+                //usuwamy zwierzaka z listy, bo najprawdopodobniej i tak zmieni pozycję i trafi do innej listy
                 move(animalList.remove(0));
             }
         }
     }
 
+//    Wyznaczamy nową pozycję zwierzaka po wykonaniu ruchu:
     protected Vector2d getNextPosition(Animal animal) {
 
-//        tutaj trzeba będzie pobrać kolejną pozycję zwierzaka
-
-        Vector2d targetPosition = animal.
+//        Na podstawie genomu zwierzaka wyznaczana jest jego docelowa pozycja:
+        Vector2d targetPosition = animal.turn();
 
         int x = targetPosition.getX();
         int y = targetPosition.getY();
 
+//        Sprawdzamy, czy zwierzak nie wyjdzie poza południową granicę mapy
         if (y < mapBoundary.lowerY()) {
-//            TODO: zmiana kierunku zwierzaka na przeciwny
+//            Jeśli tak, to odwracamy jego orientację o 180 stopni
+            animal.reverseOrientation();
+//            a docelowa współrzędna y to dolna granica mapy
             ++y;
+//            Sprawdzamy, czy zwierzak nie wyjdzie poza północną granicę mapy
         } else if (y > mapBoundary.upperY()) {
-//            TODO: zmiana kierunku zwierzaka na przeciwny
+//            Jeśli tak, to odwracamy jego orientację o 180 stopni
+            animal.reverseOrientation();
+//            a docelowa współrzędna y to górna granica mapy
             --y;
         }
 
+//        Sprawdzamy, czy zwierzak nie wyjdzie poza zachodnią granicę mapy
         if (x < mapBoundary.leftX()) {
+//            jeśli tak, to pojawi się na wschodniej granicy
             x = mapBoundary.rightX();
+//        Sprawdzamy, czy zwierzak nie wyjdzie poza wschodnią granicę mapy
         } else if (x > mapBoundary.rightX()) {
+//            jeśli tak, to pojawi się na wschodniej granicy
             x = mapBoundary.leftX();
         }
 
+//        zwracamy poprawną docelową pozycję
         return new Vector2d(x, y);
     }
-
 
 //    Konsumpcja roślin, na których pola weszły zwierzaki
 
