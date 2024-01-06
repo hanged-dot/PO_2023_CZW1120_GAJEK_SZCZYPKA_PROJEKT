@@ -1,7 +1,6 @@
 package agh.ics.oop.model;
 
 public record MapProperties(
-
         int mapWidth,
         int mapHeight,
         int startPlantCount,

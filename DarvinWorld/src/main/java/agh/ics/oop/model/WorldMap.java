@@ -1,5 +1,7 @@
 package agh.ics.oop.model;
 
+import java.util.ArrayList;
+
 public interface WorldMap {
 
     void removeDeadAnimals();
@@ -8,4 +10,7 @@ public interface WorldMap {
     void procreate();
     boolean refreshMap();
     Boundary getCurrentBounds();
+    SimulationStatistics getSimulationStatistics();
+    ArrayList<Animal> getAnimalsWithDominantGenotype();
+    ArrayList<PositionAbundance> getPositionsPreferredByPlants();
 }

@@ -1,5 +1,6 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.Simulation;
 import agh.ics.oop.model.util.PlantPositionGenerator;
 import agh.ics.oop.presenter.SimulationStatisticsGenerator;
 
@@ -301,6 +302,11 @@ public abstract class AbstractMap implements WorldMap {
         }
     }
 
+    @Override
+    public SimulationStatistics getSimulationStatistics(){
+        return statisticsGenerator.generateSimulationStatics();
+    }
+
     protected Vector2d createRandomPosition (Boundary boundary){
 
         Random random = new Random();
@@ -336,6 +342,10 @@ public abstract class AbstractMap implements WorldMap {
         }
 
         return animalsWithDominantGenotype;
+    }
+
+    public ArrayList<PositionAbundance> getPositionsPreferredByPlants(){
+        return statisticsGenerator.generatePreferredPlantPositions();
     }
 
 
