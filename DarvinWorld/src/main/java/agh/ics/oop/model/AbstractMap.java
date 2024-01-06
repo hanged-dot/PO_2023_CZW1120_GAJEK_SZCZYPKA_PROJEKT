@@ -5,6 +5,9 @@ import agh.ics.oop.presenter.SimulationStatisticsGenerator;
 
 import java.util.*;
 
+import static java.lang.Math.round;
+import static java.util.Collections.min;
+
 
 public abstract class AbstractMap implements WorldMap {
 
@@ -13,6 +16,7 @@ public abstract class AbstractMap implements WorldMap {
     protected ArrayList<MapChangeListener> observers = new ArrayList<>();
     private HashSet<Vector2d> plants;
     private HashSet<Vector2d> plantsToEat;
+    private HashMap<Vector2d, Integer> plantHistory;
     private final PlantPositionGenerator plantPositionGenerator;
     private final int dailyPlantCount;
     protected SimulationStatisticsGenerator statisticsGenerator;
@@ -31,15 +35,17 @@ public abstract class AbstractMap implements WorldMap {
         animals = new HashMap<>();
 
         for (int i = 0; i < mapProperties.startAnimalCount(); ++i) {
-
-            place(new Animal(animalProperties,createRandomPosition(mapBoundary)));
-
+//            tworzymy nowe zwierzątka, generujemy im genom, umieszczamy na mapie
+            Animal animal = new Animal(animalProperties, createRandomPosition(mapBoundary));
+            animal.setGenome(createRandomGenome(animalProperties.genomeLength()));
+            place(animal);
         }
 
         dailyPlantCount = mapProperties.dailyPlantCount();
 
         plants = new HashSet<>();
         plantsToEat = new HashSet<>();
+        plantHistory = new HashMap<>();
 
         plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
 
@@ -52,7 +58,6 @@ public abstract class AbstractMap implements WorldMap {
     public void removeDeadAnimals() {
 
         for (Vector2d key : animals.keySet()) {
-
 //            pozyskanie setu zwierzaków na danej pozycji
             List<Animal> animalList = animals.get(key);
 
@@ -276,7 +281,13 @@ public abstract class AbstractMap implements WorldMap {
 
         for (Vector2d position : positions) {
             plants.add(position);
+
+//  Na każdym polu, na którym wyrasta roślina, zwiększamy licznik roślin
+            statisticsGenerator.plantHistoryUpdate(position);
+//  Przekazujemy do statystyk informację o pojawieniu się kolejnej rośliny
             statisticsGenerator.plantCountUpdate(true);
+//            Jeśli na tym polu nie było do tej pory żadnego zwierzęcia, to przekazujemy również do statystyk
+//            informację, że zmniejszyła się ilość pustych pól
             if (!animals.containsKey(position)){
                 statisticsGenerator.freePositionCountUpdate(false);
             }
@@ -290,9 +301,36 @@ public abstract class AbstractMap implements WorldMap {
                 random.nextInt(boundary.lowerY(), boundary.upperY()));
     }
 
+    protected int[] createRandomGenome(int genomeLen){
+        Random random = new Random();
+        int[] genome = new int[genomeLen];
+        for (int i = 0; i < genomeLen; ++i){
+            genome[i] = random.nextInt(0, 8);
+        }
+        return genome;
+    }
+
     public Boundary getCurrentBounds () {
         return mapBoundary;
     }
+
+//    Metoda generująca zwierzaki z dominującym genotypem
+    public ArrayList<Animal> getAnimalsWithDominantGenotype(){
+
+        ArrayList<Animal> animalsWithDominantGenotype = new ArrayList<>();
+        int[] dominantGenotype = statisticsGenerator.generateSimulationStatics().dominantGenotype();
+
+        for (LinkedList<Animal> animalLinkedList : animals.values()){
+            for (Animal animal : animalLinkedList){
+                if (Arrays.equals(dominantGenotype, animal.getGenome())){
+                    animalsWithDominantGenotype.add(animal);
+                }
+            }
+        }
+
+        return animalsWithDominantGenotype;
+    }
+
 
     public void mapChanged (String changeInfo){
         for (int i = 0; i < observers.size(); i++) {

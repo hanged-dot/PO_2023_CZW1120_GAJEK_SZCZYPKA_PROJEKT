@@ -7,7 +7,7 @@ import java.util.Vector;
 
 public class Animal{
 
-    private static final AnimalProperties properties;
+    private final AnimalProperties properties;
     private boolean transferedThroughTunnel;
     private int id;
     private MapDirection orientation;
@@ -162,13 +162,19 @@ public class Animal{
     public boolean canProcreate(int min){ if (getEnergy()>=min) return true;
     return false;} //zwraca informację czy zwierzak da radę się rozmnożyć
 // jest ok chyba (MG)
-    public Animal procreate(Animal other){
-    Animal offspring = new Animal(this.getPosition(),0, this.genLen);
+public Animal procreate(Animal other){
+
+    Animal offspring = new Animal(this.properties, this.getPosition());
+
     other.addKid(offspring);
     this.addKid(offspring);
+
     int[] genes= new int[this.genLen];
+
     int energySum= this.getEnergy()+other.getEnergy();
+
     int thisToStart=(new Random()).nextInt(2);
+
     if (thisToStart==1){
         int i;
         for(i=0; i<(int)Math.floor((this.getEnergy()/energySum)*this.genLen);i++){
@@ -181,7 +187,7 @@ public class Animal{
     }
     else{
         int i;
-        for(i=0; i<(int)Math.floor((other.getEnergy()/energySum)*other.genLen);i++){
+        for(i=0; i<(int)Math.floor(((double) other.getEnergy() /energySum)*other.genLen); i++){
             genes[i]=other.genome[i];
         }
         while(i<this.genLen){
@@ -191,8 +197,9 @@ public class Animal{
     }
     offspring.setGenome(genes);
 
-return offspring;
+    return offspring;
 }
+
 //nie jest ok dodac do observatora animala
     public void addObserver(MapChangeListener observer) {
         this.observers.add(observer);
