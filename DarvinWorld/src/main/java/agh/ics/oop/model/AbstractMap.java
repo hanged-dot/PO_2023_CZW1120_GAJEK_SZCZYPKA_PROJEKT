@@ -267,12 +267,19 @@ public abstract class AbstractMap implements WorldMap {
         //        Wzrastanie nowych roślin na wybranych polach mapy
 
     @Override
-    public void refreshMap () {
+    public boolean refreshMap () {
         ++day; // TODO zastanowić się czy nie przełożyć tego do symulacji
         createNewPlants(dailyPlantCount);
+//        TODO: wyświetlić pojawiające się roślinki
+        if (animals.isEmpty()){
+            return false;
+        }
+
         for (List<Animal> animalList : animals.values()) {
             animalList.sort(animalComparator);
         }
+
+        return true;
     }
 
     public void createNewPlants ( int plantCount){

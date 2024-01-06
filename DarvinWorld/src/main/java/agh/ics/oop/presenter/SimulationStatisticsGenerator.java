@@ -22,7 +22,6 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     private HashMap<int[], Integer> allGenotypes;
     private HashMap<int[], Integer> aliveGenotypes;
     private HashMap<Vector2d, Integer> plantHistory;
-    private ArrayList<PositionAbundance> positionsPreferredByPlants;
 
     public SimulationStatisticsGenerator(MapProperties properties){
         aliveAnimalCount = properties.startAnimalCount();
@@ -35,7 +34,6 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
         allGenotypes = new HashMap<>();
         aliveGenotypes = new HashMap<>();
         plantHistory = new HashMap<>();
-        positionsPreferredByPlants = new ArrayList<>();
     }
 
     @Override

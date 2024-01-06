@@ -10,8 +10,8 @@ public class Simulation implements Runnable{
     private WorldMap map;
     private List<Animal> animals = new ArrayList<>();
 
-    public Simulation(WorldMap map) {
-        this.map=map;
+    public Simulation() {
+
 
     }
 
@@ -20,6 +20,12 @@ public class Simulation implements Runnable{
     public void run() {
         //zmienic z dirs na liste animali
         // dodać while do czasu stop lub smierci wszystkich
+//        Codziennie będzie wywoływana metoda map.refreshMap(), która zwraca true, jeśli symulacja
+//        może być kontynuowana, albo false, jeśli się okaże, że nie ma już żadnych zwierząt
+
+        while(map.refreshMap()){
+
+        }
         for(int counter=0; counter< this.dirs.size(); counter++) {
             int nr_a= counter%this.animals.size();
             if (nr_a==0) {try {Thread.sleep(500);}catch(InterruptedException e){e.printStackTrace();}}

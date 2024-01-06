@@ -6,6 +6,6 @@ public interface WorldMap {
     void moveEveryAnimal();
     void removeEatenPlants();
     void procreate();
-    void refreshMap();
+    boolean refreshMap();
     Boundary getCurrentBounds();
 }
