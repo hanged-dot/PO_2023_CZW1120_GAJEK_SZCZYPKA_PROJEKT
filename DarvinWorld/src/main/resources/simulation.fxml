@@ -2,28 +2,23 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.text.Text?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             minHeight="550.0" minWidth="850.0"
-            fx:controller="agh.ics.oop.presenter.SimulationPresenter" >
-    <top>
-    </top>
+            fx:controller="agh.ics.oop.presenter.SimulationPresenter">
     <center>
-
-<HBox>
-
-    <GridPane fx:id="mapGrid" gridLinesVisible="true" HBox.hgrow="ALWAYS" alignment="CENTER"/>
-</HBox>
-
+        <VBox>
+            <HBox>
+                <TextField fx:id="argsTextField" alignment="CENTER"/>
+                <Button fx:id="startButton" text="Start" textAlignment="CENTER" />
+            </HBox>
+            <Label fx:id="movementLabel" alignment="CENTER"/>
+            <GridPane fx:id="mapGrid" gridLinesVisible="true" alignment="CENTER"/>
+        </VBox>
     </center>
-    <bottom>
-        // miejsce na staty wybranego zwierzaka
-        // start/stop button symulacji
-    </bottom>
 </BorderPane>

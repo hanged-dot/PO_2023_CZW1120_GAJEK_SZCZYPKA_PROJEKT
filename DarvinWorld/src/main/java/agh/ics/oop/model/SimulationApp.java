@@ -9,12 +9,13 @@ import javafx.stage.Stage;
 public class SimulationApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
+        primaryStage.show();
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getClassLoader().getResource("simulationstart.fxml"));
         BorderPane viewRoot = loader.load();
+
         configureStage(primaryStage,viewRoot);
-        primaryStage.show();
 
     }
     private void configureStage(Stage primaryStage, BorderPane viewRoot) {
@@ -23,6 +24,5 @@ public class SimulationApp extends Application {
         primaryStage.setTitle("Darvin World Parameters");
         primaryStage.minWidthProperty().bind(viewRoot.minWidthProperty());
         primaryStage.minHeightProperty().bind(viewRoot.minHeightProperty());
-
     }
 }

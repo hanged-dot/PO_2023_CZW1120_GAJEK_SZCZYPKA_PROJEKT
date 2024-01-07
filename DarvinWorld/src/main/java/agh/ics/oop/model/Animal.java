@@ -3,7 +3,6 @@ package agh.ics.oop.model;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Vector;
 
 public class Animal{
 
@@ -159,8 +158,9 @@ public class Animal{
         this.orientation = this.orientation.previous().previous().previous().previous();
     }
 //jest ok
-    public boolean canProcreate(int min){ if (getEnergy()>=min) return true;
-    return false;} //zwraca informację czy zwierzak da radę się rozmnożyć
+    public boolean canProcreate(){
+        return getEnergy() >= properties.minProcreateEnergy();
+    } //zwraca informację czy zwierzak da radę się rozmnożyć
 // jest ok chyba (MG)
 public Animal procreate(Animal other){
 

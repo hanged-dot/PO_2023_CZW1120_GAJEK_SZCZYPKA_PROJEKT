@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             minHeight="550.0" minWidth="850.0"
@@ -15,23 +16,35 @@
     <top>
 
         <VBox>
-            <HBox padding="">
+            <HBox>
+                <padding>
+                    <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                </padding>
                 <Text fx:id="heightText" text="Podaj Wysokosc mapy" />
                 <TextField fx:id="height"  alignment="CENTER"/>
             </HBox>
-            <TextField fx:id="width" text="Podaj szerokosc mapy"/>
-            <TextField fx:id="startPlant" text="Podaj startową liczbę roślin"/>
-            <TextField fx:id="energy1Plant" text="Podaj energie z jednej rosliny"/>
-            <TextField fx:id="plantsPerDay" text="Podaj liczbe roslin wyrastajacych jednego dnia"/>
-            <TextField fx:id="tunnelCount" text="Podaj ilosc tuneli"/>
-            <TextField fx:id="startAnimal" text="Podaj startowa liczbe zwierzakow"/>
-            <TextField fx:id="startAnimalEnergy" text="Podaj startowa energie zwierzakow"/>
-            <TextField fx:id="minFedEnergy" text="Podaj energie minimalna do rozmnazania"/>
-            <TextField fx:id="procreateEnergy" text="Podaj energie tracona na rozmnazanie"/>
-            <TextField fx:id="breedEnergy" text="Podaj energie tracona na rozmnazanie"/>
-            <TextField fx:id="minMutationNumber" text="Podaj minimalna liczbe mutacji"/>
-            <TextField fx:id="maxMutationNumber" text="Podaj maksymalna liczbe mutacji"/>
-            <TextField fx:id="genomeLength" text="Podaj liczbe genow w genomie" />
+            <HBox>
+                <TextField fx:id="width" promptText="Podaj szerokosc mapy"/>
+
+            </HBox>
+            <HBox>
+                <TextField fx:id="tunnelCount" promptText="Podaj ilosc tuneli"/>
+
+            </HBox>
+            <HBox>
+                <TextField fx:id="startPlant" promptText="Podaj startową liczbę roślin"/>
+
+            </HBox>
+            <TextField fx:id="energy1Plant" promptText="Podaj energie z jednej rosliny"/>
+            <TextField fx:id="plantsPerDay" promptText="Podaj liczbe roslin wyrastajacych jednego dnia"/>
+            <TextField fx:id="startAnimal" promptText="Podaj startowa liczbe zwierzakow"/>
+            <TextField fx:id="startAnimalEnergy" promptText="Podaj startowa energie zwierzakow"/>
+            <TextField fx:id="minFedEnergy" promptText="Podaj energie minimalna do rozmnazania"/>
+            <TextField fx:id="procreateEnergy" promptText="Podaj energie tracona na rozmnazanie"/>
+            <TextField fx:id="breedEnergy" promptText="Podaj energie tracona na rozmnazanie"/>
+            <TextField fx:id="minMutationNumber" promptText="Podaj minimalna liczbe mutacji"/>
+            <TextField fx:id="maxMutationNumber" promptText="Podaj maksymalna liczbe mutacji"/>
+            <TextField fx:id="genomeLength" promptText="Podaj liczbe genow w genomie" />
             <Label fx:id="infoLabel2"  textAlignment="CENTER"/>
         </VBox>
     </top>
