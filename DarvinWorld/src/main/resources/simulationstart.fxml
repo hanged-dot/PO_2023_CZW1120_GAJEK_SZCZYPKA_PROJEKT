@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.text.Text?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ChoiceBox?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             minHeight="550.0" minWidth="850.0"
@@ -26,6 +27,10 @@
             <HBox>
                 <Text fx:id="widthtText" text="Podaj szerokość mapy: " />
                 <TextField fx:id="width" alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="chooseMapText" text="Wybierz rodzaj mapy: " />
+                <ChoiceBox fx:id="chooseMap" items=""/>
             </HBox>
             <HBox>
                 <Text fx:id="tunnelCountText" text="Podaj ilość tuneli: " />

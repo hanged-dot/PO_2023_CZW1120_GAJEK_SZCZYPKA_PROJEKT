@@ -2,6 +2,7 @@ package agh.ics.oop.presenter;
 
 import agh.ics.oop.Simulation;
 import agh.ics.oop.model.*;
+import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -27,7 +28,6 @@ public class SimulationStart {
     @FXML private TextField minMutationNumber;
     @FXML private TextField maxMutationNumber;
     @FXML private TextField genomeLength;
-
 
     public void onSimulationStartClicked(){
         // add map i animal properties
@@ -63,7 +63,8 @@ public class SimulationStart {
         configureStage(sims,viewRoot);
         sims.show();
         SimulationPresenter presenter = loader.getController();
-
+// TODO arraylistę symulacji trzeba przenieść gdzieś wyżej, bo na klik start mamy dodać nową symulację do
+//        istniejącej listy, a nie tworzyć nową listę z jedną symulacją
         ArrayList<Simulation> simulations= new ArrayList<>();
         simulations.add(new Simulation(mapProperties, animalProperties, presenter));
         new SimulationEngine(simulations).runAsyncInThreadPool();

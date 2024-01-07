@@ -9,8 +9,8 @@ import javafx.stage.Stage;
 public class SimulationApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("Darwin World");
         primaryStage.show();
-
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getClassLoader().getResource("simulationstart.fxml"));
         BorderPane viewRoot = loader.load();
