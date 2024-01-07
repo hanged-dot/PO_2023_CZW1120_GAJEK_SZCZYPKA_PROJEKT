@@ -17,14 +17,19 @@ public abstract class AbstractMap implements WorldMap {
     protected ArrayList<MapChangeListener> observers = new ArrayList<>();
     private HashSet<Vector2d> plants;
     private HashSet<Vector2d> plantsToEat;
-    private HashMap<Vector2d, Integer> plantHistory;
     private final PlantPositionGenerator plantPositionGenerator;
     private final int dailyPlantCount;
     protected SimulationStatisticsGenerator statisticsGenerator;
     private final AnimalComparator animalComparator;
     int day; // current map day
 
-    public AbstractMap(MapProperties mapProperties, AnimalProperties animalProperties) {
+    private MapChangeListener observer;
+
+    public AbstractMap(MapProperties mapProperties,
+                       AnimalProperties animalProperties,
+                       MapChangeListener observer) {
+
+        this.observer = observer;
 
         statisticsGenerator = new SimulationStatisticsGenerator(mapProperties);
         animalComparator = new AnimalComparator();
@@ -46,7 +51,6 @@ public abstract class AbstractMap implements WorldMap {
 
         plants = new HashSet<>();
         plantsToEat = new HashSet<>();
-        plantHistory = new HashMap<>();
 
         plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
 
@@ -354,13 +358,13 @@ public abstract class AbstractMap implements WorldMap {
             observers.get(i).mapChanged(this, changeInfo);
         }
     }
-
-    public void addObserver (MapChangeListener observer){
-        this.observers.add(observer);
-    }
-
-    public void removeObserver (MapChangeListener observer){
-        this.observers.remove(observer);
-    }
+//
+//    public void addObserver (MapChangeListener observer){
+//        this.observers.add(observer);
+//    }
+//
+//    public void removeObserver (MapChangeListener observer){
+//        this.observers.remove(observer);
+//    }
 
 }

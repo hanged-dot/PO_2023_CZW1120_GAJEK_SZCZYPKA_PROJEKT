@@ -11,13 +11,17 @@ public class Simulation implements Runnable{
     private List<Animal> animals = new ArrayList<>();
 
 // w konstruktorze przekazujemy wszystkie parametry sczytane z okna startowego
-    public Simulation(MapProperties mapProperties, AnimalProperties animalProperties) {
+    public Simulation(MapProperties mapProperties,
+                      AnimalProperties animalProperties,
+                      MapChangeListener observer) {
 
         if (mapProperties.tunnelMode()){
-            this.map = new TunnelMap(mapProperties, animalProperties);
+            this.map = new TunnelMap(mapProperties, animalProperties, observer);
         } else {
-            this.map = new GlobeMap(mapProperties, animalProperties);
+            this.map = new GlobeMap(mapProperties, animalProperties, observer);
         }
+
+
     }
 
     public Animal getAnimal(int x){ return this.animals.get(x); }
