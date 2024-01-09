@@ -2,6 +2,7 @@ package agh.ics.oop.presenter;
 
 import agh.ics.oop.model.AnimalProperties;
 import agh.ics.oop.model.MapProperties;
+import agh.ics.oop.model.SimulationProperties;
 import agh.ics.oop.model.Vector2d;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -42,8 +43,11 @@ public class SimulationConfiguration extends Application {
 
     private CheckBox chooseMapWithTunnelsBox;
     private CheckBox chooseWithLightMutationCorrectBox;
+    private CheckBox saveStatisticsCheckBox;
+    private ArrayList<ConfigurationElement> configurationElementArrayList;
 
-        private ArrayList<ConfigurationElement> configurationElementArrayList;
+    private SimulationStart simulationStart;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -51,6 +55,7 @@ public class SimulationConfiguration extends Application {
 
         primaryStage.setTitle("Darwin World");
 
+        simulationStart = new SimulationStart();
         configurationElementArrayList = new ArrayList<>();
 
 //        All texts needed:
@@ -181,7 +186,7 @@ public class SimulationConfiguration extends Application {
 
 //      Potrzebne CheckBoxy:
 
-        CheckBox saveStatisticsCheckBox = new CheckBox("Save daily statistics");
+        saveStatisticsCheckBox = new CheckBox("Save daily statistics");
         chooseMapWithTunnelsBox = new CheckBox("Tunnels");
         tunnelCount.textField().setDisable(!chooseMapWithTunnelsBox.isSelected());
 
@@ -189,18 +194,14 @@ public class SimulationConfiguration extends Application {
 
 //        Potrzebne przyciski:
         Button saveConfigurationButton = new Button("Save configuration");
+        saveConfigurationButton.setOnAction(e -> saveConfiguration());
 //        TODO: zastanowić się jak chcemy przechowywać konfiguracje do wyboru
         Button chooseConfigurationButton = new Button("Choose configuration");
+        chooseConfigurationButton.setOnAction(e -> chooseSavedConfiguration());
 
         Button startSimulationButton = new Button("Start simulation");
+        startSimulationButton.setOnAction(e -> onSimulationStartClicked());
 
-//        startSimulationButton.setOnAction(e -> {
-//            if(checkConfigurationConstraints()){
-//                onSimulationStartClicked();
-//            };
-//        });
-
-//        Layout dla przycisków:
 
         HBox bottomMenu = new HBox();
         bottomMenu.getChildren().addAll(saveConfigurationButton, chooseConfigurationButton, startSimulationButton);
@@ -213,20 +214,7 @@ public class SimulationConfiguration extends Application {
                     configurationElement.text(),
                     configurationElement.textField());
         }
-//        leftMenu.getChildren().addAll(
-//                mapHeightText, mapHeight,
-//                mapWidthText, mapWidth,
-//                startPlantText, startPlantCount,
-//                plantsPerDayText, plantsPerDayCount,
-//                energyPlantText, energyPlant,
-//                startAnimalText, startAnimalCount,
-//                startAnimalEnergyText, startAnimalEnergy,
-//                minProcreateEnergyText, minProcreateEnergy,
-//                procreateEnergyText, procreateEnergy,
-//                genomeLengthText, genomeLength,
-//                minMutationText, minMutation,
-//                maxMutationText, maxMutation
-//        );
+
         leftMenu.setAlignment(Pos.TOP_LEFT);
 
         VBox rightMenu = new VBox();
@@ -238,18 +226,6 @@ public class SimulationConfiguration extends Application {
         borderPane.setLeft(leftMenu);
         borderPane.setRight(rightMenu);
 
-
-//        W taki sposób będziemy wołać nowe symulacje: tylko oczywiście nie display, a jakieś run simulation itp.
-
-//        button.setOnAction(e -> NewSimulation.display("Simulation 1", "meh"));
-//        button.setOnAction(e -> handleOptions(saveStatisticsCheckBox));
-//        button.setOnAction(e -> checkChoice(chooseMapChoiceBox));
-//
-//        VBox layout = new VBox(10);
-//        layout.setPadding(new Insets(20, 20, 20, 20));
-//        layout.getChildren().addAll(mapHeightText, mapHeight,
-//                mapWidthText, mapWidth,
-//                chooseMapWithTunnelsBox);
 
         chooseMapWithTunnelsBox.selectedProperty().addListener((o, oldValue, newValue) -> {
             if (newValue) {
@@ -307,10 +283,7 @@ public class SimulationConfiguration extends Application {
         }
     }
 
-//     do modyfikacji - tutaj będziemy odczytywać poprawne properties, a potem będziemy mogli je przekazywać
-//    albo do nowej symulacji, albo do zapisu konfiguracji na przyszłość
-//    stworzę nowy rekord, w którym będą wszystkie propertiesy spięte
-    private void onSimulationStartClicked(){
+    private SimulationProperties wrapProperties(){
 
         MapProperties mapProperties = new MapProperties(
                 Integer.parseInt(mapWidth.textField().getText()),
@@ -333,6 +306,24 @@ public class SimulationConfiguration extends Application {
                 chooseWithLightMutationCorrectBox.isSelected()
         );
 
+        return new SimulationProperties(mapProperties, animalProperties, chooseMapWithTunnelsBox.isSelected(),
+                chooseWithLightMutationCorrectBox.isSelected(), saveStatisticsCheckBox.isSelected());
+    }
+
+    private void onSimulationStartClicked(){
+        if(checkConfigurationConstraints()){
+            simulationStart.newSimulationStart(wrapProperties());
+        }
+    }
+
+    private void saveConfiguration(){
+        if (checkConfigurationConstraints()){
+            //TODO zapisać wybraną konfigurację z użyciem metody wrapProperties
+        }
+    }
+
+    private void chooseSavedConfiguration(){
+//     TODO: umożliwić wybranie jednej z zapisanych konfiguracji
     }
 
 }

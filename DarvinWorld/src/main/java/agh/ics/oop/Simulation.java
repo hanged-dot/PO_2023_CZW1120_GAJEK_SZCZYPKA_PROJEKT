@@ -11,16 +11,18 @@ public class Simulation implements Runnable{
     private List<Animal> animals = new ArrayList<>();
 
 // w konstruktorze przekazujemy wszystkie parametry sczytane z okna startowego
-    public Simulation(MapProperties mapProperties,
-                      AnimalProperties animalProperties,
+    public Simulation(SimulationProperties simulationProperties,
                       MapChangeListener observer) {
 
-        if (mapProperties.tunnelMode()){
-            this.map = new TunnelMap(mapProperties, animalProperties, observer);
+        if (simulationProperties.hasTunnels()){
+            this.map = new TunnelMap(simulationProperties.mapProperties(),
+                    simulationProperties.animalProperties(), observer);
         } else {
-            this.map = new GlobeMap(mapProperties, animalProperties, observer);
+            this.map = new GlobeMap(simulationProperties.mapProperties(),
+                    simulationProperties.animalProperties(), observer);
         }
 
+        System.out.println(simulationProperties.animalProperties().energyFromPlant());
 
     }
 
