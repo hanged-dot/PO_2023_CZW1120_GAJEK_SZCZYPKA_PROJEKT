@@ -10,10 +10,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -217,6 +214,7 @@ public class SimulationConfiguration extends Application {
 
         leftMenu.setAlignment(Pos.TOP_LEFT);
 
+
         VBox rightMenu = new VBox();
         rightMenu.getChildren().addAll(chooseMapWithTunnelsBox, chooseWithLightMutationCorrectBox);
         rightMenu.setAlignment(Pos.TOP_LEFT);
@@ -318,6 +316,8 @@ public class SimulationConfiguration extends Application {
 
     private void saveConfiguration(){
         if (checkConfigurationConstraints()){
+            NameConfigurationBox.giveConfigurationName("New configuration name: ",
+                    wrapProperties());
             //TODO zapisać wybraną konfigurację z użyciem metody wrapProperties
         }
     }
