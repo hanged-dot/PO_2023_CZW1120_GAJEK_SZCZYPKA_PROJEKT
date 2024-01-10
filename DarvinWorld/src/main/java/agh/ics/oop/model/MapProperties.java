@@ -1,5 +1,7 @@
 package agh.ics.oop.model;
 
+import java.io.Serializable;
+
 public record MapProperties(
         int mapWidth,
         int mapHeight,
@@ -7,5 +9,5 @@ public record MapProperties(
         int dailyPlantCount,
         int startAnimalCount,
         boolean tunnelMode,
-        int tunnelCount) {
+        int tunnelCount) implements Serializable {
 }

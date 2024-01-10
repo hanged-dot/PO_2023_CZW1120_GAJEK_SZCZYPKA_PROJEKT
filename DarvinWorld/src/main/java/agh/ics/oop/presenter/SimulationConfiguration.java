@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SimulationConfiguration extends Application {
@@ -148,38 +149,7 @@ public class SimulationConfiguration extends Application {
         this.configurationElementArrayList.add(maxMutation);
         this.configurationElementArrayList.add(genomeLength);
 
-////        Text mapHeightText = new Text("Choose map height: ");
-//        Text mapWidthText = new Text("Choose map width: ");
-//        // TODO: ma się pojawić jak zaznaczymy że chcemy tunele;
-//        //  musi sprawdzać czy nie dajemy za dużo tuneli w przeliczeniu na rozmiar mapy
-//        Text tunnelCountText = new Text("Choose number of tunnels: ");
-//        Text startPlantText = new Text("Choose initial number of plants: ");
-//        Text plantsPerDayText = new Text("Choose daily number of new plants: ");
-//        Text energyPlantText = new Text("Choose energy from eating one plant: ");
-//        Text startAnimalText = new Text("Choose initial number of animals: ");
-//        Text startAnimalEnergyText = new Text("Choose initial energy of animals: ");
-//        Text minProcreateEnergyText = new Text("Choose minimal energy to procreate: ");
-//        Text procreateEnergyText = new Text("Choose energy used by procreating: ");
-//        Text minMutationText = new Text("Choose minimal number of mutations: ");
-//        Text maxMutationText = new Text("Choose maximal number of mutations: ");
-//        Text genomeLengthText = new Text("Choose maximal number of mutations: ");
-
-
-//        // All text fields needed:
-//        mapHeight = new TextField("20");
-//        mapWidth = new TextField("20");
-//        tunnelCount = new TextField("5");
-//        startPlantCount = new TextField("70");
-//        plantsPerDayCount = new TextField("20");
-//        energyPlant = new TextField("2");
-//        startAnimalCount = new TextField("50");
-//        startAnimalEnergy = new TextField("15");
-//        minProcreateEnergy = new TextField("10");
-//        procreateEnergy = new TextField("5");
-//        minMutation = new TextField("0");
-//        maxMutation = new TextField("3");
-//        genomeLength = new TextField("8");
-
+////
 
 //      Potrzebne CheckBoxy:
 
@@ -318,11 +288,11 @@ public class SimulationConfiguration extends Application {
         if (checkConfigurationConstraints()){
             NameConfigurationBox.giveConfigurationName("New configuration name: ",
                     wrapProperties());
-            //TODO zapisać wybraną konfigurację z użyciem metody wrapProperties
         }
     }
 
     private void chooseSavedConfiguration(){
+        ConfigurationReader.
 //     TODO: umożliwić wybranie jednej z zapisanych konfiguracji
     }
 

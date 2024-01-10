@@ -1,5 +1,7 @@
 package agh.ics.oop.model;
 
+import java.io.Serializable;
+
 public record AnimalProperties(
         int startAnimalEnergy,
         int energyFromPlant,
@@ -10,5 +12,5 @@ public record AnimalProperties(
         int genomeLength,
         boolean withLightMutationCorrect
 
-) {
+) implements Serializable {
 }
