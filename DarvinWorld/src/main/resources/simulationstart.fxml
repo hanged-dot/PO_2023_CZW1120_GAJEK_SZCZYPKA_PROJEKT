@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ChoiceBox?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            minHeight="550.0" minWidth="850.0"
+            fx:controller="agh.ics.oop.presenter.SimulationStart" >
+    <top>
+
+        <VBox>
+            <HBox>
+                <padding>
+                    <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                </padding>
+                <Text fx:id="heightText" text="Podaj wysokość mapy: " />
+                <TextField fx:id="height"  alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="widthtText" text="Podaj szerokość mapy: " />
+                <TextField fx:id="width" alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="chooseMapText" text="Wybierz rodzaj mapy: " />
+                <ChoiceBox fx:id="chooseMap" items=""/>
+            </HBox>
+            <HBox>
+                <Text fx:id="tunnelCountText" text="Podaj ilość tuneli: " />
+                <TextField fx:id="tunnelCount" alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="startPlantText" text="Podaj startową liczbę roślin: "/>
+                <TextField fx:id="startPlant" alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="energyPlantText" text="Podaj energię z jednej rośliny: "/>
+                <TextField fx:id="energy1Plant" alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="plantsPerDayText" text="Podaj liczbę roślin wyrastających jednego dnia: "/>
+                <TextField fx:id="plantsPerDay" alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="startAnimalText" text="Podaj startową liczbą zwierzaków: "/>
+                <TextField fx:id="startAnimal" alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="startAnimalEnergyText" text="Podaj startową energię zwierzaków: "/>
+                <TextField fx:id="startAnimalEnergy" alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="minProcreateEnergyText" text="Podaj energię minimalną do rozmnażania: "/>
+                <TextField fx:id="minProcreateEnergy" alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="procreateEnergyText" text="Podaj energię traconą na rozmnażanie: "/>
+                <TextField fx:id="procreateEnergy" alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="minMutationNumberText" text="Podaj minimalną liczbę mutacji: "/>
+                <TextField fx:id="minMutationNumber" alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="maxMutationNumberText" text="Podaj maksymalną liczbę mutacji: "/>
+                <TextField fx:id="maxMutationNumber" alignment="CENTER"/>
+            </HBox>
+            <HBox>
+                <Text fx:id="genomeLengthText" text="Podaj liczbę genów w genomie: "/>
+                <TextField fx:id="genomeLength" alignment="CENTER"/>
+            </HBox>
+        </VBox>
+    </top>
+    <center>
+
+
+    </center>
+    <bottom>
+        <Button fx:id="button" text="Start" onAction="#onSimulationStartClicked" alignment="CENTER"/>
+    </bottom>
+</BorderPane>

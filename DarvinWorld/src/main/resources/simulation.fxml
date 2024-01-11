@@ -2,45 +2,23 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.text.Text?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             minHeight="550.0" minWidth="850.0"
-            fx:controller="agh.ics.oop.presenter.SimulationPresenter" >
-    <top>
-<VBox>
-    <TextField fx:id="textField" />
-    <HBox padding="">
-        <Text fx:id="hightText" text="Podaj Wysokosc mapy" />
-        <TextField fx:id="hight"  alignment="CENTER"/>
-    </HBox>
-    <TextField fx:id="width" text="Podaj szerokosc mapy"/>
-    <TextField fx:id="startPlant" text="Podaj startową liczbę roślin"/>
-    <TextField fx:id="energy1Plant" text="Podaj energie z jednej rosliny"/>
-    <TextField fx:id="plantsPerDay" text="Podaj liczbe roslin wyrastajacych jednego dnia"/>
-    <TextField fx:id="startAnimal" text="Podaj startowa liczbe zwierzakow"/>
-    <TextField fx:id="minFedEnergy" text="Podaj energie minimalna do rozmnazania"/>
-    <TextField fx:id="breedEnergy" text="Podaj energie tracona na rozmnazanie"/>
-    <TextField fx:id="minMutationNumber" text="Podaj minimalna liczbe mutacji"/>
-    <TextField fx:id="maxMutationNuber" text="Podaj maksymalna liczbe mutacji"/>
-    <TextField fx:id="genomeLenght" text="Podaj liczbe genow w genomie" />
-        <Label fx:id="infoLabel2"  textAlignment="CENTER"/>
-</VBox>
-    </top>
+            fx:controller="agh.ics.oop.presenter.SimulationPresenter">
     <center>
-
-<HBox>
-
-    <GridPane fx:id="mapGrid" gridLinesVisible="true" HBox.hgrow="ALWAYS" alignment="CENTER"/>
-</HBox>
-
+        <VBox>
+            <HBox>
+                <TextField fx:id="argsTextField" alignment="CENTER"/>
+                <Button fx:id="startButton" text="Start" textAlignment="CENTER" />
+            </HBox>
+            <Label fx:id="movementLabel" alignment="CENTER"/>
+            <GridPane fx:id="mapGrid" gridLinesVisible="true" alignment="CENTER"/>
+        </VBox>
     </center>
-    <bottom>
-        <Button fx:id="button" text="Start" onAction="#onSimulationStartClicked" alignment="CENTER"/>
-    </bottom>
 </BorderPane>
