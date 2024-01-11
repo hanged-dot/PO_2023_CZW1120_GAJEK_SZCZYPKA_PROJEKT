@@ -33,6 +33,7 @@ public class Animal{
         this.plants=0;
         this.transferedThroughTunnel=false;
 
+
     }
     public MapDirection getOrientation() { return orientation; }  //zwraca orientacje zwierzaka
     public Vector2d getPosition() {
@@ -195,7 +196,9 @@ public Animal procreate(Animal other){
             i++;
         }
     }
+    //dodac mutacje
     offspring.setGenome(genes);
+
 
     return offspring;
 }

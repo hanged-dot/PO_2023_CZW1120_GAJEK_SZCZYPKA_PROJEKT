@@ -279,6 +279,7 @@ public class SimulationConfiguration extends Application {
     }
 
     private void onSimulationStartClicked(){
+
         if(checkConfigurationConstraints()){
             simulationStart.newSimulationStart(wrapProperties());
         }
@@ -292,7 +293,7 @@ public class SimulationConfiguration extends Application {
     }
 
     private void chooseSavedConfiguration(){
-        ConfigurationReader.
+//        ConfigurationReader.
 //     TODO: umożliwić wybranie jednej z zapisanych konfiguracji
     }
 
