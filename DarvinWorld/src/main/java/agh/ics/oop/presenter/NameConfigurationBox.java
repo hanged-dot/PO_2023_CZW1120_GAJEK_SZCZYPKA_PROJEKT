@@ -24,6 +24,8 @@ public class NameConfigurationBox {
             if (!(nameField.getText() == null || nameField.getText().trim().isEmpty())){
                 ConfigurationSaver.saveConfiguration(nameField.getText(), simulationProperties);
                 window.close();
+            } else {
+                AlertBox.display("Wrong title","You have to select a name for your configuration.");
             }
         });
         Button abortButton = new Button("Cancel");

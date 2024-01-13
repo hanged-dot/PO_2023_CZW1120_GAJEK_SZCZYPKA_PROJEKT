@@ -118,19 +118,19 @@ public class SimulationConfiguration extends Application {
         );
 
         minMutation = new ConfigurationElement(
-                new Text("Choose minimal number(?percent?) of mutations: "),
+                new Text("Choose minimal percent of mutations: "),
                 new TextField("0"),
                 new Vector2d(0, 10)
         );
 
         maxMutation = new ConfigurationElement(
-                new Text("Choose maximal number (?percent?) of mutations: "),
-                new TextField("3"),
+                new Text("Choose maximal percent of mutations: "),
+                new TextField("30"),
                 new Vector2d(10, 80)
         );
 
         genomeLength = new ConfigurationElement(
-                new Text("Choose maximal number of mutations: "),
+                new Text("Choose genome length: "),
                 new TextField("8"),
                 new Vector2d(2, 100)
         );
@@ -153,10 +153,12 @@ public class SimulationConfiguration extends Application {
 
 //      Potrzebne CheckBoxy:
 
+//        zapisywanie statystyk uruchomionej symulacji:
         saveStatisticsCheckBox = new CheckBox("Save daily statistics");
+//        wybór mapy z tunelami:
         chooseMapWithTunnelsBox = new CheckBox("Tunnels");
         tunnelCount.textField().setDisable(!chooseMapWithTunnelsBox.isSelected());
-
+//        wybór lekkiej korekty
         chooseWithLightMutationCorrectBox = new CheckBox("Light Mutation Correct");
 
 //        Potrzebne przyciski:
@@ -186,7 +188,7 @@ public class SimulationConfiguration extends Application {
 
 
         VBox rightMenu = new VBox();
-        rightMenu.getChildren().addAll(chooseMapWithTunnelsBox, chooseWithLightMutationCorrectBox);
+        rightMenu.getChildren().addAll(chooseMapWithTunnelsBox, chooseWithLightMutationCorrectBox, saveStatisticsCheckBox);
         rightMenu.setAlignment(Pos.TOP_LEFT);
 
         BorderPane borderPane = new BorderPane();
@@ -217,7 +219,7 @@ public class SimulationConfiguration extends Application {
             }
         }
 
-        if (Integer.parseInt(minMutation.textField().getText()) > Integer.parseInt(maxMutation.text().getText())){
+        if (Integer.parseInt(minMutation.textField().getText()) > Integer.parseInt(maxMutation.textField().getText())){
             AlertBox.display("Incorrect Input", "Minimal Mutation Count cannot be higher than Maximal Mutation Count.");
             return false;
         }
@@ -292,8 +294,8 @@ public class SimulationConfiguration extends Application {
     }
 
     private void chooseSavedConfiguration(){
-        ConfigurationReader.
-//     TODO: umożliwić wybranie jednej z zapisanych konfiguracji
+        ConfigurationReader configurationReader = new ConfigurationReader();
+        configurationReader.choosePredefinedSimulationProperties();
     }
 
 }

@@ -22,22 +22,28 @@ public class ConfigurationReader {
 
         Label label = new Label("Choose configuration: ");
 
-        File folder = new File("/configurations/");
+        File folder = new File("src/main/java/agh/ics/oop/presenter/configurations");
         File[] files = folder.listFiles();
 
         ChoiceBox choiceBox = new ChoiceBox<>();
 
-        for (File file: files){
-            if (file.isFile() && file.getName().endsWith(".txt")){
-                String name = file.getName();
-                int len = name.length();
-                choiceBox.getItems().add(name.substring(0, len - 5));
+        try {
+            for (File file: files){
+                if (file.isFile() && file.getName().endsWith(".txt")){
+                    String name = file.getName();
+                    int len = name.length();
+                    choiceBox.getItems().add(name.substring(0, len - 5));
+                }
             }
+        } catch (Exception e){
+            AlertBox.display("Error", "Error");
         }
+
 
         Button acceptButton = new Button("Start simulation");
         acceptButton.setOnAction(e -> {
-            this.onSimulationStartClicked((String)choiceBox.getValue());
+//            this.onSimulationStartClicked((String)choiceBox.getValue());
+            System.out.println((String)choiceBox.getValue());
             window.close();
         });
 

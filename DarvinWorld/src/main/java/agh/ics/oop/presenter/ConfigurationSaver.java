@@ -6,11 +6,10 @@ import java.io.*;
 
 public class ConfigurationSaver {
 
-//    `czy to tak będzie działać???
     public static void saveConfiguration(String name, SimulationProperties simulationProperties){
 
         try{
-            FileOutputStream f = new FileOutputStream(new File("/configurations/"+name+".txt"));
+            FileOutputStream f = new FileOutputStream("src/main/java/agh/ics/oop/presenter/configurations/"+name+".txt");
             ObjectOutputStream o = new ObjectOutputStream(f);
 
             o.writeObject(simulationProperties);
@@ -19,9 +18,8 @@ public class ConfigurationSaver {
 
         } catch (IOException e){
             System.out.println("Error initializing stream");
+            AlertBox.display("Error", "Sorry, your configuration could not be saved properly.");
         }
-//        TODO: zapis konfiguracji do pliku
     }
-
 
 }
