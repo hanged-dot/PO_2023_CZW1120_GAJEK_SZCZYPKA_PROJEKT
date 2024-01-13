@@ -8,9 +8,9 @@ import java.util.List;
 public class Simulation implements Runnable{
 
     private WorldMap map;
-    private List<Animal> animals = new ArrayList<>();
+    private List<Animal> animals;
 
-// w konstruktorze przekazujemy wszystkie parametry sczytane z okna startowego
+// w konstruktorze przekazujemy wszystkie parametry zczytane z okna startowego
     public Simulation(SimulationProperties simulationProperties,
                       MapChangeListener observer) {
 
@@ -22,8 +22,7 @@ public class Simulation implements Runnable{
                     simulationProperties.animalProperties(), observer);
         }
 
-        System.out.println(simulationProperties.animalProperties().energyFromPlant());
-
+        animals = new ArrayList<>();
     }
 
     public Animal getAnimal(int x){ return this.animals.get(x); }
@@ -34,18 +33,31 @@ public class Simulation implements Runnable{
 //        Codziennie będzie wywoływana metoda map.refreshMap(), która zwraca true, jeśli symulacja
 //        może być kontynuowana, albo false, jeśli się okaże, że nie ma już żadnych zwierząt
 
-        do {
-//            TODO Update statystyk symulacji - trzeba ogarnąć ich wyświetlanie
-            map.getSimulationStatistics();
+//        do {
+////            TODO Update statystyk symulacji - trzeba ogarnąć ich wyświetlanie
+//            map.getSimulationStatistics();
+////            Usunięcie martwych zwierzaków z mapy
+//            map.removeDeadAnimals();
+////            Skręt i przemieszczenie każdego zwierzaka
+//            map.moveEveryAnimal();
+////            Konsumpcja roślin, na których pola weszły zwierzaki
+//            map.removeEatenPlants();
+////            Rozmnażanie się najedzonych zwierzaków znajdujących się na tym samym polu
+//            map.procreate();
+//        } while (map.refreshMap()); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy)
+
+        map.getSimulationStatistics();
 //            Usunięcie martwych zwierzaków z mapy
-            map.removeDeadAnimals();
-//            Skręt i przemieszczenie każdego zwierzaka
-            map.moveEveryAnimal();
-//            Konsumpcja roślin, na których pola weszły zwierzaki
-            map.removeEatenPlants();
-//            Rozmnażanie się najedzonych zwierzaków znajdujących się na tym samym polu
-            map.procreate();
-        } while (map.refreshMap()); // Wzrastanie nowych roślin na wybranych polach mapy.
+        map.removeDeadAnimals();
+////            Skręt i przemieszczenie każdego zwierzaka
+        map.moveEveryAnimal();
+        System.out.println("1");
+
+////            Konsumpcja roślin, na których pola weszły zwierzaki
+//        map.removeEatenPlants();
+////            Rozmnażanie się najedzonych zwierzaków znajdujących się na tym samym polu
+//        map.procreate();
+//        System.out.println(map.refreshMap());
 
 //        for(int counter=0; counter< this.dirs.size(); counter++) {
 //            int nr_a= counter%this.animals.size();

@@ -29,7 +29,6 @@ public class PlantPositionGenerator {
         southernSteppeBoundary = new Boundary(boundary.leftX(), boundary.rightX(),
                 0, equatorBoundary.lowerY() - 1);
 
-
         equatorPositions = new ArrayList<>();
         northernSteppePositions = new ArrayList<>();
         southernSteppePositions = new ArrayList<>();
@@ -48,6 +47,7 @@ public class PlantPositionGenerator {
                 southernSteppePositions.add(new Vector2d(i, j));
             }
         }
+
     }
 
     private void generatePositions(HashSet<Vector2d> takenPositions, int positionCount){
@@ -62,10 +62,10 @@ public class PlantPositionGenerator {
         Collections.shuffle(northernSteppePositions);
         Collections.shuffle(southernSteppePositions);
 
+
 //        jeśli na mapie nie ma wystarczająco dużo wolnych miejsc, zajmiemy tylko taką ilość miejsc, jaka jest dostępna
         positionCount = min(positionCount,
-                sum(sum(equatorPositions.size(), northernSteppePositions.size()), southernSteppePositions.size()) -
-                takenPositions.size());
+                sum((sum(equatorPositions.size(), northernSteppePositions.size())), southernSteppePositions.size()) - takenPositions.size());
 
         while (positionCount > 0){
 
@@ -85,9 +85,8 @@ public class PlantPositionGenerator {
                     positions.add(southernSteppePositions.get(southCtr));
                     ++southCtr;
                 }
-
             }
-
+            --positionCount;
         }
 
     }

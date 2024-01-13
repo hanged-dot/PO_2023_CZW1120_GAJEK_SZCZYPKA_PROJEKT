@@ -21,8 +21,11 @@ public class SimulationStart {
     public void newSimulationStart(SimulationProperties simulationProperties){
         MapChangeListener observer = new SimulationPresenter();
         // TODO stworzyć prezentera tutaj i przekazać symulacji
-        simulations.add(new Simulation(simulationProperties, observer));
-        new SimulationEngine(simulations).runAsyncInThreadPool();
+//        simulations.add(new Simulation(simulationProperties, observer));
+//        new SimulationEngine(simulations).runAsyncInThreadPool();
+
+//        NA RAZIE ODPALAMY 1 SYMULACJe,WĄTKI DODAMY NA KONIEC
+        (new Simulation(simulationProperties, observer)).run();
 
     }
 }

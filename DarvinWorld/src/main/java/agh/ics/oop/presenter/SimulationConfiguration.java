@@ -16,9 +16,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import javax.swing.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -164,7 +166,6 @@ public class SimulationConfiguration extends Application {
 //        Potrzebne przyciski:
         Button saveConfigurationButton = new Button("Save configuration");
         saveConfigurationButton.setOnAction(e -> saveConfiguration());
-//        TODO: zastanowić się jak chcemy przechowywać konfiguracje do wyboru
         Button chooseConfigurationButton = new Button("Choose configuration");
         chooseConfigurationButton.setOnAction(e -> chooseSavedConfiguration());
 
@@ -281,6 +282,7 @@ public class SimulationConfiguration extends Application {
     }
 
     private void onSimulationStartClicked(){
+
         if(checkConfigurationConstraints()){
             simulationStart.newSimulationStart(wrapProperties());
         }

@@ -1,4 +1,4 @@
-package agh.ics.oop.presenter;
+package agh.ics.oop.model;
 
 import agh.ics.oop.model.*;
 

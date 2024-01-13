@@ -1,8 +1,6 @@
 package agh.ics.oop.model;
 
-import agh.ics.oop.Simulation;
 import agh.ics.oop.model.util.PlantPositionGenerator;
-import agh.ics.oop.presenter.SimulationStatisticsGenerator;
 
 import java.util.*;
 
@@ -40,19 +38,18 @@ public abstract class AbstractMap implements WorldMap {
 
         animals = new HashMap<>();
 
+        plants = new HashSet<>();
+        plantsToEat = new HashSet<>();
+        dailyPlantCount = mapProperties.dailyPlantCount();
+
+        plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
+
         for (int i = 0; i < mapProperties.startAnimalCount(); ++i) {
 //            tworzymy nowe zwierzątka, generujemy im genom, umieszczamy na mapie
             Animal animal = new Animal(animalProperties, createRandomPosition(mapBoundary));
             animal.setGenome(createRandomGenome(animalProperties.genomeLength()));
             place(animal);
         }
-
-        dailyPlantCount = mapProperties.dailyPlantCount();
-
-        plants = new HashSet<>();
-        plantsToEat = new HashSet<>();
-
-        plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
 
         createNewPlants(mapProperties.startPlantCount());
     }
@@ -119,6 +116,7 @@ public abstract class AbstractMap implements WorldMap {
         animal.move(targetPosition);
 //        Umieszczamy zwierzaka na odpowiednim miejscu na mapie
         this.place(animal);
+        animal.changeHasMovedStatus();
 //        TODO poinformuj wizualizację że zwierzak zmienił pozycję (fizycznie musi teraz zmienić pozycję)
 
     }
@@ -126,11 +124,23 @@ public abstract class AbstractMap implements WorldMap {
     @Override
     public void moveEveryAnimal() {
 
-        for (List<Animal> animalList : animals.values()) {
+        Iterator animalIterator = animals.values().iterator();
 
-            while (!animalList.isEmpty()){
+        while (animalIterator.hasNext()) {
+
+            LinkedList<Animal> animalList = (LinkedList<Animal>) animalIterator.next();
+
+            Iterator<Animal> iterator = animalList.iterator();
+
+            while (iterator.hasNext()){
+                System.out.println(animalList.size());
+
+                Animal animal = iterator.next();
                 //usuwamy zwierzaka z listy, bo najprawdopodobniej i tak zmieni pozycję i trafi do innej listy
-                move(animalList.remove(0));
+                if (!animal.getHasMoved()){
+                    iterator.remove();
+                    move(animal);
+                }
             }
         }
     }
@@ -269,25 +279,35 @@ public abstract class AbstractMap implements WorldMap {
     }
 
 
-        //        Wzrastanie nowych roślin na wybranych polach mapy
-
     @Override
     public boolean refreshMap () {
-        ++day; // TODO zastanowić się czy nie przełożyć tego do symulacji
+        ++day;
         createNewPlants(dailyPlantCount);
 //        TODO: wyświetlić pojawiające się roślinki
         if (animals.isEmpty()){
             return false;
         }
 
-        for (List<Animal> animalList : animals.values()) {
-            animalList.sort(animalComparator);
-        }
+        for (Vector2d key : animals.keySet()) {
 
+            LinkedList<Animal> animalList = animals.get(key);
+
+            if (animals.get(key).isEmpty()){
+                animals.remove(key);
+            }
+            else {
+                for(Animal animal:animalList){
+                    animal.changeHasMovedStatus();
+                }
+                animalList.sort(animalComparator);
+            }
+        }
         return true;
     }
 
-    public void createNewPlants ( int plantCount){
+    //        Wzrastanie nowych roślin na wybranych polach mapy
+
+    public void createNewPlants (int plantCount){
 //       parametr plantCount to albo startowa ilość roślin, albo ilość roślin wyrastająca w 1 dzień
         ArrayList<Vector2d> positions = plantPositionGenerator.getPositions(plants, plantCount);
 
@@ -358,13 +378,4 @@ public abstract class AbstractMap implements WorldMap {
             observers.get(i).mapChanged(this, changeInfo);
         }
     }
-//
-//    public void addObserver (MapChangeListener observer){
-//        this.observers.add(observer);
-//    }
-//
-//    public void removeObserver (MapChangeListener observer){
-//        this.observers.remove(observer);
-//    }
-
 }

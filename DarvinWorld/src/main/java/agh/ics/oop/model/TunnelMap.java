@@ -12,6 +12,7 @@ public class TunnelMap extends AbstractMap {
                      MapChangeListener observer) {
 
         super(mapProperties, animalProperties, observer);
+        tunnels = new HashMap<>();
         this.tunnelCount = mapProperties.tunnelCount();
 
         while (tunnelCount > 0){
@@ -24,6 +25,7 @@ public class TunnelMap extends AbstractMap {
                     !firstEnd.equals(secondEnd)){
                 tunnels.put(firstEnd, secondEnd);
                 tunnels.put(secondEnd, firstEnd);
+                --tunnelCount;
             }
         }
     }

@@ -18,6 +18,7 @@ public class Animal{
     private ArrayList<Animal> kids;
     private int death;
     private int genLen;
+    private boolean hasMoved;
     protected ArrayList<MapChangeListener> observers = new ArrayList<>();
 
     public Animal(AnimalProperties properties, Vector2d position){
@@ -32,6 +33,7 @@ public class Animal{
         this.kids= new ArrayList<>();
         this.plants=0;
         this.transferedThroughTunnel=false;
+        hasMoved = false;
 
     }
     public MapDirection getOrientation() { return orientation; }  //zwraca orientacje zwierzaka
@@ -48,6 +50,8 @@ public class Animal{
     public void eat(){this.energy=this.energy+properties.energyFromPlant();} //zwerzak je
     public void setTransferredThroughTunnel(boolean value){this.transferedThroughTunnel=value;} //zwierzak przeszedl wlasnie przez tunel, ma nim teraz nie wracac
     public boolean isTransferedThroughTunnel(){return this.transferedThroughTunnel;} //zwraca czy zwierzak wlasnie przeszedl przez tunel
+    public boolean getHasMoved(){return hasMoved;}
+    public void changeHasMovedStatus(){hasMoved = !hasMoved;}
 
     public int getNumberOfChildren(){
         int children=0;
