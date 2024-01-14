@@ -1,6 +1,7 @@
 package agh.ics.oop.model;
 
 import agh.ics.oop.model.util.PlantPositionGenerator;
+import com.sun.scenario.animation.shared.AnimationAccessor;
 
 import java.util.*;
 
@@ -11,7 +12,9 @@ import static java.util.Collections.min;
 public abstract class AbstractMap implements WorldMap {
 
     protected final Boundary mapBoundary;
-    protected HashMap<Vector2d, LinkedList<Animal>> animals;
+    protected HashMap<Vector2d, LinkedList<Animal>> beforeMoveAnimals;
+    protected HashMap<Vector2d, LinkedList<Animal>> afterMoveAnimals;
+
     protected ArrayList<MapChangeListener> observers = new ArrayList<>();
     private HashSet<Vector2d> plants;
     private HashSet<Vector2d> plantsToEat;
@@ -36,7 +39,8 @@ public abstract class AbstractMap implements WorldMap {
         mapBoundary = new Boundary(0, mapProperties.mapWidth() - 1,
                 0, mapProperties.mapHeight() - 1);
 
-        animals = new HashMap<>();
+        beforeMoveAnimals = new HashMap<>();
+        afterMoveAnimals = new HashMap<>();
 
         plants = new HashSet<>();
         plantsToEat = new HashSet<>();
@@ -50,6 +54,9 @@ public abstract class AbstractMap implements WorldMap {
             animal.setGenome(createRandomGenome(animalProperties.genomeLength()));
             place(animal);
         }
+        beforeMoveAnimals.putAll(afterMoveAnimals);
+        afterMoveAnimals.clear();
+        System.out.println(beforeMoveAnimals.size());
 
         createNewPlants(mapProperties.startPlantCount());
     }
@@ -59,9 +66,9 @@ public abstract class AbstractMap implements WorldMap {
     @Override
     public void removeDeadAnimals() {
 
-        for (Vector2d key : animals.keySet()) {
+        for (Vector2d key : beforeMoveAnimals.keySet()) {
 //            pozyskanie setu zwierzaków na danej pozycji
-            List<Animal> animalList = animals.get(key);
+            List<Animal> animalList = beforeMoveAnimals.get(key);
 
 //            Usuwanie martwych zwierząt
             while (animalList.get(0).getEnergy()==0){
@@ -72,7 +79,7 @@ public abstract class AbstractMap implements WorldMap {
 
 //            Jeśli lista została pusta, usuwamy ją z hashmapy i update wolnych pozycji na mapie
             if (animalList.isEmpty()) {
-                animals.remove(key);
+                beforeMoveAnimals.remove(key);
                 if (!plants.contains(key)){
                     statisticsGenerator.freePositionCountUpdate(false);
                 }
@@ -83,26 +90,25 @@ public abstract class AbstractMap implements WorldMap {
 //    Rozmieszczanie zwierzaków na mapie (zarówno przy budowaniu nowej mapy jak i po każdym ruchu zwierzęcia)
     private void place(Animal animal) {
 
-//        Pobieramy pozycję zwierzaka
+        //        Pobieramy pozycję zwierzaka
         Vector2d animalPosition = animal.getPosition();
+
 //        jeśli już są jakieś zwierzęta na tej pozycji, to po prostu dodajemy danego zwierzaka do listy
-        if (animals.containsKey(animalPosition)) {
-            animals.get(animalPosition).add(animal);
+        if (afterMoveAnimals.containsKey(animalPosition)) {
+            afterMoveAnimals.get(animalPosition).add(animal);
         }
 //        a jeśli nie, to tworzymy na tej pozycji nową kolekcję
         else {
             LinkedList<Animal> animalList = new LinkedList<>();
             animalList.add(animal);
-            animals.put(animalPosition, animalList);
+            afterMoveAnimals.put(animalPosition, animalList);
 
-//        Jeśli na nowym miejscu zwierzaka znajduje się roślina, dołączamy ją do listy roślin do zjedzenia
-//        w następnym dniu
-        if (plants.contains(animalPosition)) {
-            plantsToEat.add(animalPosition);
-        } else {
-//            w przeciwnym wypadku pozycja ta do tej pory była wolna, zatem musimy zmniejszyć licznik wolnych
-//            pozycji
-            statisticsGenerator.freePositionCountUpdate(false);
+//        Jeśli na nowym miejscu zwierzaka znajduje się roślina, dołączamy ją do listy roślin do zjedzenia w następnym dniu
+            if (plants.contains(animalPosition)) {
+                plantsToEat.add(animalPosition);
+            } else {
+//            w przeciwnym wypadku pozycja ta do tej pory była wolna, zatem musimy zmniejszyć licznik wolnych pozycji
+                statisticsGenerator.freePositionCountUpdate(false);
             }
         }
     }
@@ -124,23 +130,9 @@ public abstract class AbstractMap implements WorldMap {
     @Override
     public void moveEveryAnimal() {
 
-        Iterator animalIterator = animals.values().iterator();
-
-        while (animalIterator.hasNext()) {
-
-            LinkedList<Animal> animalList = (LinkedList<Animal>) animalIterator.next();
-
-            Iterator<Animal> iterator = animalList.iterator();
-
-            while (iterator.hasNext()){
-                System.out.println(animalList.size());
-
-                Animal animal = iterator.next();
-                //usuwamy zwierzaka z listy, bo najprawdopodobniej i tak zmieni pozycję i trafi do innej listy
-                if (!animal.getHasMoved()){
-                    iterator.remove();
-                    move(animal);
-                }
+        for (List<Animal> animalList : beforeMoveAnimals.values()) {
+            for (Animal animal : animalList) {
+                move(animal);
             }
         }
     }
@@ -154,31 +146,22 @@ public abstract class AbstractMap implements WorldMap {
         int x = targetPosition.getX();
         int y = targetPosition.getY();
 
-//        Sprawdzamy, czy zwierzak nie wyjdzie poza południową granicę mapy
+//        Sprawdzamy, czy zwierzak nie wyjdzie poza południową/północną granicę mapy
         if (y < mapBoundary.lowerY()) {
-//            Jeśli tak, to odwracamy jego orientację o 180 stopni
             animal.reverseOrientation();
-//            a docelowa współrzędna y to dolna granica mapy
             ++y;
-//            Sprawdzamy, czy zwierzak nie wyjdzie poza północną granicę mapy
         } else if (y > mapBoundary.upperY()) {
-//            Jeśli tak, to odwracamy jego orientację o 180 stopni
             animal.reverseOrientation();
-//            a docelowa współrzędna y to górna granica mapy
             --y;
         }
 
-//        Sprawdzamy, czy zwierzak nie wyjdzie poza zachodnią granicę mapy
+//        Sprawdzamy, czy zwierzak nie wyjdzie poza zachodnią/wschodnią granicę mapy
         if (x < mapBoundary.leftX()) {
-//            jeśli tak, to pojawi się na wschodniej granicy
             x = mapBoundary.rightX();
-//        Sprawdzamy, czy zwierzak nie wyjdzie poza wschodnią granicę mapy
         } else if (x > mapBoundary.rightX()) {
-//            jeśli tak, to pojawi się na wschodniej granicy
             x = mapBoundary.leftX();
         }
 
-//        zwracamy poprawną docelową pozycję
         return new Vector2d(x, y);
     }
 
@@ -186,53 +169,56 @@ public abstract class AbstractMap implements WorldMap {
 
     public void removeEatenPlants() {
 
+        System.out.println("Jest razem "+plants.size()+" roślin");
+        System.out.println("W tym "+plantsToEat.size()+" do zjedzenia");
+
         for (Vector2d plantPosition : plantsToEat) {
-//            wybór zwierzaka, który zje roślinę:
 
             Animal eatingAnimal = chooseEatingAnimal(plantPosition);
-
             eatingAnimal.eat();
-//             zwracamy najedzonego zwierzaka do listy
-            animals.get(plantPosition).add(eatingAnimal);
-            plantsToEat.remove(plantPosition);
+    //             zwracamy najedzonego zwierzaka do listy
+            afterMoveAnimals.get(plantPosition).add(eatingAnimal);
+            plants.remove(plantPosition);
             statisticsGenerator.plantCountUpdate(false);
-        }
+            }
+
         plantsToEat = new HashSet<>();
     }
 
     private Animal chooseEatingAnimal(Vector2d position) {
 
-        List<Animal> animalsAtPosition = animals.get(position);
+        List<Animal> animalsAtPosition = afterMoveAnimals.get(position);
+
+        if (animalsAtPosition.size()==1){
+            return animalsAtPosition.remove(0);
+        }
+
         int index = animalsAtPosition.size() - 1;
         Animal animal1 = animalsAtPosition.remove(index);
         ArrayList<Animal> competingAnimals = new ArrayList<>();
         competingAnimals.add(animal1);
 
-//        jeśli w kolejce są zwierzaki o takiej samej energii, wieku i ilości dzieci, tworzymy listę
-//        tych zwierząt
+//        jeśli w kolejce są zwierzaki o takiej samej energii, wieku i ilości dzieci, tworzymy listę tych zwierząt
         for (int i = index - 1; i >= 0; --i) {
-            Animal animal2 = animalsAtPosition.remove(i);
+            Animal animal2 = animalsAtPosition.get(i);
             if (animal1.greaterThan(animal2) == 0) {
-                competingAnimals.add(animal2);
+                competingAnimals.add(animalsAtPosition.remove(i));
             } else {
                 break;
             }
         }
 
-//        jeśli lista zawiera tylko jednego najsilniejszego zwierzaka, zwracamy go od razu
         if (competingAnimals.size() == 1) {
             return animal1;
         } else {
-//            w przeciwnym wypadku losujemy zweirzaka z listy
+//            losujemy zwierzaka z listy zwierzaków rywalizujących o jedzenie
             Random random = new Random();
             int temp = random.nextInt(0, competingAnimals.size() - 1);
-//            a resztę zwierzaków zwracamy do kolejki zwierzaków (lądują na końcu listy, więc nadal jest posortowana)
-            for (int i = 0; i < competingAnimals.size(); ++i) {
-                if (i != temp) {
-                    animals.get(position).add(competingAnimals.get(i));
+            for (int i = 0; i < competingAnimals.size(); ++i){
+                if (i != temp){
+                    animalsAtPosition.add(competingAnimals.get(i));
                 }
             }
-//            i zwracamy wylosowanego zwierzaka
             return competingAnimals.get(temp);
         }
     }
@@ -241,38 +227,38 @@ public abstract class AbstractMap implements WorldMap {
 
     public void procreate() {
 
-        for (Vector2d position : animals.keySet()) {
+        int numberOfAnimals = 0;
+        for (List<Animal> list : afterMoveAnimals.values()){
+            numberOfAnimals += list.size();
+        }
 
-            ArrayList<Animal> procreatingAnimals = new ArrayList<>();
-            ArrayList<Animal> children = new ArrayList<>();
+        for (Vector2d position : afterMoveAnimals.keySet()) {
 
-//            na początek tworzymy listę ze wszystkimi zwierzętami zdolnymi do prokreacji,
-//            ponieważ są na bieżąco wybierane z kolejki, są od razu ułożone w malejącej kolejności
-            List<Animal> animalList = animals.get(position);
-            int index = animalList.size() - 1;
+            List<Animal> animalList = afterMoveAnimals.get(position);
 
-            while (!animalList.isEmpty()) {
+            if (animalList.size() > 1){
 
-                if (animalList.get(index).canProcreate()) {
-                    Animal animal = animalList.remove(index);
-                    procreatingAnimals.add(animal);
-                } else {
-                    break;
+                ArrayList<Animal> procreatingAnimals = new ArrayList<>();
+                ArrayList<Animal> children = new ArrayList<>();
+
+                for (int i = animalList.size()  - 1; i >= 0; --i){
+                    if (animalList.get(i).canProcreate()) {
+                        Animal animal = animalList.get(i);
+                        procreatingAnimals.add(animal);
+                    } else {
+                        break;
+                    }
                 }
-                --index;
-            }
 
-            for (int i = procreatingAnimals.size() - 1; i <= 0; i = i - 2) {
-                Animal kid = procreatingAnimals.get(i).procreate(procreatingAnimals.get(i + 1));
-                children.add(kid);
-                statisticsGenerator.newbornAnimalUpdate(kid);
+                for (int i = procreatingAnimals.size() - 1; i > 0; i = i - 2) {
 
-                for (Animal animal : procreatingAnimals) {
-                    animals.get(position).add(animal);
+                    Animal child = procreatingAnimals.get(i).procreate(procreatingAnimals.get(i - 1));
+                    children.add(child);
+                    statisticsGenerator.newbornAnimalUpdate(child);
                 }
 
                 for (Animal animal : children) {
-                    animals.get(position).add(animal);
+                    afterMoveAnimals.get(position).add(animal);
                 }
             }
         }
@@ -281,27 +267,37 @@ public abstract class AbstractMap implements WorldMap {
 
     @Override
     public boolean refreshMap () {
-        ++day;
-        createNewPlants(dailyPlantCount);
+
 //        TODO: wyświetlić pojawiające się roślinki
-        if (animals.isEmpty()){
+        if (afterMoveAnimals.isEmpty()){
             return false;
         }
 
-        for (Vector2d key : animals.keySet()) {
+        ++day;
+        System.out.println("Zaczniemy dzień "+day);
 
-            LinkedList<Animal> animalList = animals.get(key);
+        System.out.println("Zaczynamy od wyrośnięcia roślinek");
+        System.out.println("Na razie jest ich "+plants.size());
+        System.out.println("Chcemy wygenerować ich "+dailyPlantCount);
+        createNewPlants(dailyPlantCount);
+        System.out.println("A teraz jest ich "+plants.size());
 
-            if (animals.get(key).isEmpty()){
-                animals.remove(key);
+        for (Vector2d key : afterMoveAnimals.keySet()) {
+
+            LinkedList<Animal> animalList = afterMoveAnimals.get(key);
+
+            if (animalList.isEmpty()){
+                afterMoveAnimals.remove(key);
             }
             else {
-                for(Animal animal:animalList){
-                    animal.changeHasMovedStatus();
-                }
                 animalList.sort(animalComparator);
             }
         }
+
+        beforeMoveAnimals.clear();
+        beforeMoveAnimals.putAll(afterMoveAnimals);
+        afterMoveAnimals.clear();
+
         return true;
     }
 
@@ -310,17 +306,17 @@ public abstract class AbstractMap implements WorldMap {
     public void createNewPlants (int plantCount){
 //       parametr plantCount to albo startowa ilość roślin, albo ilość roślin wyrastająca w 1 dzień
         ArrayList<Vector2d> positions = plantPositionGenerator.getPositions(plants, plantCount);
+        System.out.println("Wygenerowano "+positions.size()+" pozycji dla roślinek");
 
         for (Vector2d position : positions) {
             plants.add(position);
-
 //  Na każdym polu, na którym wyrasta roślina, zwiększamy licznik roślin
             statisticsGenerator.plantHistoryUpdate(position);
 //  Przekazujemy do statystyk informację o pojawieniu się kolejnej rośliny
             statisticsGenerator.plantCountUpdate(true);
 //            Jeśli na tym polu nie było do tej pory żadnego zwierzęcia, to przekazujemy również do statystyk
 //            informację, że zmniejszyła się ilość pustych pól
-            if (!animals.containsKey(position)){
+            if (!afterMoveAnimals.containsKey(position)){
                 statisticsGenerator.freePositionCountUpdate(false);
             }
         }
@@ -357,7 +353,7 @@ public abstract class AbstractMap implements WorldMap {
         ArrayList<Animal> animalsWithDominantGenotype = new ArrayList<>();
         int[] dominantGenotype = statisticsGenerator.generateSimulationStatics().dominantGenotype();
 
-        for (LinkedList<Animal> animalLinkedList : animals.values()){
+        for (LinkedList<Animal> animalLinkedList : afterMoveAnimals.values()){
             for (Animal animal : animalLinkedList){
                 if (Arrays.equals(dominantGenotype, animal.getGenome())){
                     animalsWithDominantGenotype.add(animal);

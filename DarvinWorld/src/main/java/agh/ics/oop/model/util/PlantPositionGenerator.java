@@ -52,6 +52,8 @@ public class PlantPositionGenerator {
 
     private void generatePositions(HashSet<Vector2d> takenPositions, int positionCount){
 
+        positions = new ArrayList<>();
+
         Random random = new Random();
 
         int equatorCtr = 0;
@@ -62,7 +64,6 @@ public class PlantPositionGenerator {
         Collections.shuffle(northernSteppePositions);
         Collections.shuffle(southernSteppePositions);
 
-
 //        jeśli na mapie nie ma wystarczająco dużo wolnych miejsc, zajmiemy tylko taką ilość miejsc, jaka jest dostępna
         positionCount = min(positionCount,
                 sum((sum(equatorPositions.size(), northernSteppePositions.size())), southernSteppePositions.size()) - takenPositions.size());
@@ -70,25 +71,31 @@ public class PlantPositionGenerator {
         while (positionCount > 0){
 
             int temp = random.nextInt(0,9);
+
             if (temp <= 7 && equatorCtr < equatorPositions.size()){
+
                 if (!takenPositions.contains(equatorPositions.get(equatorCtr))) {
                     positions.add(equatorPositions.get(equatorCtr));
-                    ++equatorCtr;
+                    --positionCount;
                 }
+                ++equatorCtr;
             } else if (temp == 8 && northCtr < northernSteppePositions.size()){
+
                 if (!takenPositions.contains(northernSteppePositions.get(northCtr))){
                     positions.add(northernSteppePositions.get(northCtr));
-                    ++northCtr;
+                    --positionCount;
                 }
+                ++northCtr;
             } else if (temp == 9 && southCtr < southernSteppePositions.size()) {
+
                 if (!takenPositions.contains(southernSteppePositions.get(southCtr))){
                     positions.add(southernSteppePositions.get(southCtr));
-                    ++southCtr;
+                    --positionCount;
                 }
+                ++southCtr;
             }
-            --positionCount;
-        }
 
+        }
     }
 
     public ArrayList<Vector2d> getPositions(HashSet<Vector2d> takenPositions, int positionCount){

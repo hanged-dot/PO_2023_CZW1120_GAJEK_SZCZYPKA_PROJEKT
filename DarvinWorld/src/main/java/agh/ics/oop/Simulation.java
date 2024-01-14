@@ -46,18 +46,13 @@ public class Simulation implements Runnable{
 //            map.procreate();
 //        } while (map.refreshMap()); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy)
 
-        map.getSimulationStatistics();
-//            Usunięcie martwych zwierzaków z mapy
-        map.removeDeadAnimals();
-////            Skręt i przemieszczenie każdego zwierzaka
-        map.moveEveryAnimal();
-        System.out.println("1");
-
-////            Konsumpcja roślin, na których pola weszły zwierzaki
-//        map.removeEatenPlants();
-////            Rozmnażanie się najedzonych zwierzaków znajdujących się na tym samym polu
-//        map.procreate();
-//        System.out.println(map.refreshMap());
+        map.getSimulationStatistics();  //
+        map.removeDeadAnimals();        //            Usunięcie martwych zwierzaków z mapy
+        map.moveEveryAnimal();          //            Skręt i przemieszczenie każdego zwierzaka
+        map.removeEatenPlants();        // `          Konsumpcja roślin, na których pola weszły zwierzaki
+        map.procreate();                //            rozmnażanie
+        System.out.println("Mamy to?");
+        System.out.println(map.refreshMap());
 
 //        for(int counter=0; counter< this.dirs.size(); counter++) {
 //            int nr_a= counter%this.animals.size();
