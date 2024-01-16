@@ -125,7 +125,7 @@ public class SimulationConfiguration extends Application {
 
         maxMutation = new ConfigurationElement(
                 new Text("Choose maximal number (?percent?) of mutations: "),
-                new TextField("3"),
+                new TextField("11"),
                 new Vector2d(10, 80)
         );
 
@@ -152,17 +152,19 @@ public class SimulationConfiguration extends Application {
 ////
 
 //      Potrzebne CheckBoxy:
-
         saveStatisticsCheckBox = new CheckBox("Save daily statistics");
         chooseMapWithTunnelsBox = new CheckBox("Tunnels");
         tunnelCount.textField().setDisable(!chooseMapWithTunnelsBox.isSelected());
-
         chooseWithLightMutationCorrectBox = new CheckBox("Light Mutation Correct");
 
 //        Potrzebne przyciski:
         Button saveConfigurationButton = new Button("Save configuration");
         saveConfigurationButton.setOnAction(e -> saveConfiguration());
-//        TODO: zastanowić się jak chcemy przechowywać konfiguracje do wyboru
+
+
+        //        TODO: zastanowić się jak chcemy przechowywać konfiguracje do wyboru
+
+
         Button chooseConfigurationButton = new Button("Choose configuration");
         chooseConfigurationButton.setOnAction(e -> chooseSavedConfiguration());
 
@@ -292,7 +294,7 @@ public class SimulationConfiguration extends Application {
     }
 
     private void chooseSavedConfiguration(){
-        ConfigurationReader.
+       // ConfigurationReader.
 //     TODO: umożliwić wybranie jednej z zapisanych konfiguracji
     }
 

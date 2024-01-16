@@ -1,6 +1,7 @@
 package agh.ics.oop.model.util;
 
 import agh.ics.oop.model.Boundary;
+import agh.ics.oop.model.Plant;
 import agh.ics.oop.model.Vector2d;
 
 import java.util.*;
@@ -49,8 +50,8 @@ public class PlantPositionGenerator {
             }
         }
     }
-
-    private void generatePositions(HashSet<Vector2d> takenPositions, int positionCount){
+//      zmiana hashsetu z typu vector na plant
+    private void generatePositions(HashMap<Vector2d,Plant> takenPositions, int positionCount){
 
         Random random = new Random();
 
@@ -68,20 +69,20 @@ public class PlantPositionGenerator {
                 takenPositions.size());
 
         while (positionCount > 0){
-
+//nie wiem czy to bedzie dizalac
             int temp = random.nextInt(0,9);
             if (temp <= 7 && equatorCtr < equatorPositions.size()){
-                if (!takenPositions.contains(equatorPositions.get(equatorCtr))) {
+                if (!takenPositions.containsKey(equatorPositions.get(equatorCtr))) {
                     positions.add(equatorPositions.get(equatorCtr));
                     ++equatorCtr;
                 }
             } else if (temp == 8 && northCtr < northernSteppePositions.size()){
-                if (!takenPositions.contains(northernSteppePositions.get(northCtr))){
+                if (!takenPositions.containsKey(northernSteppePositions.get(northCtr))){
                     positions.add(northernSteppePositions.get(northCtr));
                     ++northCtr;
                 }
             } else if (temp == 9 && southCtr < southernSteppePositions.size()) {
-                if (!takenPositions.contains(southernSteppePositions.get(southCtr))){
+                if (!takenPositions.containsKey(southernSteppePositions.get(southCtr))){
                     positions.add(southernSteppePositions.get(southCtr));
                     ++southCtr;
                 }
@@ -92,7 +93,7 @@ public class PlantPositionGenerator {
 
     }
 
-    public ArrayList<Vector2d> getPositions(HashSet<Vector2d> takenPositions, int positionCount){
+    public ArrayList<Vector2d> getPositions(HashMap<Vector2d,Plant> takenPositions, int positionCount){
         generatePositions(takenPositions, positionCount);
         return positions;
     }
