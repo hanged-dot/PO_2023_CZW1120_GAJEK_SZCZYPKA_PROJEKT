@@ -33,24 +33,22 @@ public abstract class AbstractMap implements WorldMap {
 
         this.observers = new ArrayList<>();
         this.identifier= UUID.randomUUID();
-        statisticsGenerator = new SimulationStatisticsGenerator(mapProperties, animalProperties);
-        animalComparator = new AnimalComparator();
-        day = 1;
 
-        this.statisticsGenerator = new SimulationStatisticsGenerator(mapProperties);
+        this.statisticsGenerator = new SimulationStatisticsGenerator(mapProperties, animalProperties);
         this.animalComparator = new AnimalComparator();
         this.day = 1;
         this.mapBoundary = new Boundary(0, mapProperties.mapWidth() - 1, 0, mapProperties.mapHeight() - 1);
         this.animals = new HashMap<>();
-        mapBoundary = new Boundary(0, mapProperties.mapWidth() - 1,
-                0, mapProperties.mapHeight() - 1);
 
         beforeMoveAnimals = new HashMap<>();
         afterMoveAnimals = new HashMap<>();
 
-        plants = new HashSet<>();
+        this.dailyPlantCount = mapProperties.dailyPlantCount();
+
+        plants = new HashMap<>();
         plantsToEat = new HashSet<>();
-        dailyPlantCount = mapProperties.dailyPlantCount();
+
+        plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
 
 
         for (int i = 0; i < mapProperties.startAnimalCount(); ++i) {
@@ -61,16 +59,9 @@ public abstract class AbstractMap implements WorldMap {
             place(animal);
         }
 
-        this.dailyPlantCount = mapProperties.dailyPlantCount();
-
-        plants = new HashMap<>();
-        plantsToEat = new HashSet<>();
-
-        plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
 
         beforeMoveAnimals.putAll(afterMoveAnimals);
         afterMoveAnimals.clear();
-
         createNewPlants(mapProperties.startPlantCount());
     }
     @Override
@@ -331,12 +322,12 @@ public abstract class AbstractMap implements WorldMap {
     //        Wzrastanie nowych roślin na wybranych polach mapy
 
     public void createNewPlants (int plantCount){
+
 //       parametr plantCount to albo startowa ilość roślin, albo ilość roślin wyrastająca w 1 dzień
         ArrayList<Vector2d> positions = plantPositionGenerator.getPositions(plants, plantCount);
-
         for (Vector2d position : positions) {
             Plant p = new Plant(position);
-            plants.put(position,p);
+            plants.put(position, p);
 
 //  Na każdym polu, na którym wyrasta roślina, zwiększamy licznik roślin
             statisticsGenerator.plantHistoryUpdate(position);
