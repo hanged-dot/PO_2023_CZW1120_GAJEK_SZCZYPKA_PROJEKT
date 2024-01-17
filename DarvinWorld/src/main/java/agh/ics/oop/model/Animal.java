@@ -46,7 +46,9 @@ public class Animal{
     public void setDeath(int day){this.death=day;} // zwraca dzien smierci zwierzaka
     public void addKid(Animal kid){ this.kids.add(kid);} // dodaje zwierzaka do listy dzieci rodzica zwierzaka
     public int getAge(){return this.life;}; //zwraca dotychczasowa dlugosc zycia
-    public void age(){this.life++;} // postarza zwierzaka
+    public void age(){
+        this.life++;
+        this.energy--;} // postarza zwierzaka
     public void eat(){this.energy=this.energy+properties.energyFromPlant();} //zwerzak je
     public void setTransferredThroughTunnel(boolean value){this.transferedThroughTunnel=value;} //zwierzak przeszedl wlasnie przez tunel, ma nim teraz nie wracac
     public boolean isTransferedThroughTunnel(){return this.transferedThroughTunnel;} //zwraca czy zwierzak wlasnie przeszedl przez tunel

@@ -157,9 +157,9 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     }
 
     public void deadAnimalUpdate(Animal deadAnimal){
-        deadAnimalCountUpdate(deadAnimal.getAge());
-        aliveGenotypeCountUpdate(deadAnimal.getGenome(), false);
-        totalKidsCountUpdate(deadAnimal.getNumberOfChildren());
+//        deadAnimalCountUpdate(deadAnimal.getAge());
+//        aliveGenotypeCountUpdate(deadAnimal.getGenome(), false);
+//        totalKidsCountUpdate(deadAnimal.getNumberOfChildren());
     }
 
     private float getMeanLifeSpan(){

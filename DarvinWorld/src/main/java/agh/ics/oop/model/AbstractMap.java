@@ -12,8 +12,8 @@ import static java.util.Collections.min;
 public abstract class AbstractMap implements WorldMap {
 
     protected final Boundary mapBoundary;
-    protected HashMap<Vector2d, LinkedList<Animal>> beforeMoveAnimals;
-    protected HashMap<Vector2d, LinkedList<Animal>> afterMoveAnimals;
+    protected HashMap<Vector2d, ArrayList<Animal>> beforeMoveAnimals;
+    protected HashMap<Vector2d, ArrayList<Animal>> afterMoveAnimals;
 
     protected ArrayList<MapChangeListener> observers = new ArrayList<>();
     private HashSet<Vector2d> plants;
@@ -66,23 +66,31 @@ public abstract class AbstractMap implements WorldMap {
     @Override
     public void removeDeadAnimals() {
 
+        ArrayList<Vector2d> keysToRemove = new ArrayList<>();
+
         for (Vector2d key : beforeMoveAnimals.keySet()) {
 //            pozyskanie setu zwierzaków na danej pozycji
-            List<Animal> animalList = beforeMoveAnimals.get(key);
+            ArrayList<Animal> animalList = beforeMoveAnimals.get(key);
 
-//            Usuwanie martwych zwierząt
-            while (animalList.get(0).getEnergy()==0){
-                Animal deadAnimal = animalList.remove(0);
-                statisticsGenerator.deadAnimalUpdate(deadAnimal);
-//                TODO: usunięcie zwierzaka z wizualizacji
-            }
+            animalList.removeIf(a ->
+            {
+                if (a.getEnergy() == 0){
+                    statisticsGenerator.deadAnimalUpdate(a);
+                    return true;
+                }
+                return false;
+            });
 
 //            Jeśli lista została pusta, usuwamy ją z hashmapy i update wolnych pozycji na mapie
             if (animalList.isEmpty()) {
-                beforeMoveAnimals.remove(key);
-                if (!plants.contains(key)){
-                    statisticsGenerator.freePositionCountUpdate(false);
-                }
+                keysToRemove.add(key);
+            }
+        }
+
+        for (Vector2d key : keysToRemove){
+            beforeMoveAnimals.remove(key);
+            if (!plants.contains(key)){
+                statisticsGenerator.freePositionCountUpdate(false);
             }
         }
     }
@@ -99,7 +107,7 @@ public abstract class AbstractMap implements WorldMap {
         }
 //        a jeśli nie, to tworzymy na tej pozycji nową kolekcję
         else {
-            LinkedList<Animal> animalList = new LinkedList<>();
+            ArrayList<Animal> animalList = new ArrayList<>();
             animalList.add(animal);
             afterMoveAnimals.put(animalPosition, animalList);
 
@@ -122,7 +130,6 @@ public abstract class AbstractMap implements WorldMap {
         animal.move(targetPosition);
 //        Umieszczamy zwierzaka na odpowiednim miejscu na mapie
         this.place(animal);
-        animal.changeHasMovedStatus();
 //        TODO poinformuj wizualizację że zwierzak zmienił pozycję (fizycznie musi teraz zmienić pozycję)
 
     }
@@ -133,7 +140,11 @@ public abstract class AbstractMap implements WorldMap {
         for (List<Animal> animalList : beforeMoveAnimals.values()) {
             for (Animal animal : animalList) {
                 move(animal);
+                animal.age();
             }
+        }
+        for (List<Animal> animalList: afterMoveAnimals.values()){
+            animalList.sort(new AnimalComparator());
         }
     }
 
@@ -168,9 +179,6 @@ public abstract class AbstractMap implements WorldMap {
 //    Konsumpcja roślin, na których pola weszły zwierzaki
 
     public void removeEatenPlants() {
-
-        System.out.println("Jest razem "+plants.size()+" roślin");
-        System.out.println("W tym "+plantsToEat.size()+" do zjedzenia");
 
         for (Vector2d plantPosition : plantsToEat) {
 
@@ -209,6 +217,7 @@ public abstract class AbstractMap implements WorldMap {
         }
 
         if (competingAnimals.size() == 1) {
+            System.out.println("Na pozycji "+position+" wyggrywa zwierz z energią "+animal1.getEnergy());
             return animal1;
         } else {
 //            losujemy zwierzaka z listy zwierzaków rywalizujących o jedzenie
@@ -219,6 +228,7 @@ public abstract class AbstractMap implements WorldMap {
                     animalsAtPosition.add(competingAnimals.get(i));
                 }
             }
+            System.out.println("Na pozycji "+position+" wyggrywa zwierz z energią "+competingAnimals.get(temp).getEnergy());
             return competingAnimals.get(temp);
         }
     }
@@ -272,19 +282,19 @@ public abstract class AbstractMap implements WorldMap {
         if (afterMoveAnimals.isEmpty()){
             return false;
         }
+        int numberOfAnimals = 0;
+        for (List<Animal> list : afterMoveAnimals.values()){
+            numberOfAnimals += list.size();
+        }
+        System.out.println("Zakończono dzień "+day+". Pozostaje zwierzaków: "+numberOfAnimals);
 
         ++day;
-        System.out.println("Zaczniemy dzień "+day);
 
-        System.out.println("Zaczynamy od wyrośnięcia roślinek");
-        System.out.println("Na razie jest ich "+plants.size());
-        System.out.println("Chcemy wygenerować ich "+dailyPlantCount);
         createNewPlants(dailyPlantCount);
-        System.out.println("A teraz jest ich "+plants.size());
 
         for (Vector2d key : afterMoveAnimals.keySet()) {
 
-            LinkedList<Animal> animalList = afterMoveAnimals.get(key);
+            ArrayList<Animal> animalList = afterMoveAnimals.get(key);
 
             if (animalList.isEmpty()){
                 afterMoveAnimals.remove(key);
@@ -296,6 +306,7 @@ public abstract class AbstractMap implements WorldMap {
 
         beforeMoveAnimals.clear();
         beforeMoveAnimals.putAll(afterMoveAnimals);
+
         afterMoveAnimals.clear();
 
         return true;
@@ -306,7 +317,6 @@ public abstract class AbstractMap implements WorldMap {
     public void createNewPlants (int plantCount){
 //       parametr plantCount to albo startowa ilość roślin, albo ilość roślin wyrastająca w 1 dzień
         ArrayList<Vector2d> positions = plantPositionGenerator.getPositions(plants, plantCount);
-        System.out.println("Wygenerowano "+positions.size()+" pozycji dla roślinek");
 
         for (Vector2d position : positions) {
             plants.add(position);
@@ -353,8 +363,8 @@ public abstract class AbstractMap implements WorldMap {
         ArrayList<Animal> animalsWithDominantGenotype = new ArrayList<>();
         int[] dominantGenotype = statisticsGenerator.generateSimulationStatics().dominantGenotype();
 
-        for (LinkedList<Animal> animalLinkedList : afterMoveAnimals.values()){
-            for (Animal animal : animalLinkedList){
+        for (ArrayList<Animal> animalList : afterMoveAnimals.values()){
+            for (Animal animal : animalList){
                 if (Arrays.equals(dominantGenotype, animal.getGenome())){
                     animalsWithDominantGenotype.add(animal);
                 }

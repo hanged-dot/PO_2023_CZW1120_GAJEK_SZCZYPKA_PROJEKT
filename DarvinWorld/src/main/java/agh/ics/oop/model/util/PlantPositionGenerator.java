@@ -65,34 +65,59 @@ public class PlantPositionGenerator {
         Collections.shuffle(southernSteppePositions);
 
 //        jeśli na mapie nie ma wystarczająco dużo wolnych miejsc, zajmiemy tylko taką ilość miejsc, jaka jest dostępna
+
+        int freePlaces = sum((sum(equatorPositions.size(), northernSteppePositions.size())), southernSteppePositions.size()) - takenPositions.size();
+
         positionCount = min(positionCount,
                 sum((sum(equatorPositions.size(), northernSteppePositions.size())), southernSteppePositions.size()) - takenPositions.size());
 
+
         while (positionCount > 0){
 
-            int temp = random.nextInt(0,9);
+            int temp;
+            if (equatorCtr < equatorPositions.size()){
+                temp = random.nextInt(0, 10);
+            } else {
+                temp = random.nextInt(8, 10);
+            }
 
-            if (temp <= 7 && equatorCtr < equatorPositions.size()){
+            if (temp <= 7){
 
-                if (!takenPositions.contains(equatorPositions.get(equatorCtr))) {
+                while (equatorCtr < equatorPositions.size() && takenPositions.contains(equatorPositions.get(equatorCtr))){
+                    ++equatorCtr;
+                }
+                if (equatorCtr < equatorPositions.size()) {
                     positions.add(equatorPositions.get(equatorCtr));
                     --positionCount;
+                    ++equatorCtr;
                 }
-                ++equatorCtr;
+
             } else if (temp == 8 && northCtr < northernSteppePositions.size()){
 
-                if (!takenPositions.contains(northernSteppePositions.get(northCtr))){
+                while (northCtr < northernSteppePositions.size() && takenPositions.contains(northernSteppePositions.get(northCtr))){
+                    ++northCtr;
+                }
+                if (northCtr < northernSteppePositions.size()) {
                     positions.add(northernSteppePositions.get(northCtr));
                     --positionCount;
+                    ++northCtr;
                 }
-                ++northCtr;
+
+
             } else if (temp == 9 && southCtr < southernSteppePositions.size()) {
 
-                if (!takenPositions.contains(southernSteppePositions.get(southCtr))){
+                while (southCtr < southernSteppePositions.size() && takenPositions.contains(southernSteppePositions.get(southCtr))){
+                    ++southCtr;
+                }
+                if (southCtr < southernSteppePositions.size()) {
                     positions.add(southernSteppePositions.get(southCtr));
                     --positionCount;
+                    ++southCtr;
                 }
-                ++southCtr;
+
+            }
+            if (equatorCtr >= equatorPositions.size() && northCtr >= northernSteppePositions.size() && southCtr >= southernSteppePositions.size()){
+                break;
             }
 
         }
