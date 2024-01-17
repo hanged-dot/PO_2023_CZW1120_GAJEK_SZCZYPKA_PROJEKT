@@ -37,7 +37,11 @@ public class ConfigurationReader {
 
         Button acceptButton = new Button("Start simulation");
         acceptButton.setOnAction(e -> {
-            this.onSimulationStartClicked((String)choiceBox.getValue());
+            try {
+                this.onSimulationStartClicked((String)choiceBox.getValue());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             window.close();
         });
 
