@@ -12,14 +12,14 @@ public class Simulation implements Runnable{
 
 // w konstruktorze przekazujemy wszystkie parametry zczytane z okna startowego
     public Simulation(SimulationProperties simulationProperties,
-                      MapChangeListener observer) {
+                      ArrayList<MapChangeListener> observers) {
 
         if (simulationProperties.hasTunnels()){
             this.map = new TunnelMap(simulationProperties.mapProperties(),
-                    simulationProperties.animalProperties(), observer);
+                    simulationProperties.animalProperties(), observers);
         } else {
             this.map = new GlobeMap(simulationProperties.mapProperties(),
-                    simulationProperties.animalProperties(), observer);
+                    simulationProperties.animalProperties(), observers);
         }
 
         animals = new ArrayList<>();

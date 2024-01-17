@@ -126,8 +126,8 @@ public class SimulationConfiguration extends Application {
         );
 
         maxMutation = new ConfigurationElement(
-                new Text("Choose maximal percent of mutations: "),
-                new TextField("30"),
+                new Text("Choose maximal number (?percent?) of mutations: "),
+                new TextField("11"),
                 new Vector2d(10, 80)
         );
 

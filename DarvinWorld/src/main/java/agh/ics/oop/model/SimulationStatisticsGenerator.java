@@ -162,7 +162,7 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
 
     @Override
     public void totalKidsCountUpdate(int kidsCount) {
-//        WAŻNE PYTANIE: liczymy dla każdego zwierzaka liczbę dzieci, czy jedno dziecko na parę?
+//        WAŻNE PYTANIE: liczymy dla każdego zwierzaka liczbę dzieci, czy jedno dziecko na parę? dla kazdego zwierzaka liczbe
         totalAliveAnimalOffspringCount = max(0, totalAliveAnimalOffspringCount + kidsCount);
     }
 

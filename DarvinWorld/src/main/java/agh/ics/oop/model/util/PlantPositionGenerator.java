@@ -1,6 +1,7 @@
 package agh.ics.oop.model.util;
 
 import agh.ics.oop.model.Boundary;
+import agh.ics.oop.model.Plant;
 import agh.ics.oop.model.Vector2d;
 
 import java.util.*;
@@ -49,8 +50,8 @@ public class PlantPositionGenerator {
         }
 
     }
-
-    private void generatePositions(HashSet<Vector2d> takenPositions, int positionCount){
+//      zmiana hashsetu z typu vector na plant
+    private void generatePositions(HashMap<Vector2d,Plant> takenPositions, int positionCount){
 
         positions = new ArrayList<>();
 
@@ -65,9 +66,6 @@ public class PlantPositionGenerator {
         Collections.shuffle(southernSteppePositions);
 
 //        jeśli na mapie nie ma wystarczająco dużo wolnych miejsc, zajmiemy tylko taką ilość miejsc, jaka jest dostępna
-
-        int freePlaces = sum((sum(equatorPositions.size(), northernSteppePositions.size())), southernSteppePositions.size()) - takenPositions.size();
-
         positionCount = min(positionCount,
                 sum((sum(equatorPositions.size(), northernSteppePositions.size())), southernSteppePositions.size()) - takenPositions.size());
 
@@ -83,7 +81,7 @@ public class PlantPositionGenerator {
 
             if (temp <= 7){
 
-                while (equatorCtr < equatorPositions.size() && takenPositions.contains(equatorPositions.get(equatorCtr))){
+                while (equatorCtr < equatorPositions.size() && takenPositions.containsKey(equatorPositions.get(equatorCtr))){
                     ++equatorCtr;
                 }
                 if (equatorCtr < equatorPositions.size()) {
@@ -94,7 +92,7 @@ public class PlantPositionGenerator {
 
             } else if (temp == 8 && northCtr < northernSteppePositions.size()){
 
-                while (northCtr < northernSteppePositions.size() && takenPositions.contains(northernSteppePositions.get(northCtr))){
+                while (northCtr < northernSteppePositions.size() && takenPositions.containsKey(northernSteppePositions.get(northCtr))){
                     ++northCtr;
                 }
                 if (northCtr < northernSteppePositions.size()) {
@@ -106,7 +104,7 @@ public class PlantPositionGenerator {
 
             } else if (temp == 9 && southCtr < southernSteppePositions.size()) {
 
-                while (southCtr < southernSteppePositions.size() && takenPositions.contains(southernSteppePositions.get(southCtr))){
+                while (southCtr < southernSteppePositions.size() && takenPositions.containsKey(southernSteppePositions.get(southCtr))){
                     ++southCtr;
                 }
                 if (southCtr < southernSteppePositions.size()) {
@@ -123,7 +121,7 @@ public class PlantPositionGenerator {
         }
     }
 
-    public ArrayList<Vector2d> getPositions(HashSet<Vector2d> takenPositions, int positionCount){
+    public ArrayList<Vector2d> getPositions(HashMap<Vector2d,Plant> takenPositions, int positionCount){
         generatePositions(takenPositions, positionCount);
         return positions;
     }

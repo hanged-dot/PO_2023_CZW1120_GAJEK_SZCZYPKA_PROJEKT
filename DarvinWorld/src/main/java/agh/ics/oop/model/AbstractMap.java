@@ -3,6 +3,7 @@ package agh.ics.oop.model;
 import agh.ics.oop.model.util.PlantPositionGenerator;
 import com.sun.scenario.animation.shared.AnimationAccessor;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import static java.lang.Math.round;
@@ -12,11 +13,13 @@ import static java.util.Collections.min;
 public abstract class AbstractMap implements WorldMap {
 
     protected final Boundary mapBoundary;
+    private final UUID identifier;
+    private HashMap<Vector2d, LinkedList<Animal>> animals;
     protected HashMap<Vector2d, ArrayList<Animal>> beforeMoveAnimals;
     protected HashMap<Vector2d, ArrayList<Animal>> afterMoveAnimals;
 
     protected ArrayList<MapChangeListener> observers = new ArrayList<>();
-    private HashSet<Vector2d> plants;
+    private HashMap<Vector2d,Plant> plants;
     private HashSet<Vector2d> plantsToEat;
     private final PlantPositionGenerator plantPositionGenerator;
     private final int dailyPlantCount;
@@ -26,16 +29,19 @@ public abstract class AbstractMap implements WorldMap {
 
     private MapChangeListener observer;
 
-    public AbstractMap(MapProperties mapProperties,
-                       AnimalProperties animalProperties,
-                       MapChangeListener observer) {
+    public AbstractMap(MapProperties mapProperties, AnimalProperties animalProperties, ArrayList<MapChangeListener> observers) {
 
-        this.observer = observer;
-
+        this.observers = new ArrayList<>();
+        this.identifier= UUID.randomUUID();
         statisticsGenerator = new SimulationStatisticsGenerator(mapProperties, animalProperties);
         animalComparator = new AnimalComparator();
         day = 1;
 
+        this.statisticsGenerator = new SimulationStatisticsGenerator(mapProperties);
+        this.animalComparator = new AnimalComparator();
+        this.day = 1;
+        this.mapBoundary = new Boundary(0, mapProperties.mapWidth() - 1, 0, mapProperties.mapHeight() - 1);
+        this.animals = new HashMap<>();
         mapBoundary = new Boundary(0, mapProperties.mapWidth() - 1,
                 0, mapProperties.mapHeight() - 1);
 
@@ -46,7 +52,6 @@ public abstract class AbstractMap implements WorldMap {
         plantsToEat = new HashSet<>();
         dailyPlantCount = mapProperties.dailyPlantCount();
 
-        plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
 
         for (int i = 0; i < mapProperties.startAnimalCount(); ++i) {
 //            tworzymy nowe zwierzątka, generujemy im genom, umieszczamy na mapie
@@ -55,12 +60,22 @@ public abstract class AbstractMap implements WorldMap {
             statisticsGenerator.aliveGenotypeCountUpdate(animal.getGenome(), true);
             place(animal);
         }
+
+        this.dailyPlantCount = mapProperties.dailyPlantCount();
+
+        plants = new HashMap<>();
+        plantsToEat = new HashSet<>();
+
+        plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
+
         beforeMoveAnimals.putAll(afterMoveAnimals);
         afterMoveAnimals.clear();
-        System.out.println(beforeMoveAnimals.size());
 
         createNewPlants(mapProperties.startPlantCount());
     }
+    @Override
+    public UUID getID() {return identifier;}
+    public HashMap<Vector2d,LinkedList<Animal>> getAnimals(){ return this.animals;}
 
 //    Usunięcie martwych zwierzaków z mapy
 
@@ -91,7 +106,7 @@ public abstract class AbstractMap implements WorldMap {
 
         for (Vector2d key : keysToRemove){
             beforeMoveAnimals.remove(key);
-            if (!plants.contains(key)){
+            if (!plants.containsKey(key)){
                 statisticsGenerator.freePositionCountUpdate(false);
             }
         }
@@ -113,26 +128,30 @@ public abstract class AbstractMap implements WorldMap {
             animalList.add(animal);
             afterMoveAnimals.put(animalPosition, animalList);
 
-//        Jeśli na nowym miejscu zwierzaka znajduje się roślina, dołączamy ją do listy roślin do zjedzenia w następnym dniu
-            if (plants.contains(animalPosition)) {
-                plantsToEat.add(animalPosition);
-            } else {
-//            w przeciwnym wypadku pozycja ta do tej pory była wolna, zatem musimy zmniejszyć licznik wolnych pozycji
-                statisticsGenerator.freePositionCountUpdate(false);
+//        Jeśli na nowym miejscu zwierzaka znajduje się roślina, dołączamy ją do listy roślin do zjedzenia
+//        w następnym dniu
+        if (plants.containsKey(animalPosition)) {
+            plantsToEat.add(animalPosition);
+        } else {
+//            w przeciwnym wypadku pozycja ta do tej pory była wolna, zatem musimy zmniejszyć licznik wolnych
+//            pozycji
+            statisticsGenerator.freePositionCountUpdate(false);
             }
         }
+        mapChanged("Zwierzę zostało umieszczone na mapie na pozycji" + animal.getPosition());
     }
 
     //    Skręt i przemieszczanie każdego zwierzaka
     private void move(Animal animal) {
 
+        Vector2d pos1 = animal.getPosition();
 //        Wyznaczamy docelową pozycję zwierzaka
         Vector2d targetPosition = getNextPosition(animal);
 //        Informujemy zwierzaka o zmianie jego położenia
         animal.move(targetPosition);
 //        Umieszczamy zwierzaka na odpowiednim miejscu na mapie
         this.place(animal);
-//        TODO poinformuj wizualizację że zwierzak zmienił pozycję (fizycznie musi teraz zmienić pozycję)
+        mapChanged("Zwierzę poruszyło się z pozycji "+ pos1 + " na pozycję " +targetPosition);
 
     }
 
@@ -316,7 +335,9 @@ public abstract class AbstractMap implements WorldMap {
         ArrayList<Vector2d> positions = plantPositionGenerator.getPositions(plants, plantCount);
 
         for (Vector2d position : positions) {
-            plants.add(position);
+            Plant p = new Plant(position);
+            plants.put(position,p);
+
 //  Na każdym polu, na którym wyrasta roślina, zwiększamy licznik roślin
             statisticsGenerator.plantHistoryUpdate(position);
 //  Przekazujemy do statystyk informację o pojawieniu się kolejnej rośliny
@@ -382,9 +403,34 @@ public abstract class AbstractMap implements WorldMap {
         }
     }
 
+    public WorldElement getStrongest(Vector2d position){
+        LinkedList<Animal> pos1 = this.animals.get(position);
+        int energy=0;
+        Animal strongest = null;
+        for (Animal a : pos1){
+            if(a.getEnergy()>energy && a.getDeath()!=0){
+                energy=a.getEnergy();
+                strongest=a;
+            }
+        }
+        return strongest;
+    }
+
+    public WorldElement getPlant(Vector2d position){
+        if(this.plants.containsKey(position)) return this.plants.get(position);
+        else return null;
+    }
+
+    public void addObserver (MapChangeListener observer){
+        this.observers.add(observer);
+    }
+
+    public void removeObserver (MapChangeListener observer){
+        this.observers.remove(observer);
+    }
+
     public void printStatisticsPlease(){
         System.out.println("Wypisujemy statystyki z dnia nr "+day);
-
         SimulationStatistics stats = statisticsGenerator.generateSimulationStatics();
 
         System.out.println("Ilość żywych zwierząt: " + stats.aliveAnimalCount());

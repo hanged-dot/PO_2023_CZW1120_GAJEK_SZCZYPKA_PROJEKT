@@ -9,12 +9,13 @@ public class ConfigurationSaver {
     public static void saveConfiguration(String name, SimulationProperties simulationProperties){
 
         try{
-            FileOutputStream f = new FileOutputStream("src/main/java/agh/ics/oop/presenter/configurations/"+name+".txt");
-            ObjectOutputStream o = new ObjectOutputStream(f);
+            FileOutputStream fileOutputStream = new FileOutputStream(new File("/configurations/"+name+".txt"));
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
-            o.writeObject(simulationProperties);
-            o.close();
-            f.close();
+            objectOutputStream.writeObject(simulationProperties);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+            fileOutputStream.close();
 
         } catch (IOException e){
             System.out.println("Error initializing stream");

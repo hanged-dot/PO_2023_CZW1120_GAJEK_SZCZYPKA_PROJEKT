@@ -19,13 +19,16 @@ public class SimulationStart {
         simulations = new ArrayList<>();
     }
     public void newSimulationStart(SimulationProperties simulationProperties){
-        MapChangeListener observer = new SimulationPresenter();
-        // TODO stworzyć prezentera tutaj i przekazać symulacji
-//        simulations.add(new Simulation(simulationProperties, observer));
-//        new SimulationEngine(simulations).runAsyncInThreadPool();
+        ArrayList<MapChangeListener> observers = new ArrayList<>();
+              SimulationPresenter observerSim = new SimulationPresenter();
+              observers.add(observerSim);
+              // TODO dodac sprawdzanie czy saveStatisticsCheckBox.isSelected()
+              FileMapDisplay observerSaveSim = new FileMapDisplay();
+              observers.add(observerSaveSim);
+        //  stworzyć prezentera tutaj i przekazać symulacji - done
 
-//        NA RAZIE ODPALAMY 1 SYMULACJe,WĄTKI DODAMY NA KONIEC
-        (new Simulation(simulationProperties, observer)).run();
+        simulations.add(new Simulation(simulationProperties, observers));
+        new SimulationEngine(simulations).runAsyncInThreadPool();
 
     }
 }
