@@ -41,6 +41,7 @@ public class Simulation implements Runnable{
             map.removeEatenPlants();        // `          Konsumpcja roślin, na których pola weszły zwierzaki
             map.procreate();                //            rozmnażanie
             System.out.println("nowa tura");
+
         } while (map.refreshMap()); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy)
 
         System.out.println("Symalacja over");

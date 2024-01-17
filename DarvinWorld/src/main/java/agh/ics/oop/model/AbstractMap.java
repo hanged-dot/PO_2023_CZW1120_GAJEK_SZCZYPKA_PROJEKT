@@ -32,7 +32,7 @@ public abstract class AbstractMap implements WorldMap {
 
         this.observer = observer;
 
-        statisticsGenerator = new SimulationStatisticsGenerator(mapProperties);
+        statisticsGenerator = new SimulationStatisticsGenerator(mapProperties, animalProperties);
         animalComparator = new AnimalComparator();
         day = 1;
 
@@ -52,6 +52,7 @@ public abstract class AbstractMap implements WorldMap {
 //            tworzymy nowe zwierzątka, generujemy im genom, umieszczamy na mapie
             Animal animal = new Animal(animalProperties, createRandomPosition(mapBoundary));
             animal.setGenome(createRandomGenome(animalProperties.genomeLength()));
+            statisticsGenerator.aliveGenotypeCountUpdate(animal.getGenome(), true);
             place(animal);
         }
         beforeMoveAnimals.putAll(afterMoveAnimals);
@@ -75,6 +76,7 @@ public abstract class AbstractMap implements WorldMap {
             animalList.removeIf(a ->
             {
                 if (a.getEnergy() == 0){
+                    System.out.println("Somebody dies!");
                     statisticsGenerator.deadAnimalUpdate(a);
                     return true;
                 }
@@ -184,10 +186,11 @@ public abstract class AbstractMap implements WorldMap {
 
             Animal eatingAnimal = chooseEatingAnimal(plantPosition);
             eatingAnimal.eat();
-    //             zwracamy najedzonego zwierzaka do listy
+            statisticsGenerator.totalEnergyUpdate(true);    // informujemy statystyki, że wzrosła energia jednego zwierzaka
+            statisticsGenerator.plantCountUpdate(false);    // informujemy statystyki, że zmniejszyła się liczba roślin
+            //             zwracamy najedzonego zwierzaka do listy
             afterMoveAnimals.get(plantPosition).add(eatingAnimal);
             plants.remove(plantPosition);
-            statisticsGenerator.plantCountUpdate(false);
             }
 
         plantsToEat = new HashSet<>();
@@ -210,25 +213,20 @@ public abstract class AbstractMap implements WorldMap {
         for (int i = index - 1; i >= 0; --i) {
             Animal animal2 = animalsAtPosition.get(i);
             if (animal1.greaterThan(animal2) == 0) {
-                competingAnimals.add(animalsAtPosition.remove(i));
+                competingAnimals.add(animalsAtPosition.get(i));
             } else {
                 break;
             }
         }
 
         if (competingAnimals.size() == 1) {
-            System.out.println("Na pozycji "+position+" wyggrywa zwierz z energią "+animal1.getEnergy());
+            animalsAtPosition.remove(animal1);
             return animal1;
         } else {
 //            losujemy zwierzaka z listy zwierzaków rywalizujących o jedzenie
             Random random = new Random();
-            int temp = random.nextInt(0, competingAnimals.size() - 1);
-            for (int i = 0; i < competingAnimals.size(); ++i){
-                if (i != temp){
-                    animalsAtPosition.add(competingAnimals.get(i));
-                }
-            }
-            System.out.println("Na pozycji "+position+" wyggrywa zwierz z energią "+competingAnimals.get(temp).getEnergy());
+            int temp = random.nextInt(0, competingAnimals.size());
+            animalsAtPosition.remove(competingAnimals.get(temp));
             return competingAnimals.get(temp);
         }
     }
@@ -264,7 +262,7 @@ public abstract class AbstractMap implements WorldMap {
 
                     Animal child = procreatingAnimals.get(i).procreate(procreatingAnimals.get(i - 1));
                     children.add(child);
-                    statisticsGenerator.newbornAnimalUpdate(child);
+                    statisticsGenerator.newbornAnimalUpdate(child);     // informujemy statystyki, że doszło nowe zwierzę z nowym genomem
                 }
 
                 for (Animal animal : children) {
@@ -282,11 +280,11 @@ public abstract class AbstractMap implements WorldMap {
         if (afterMoveAnimals.isEmpty()){
             return false;
         }
-        int numberOfAnimals = 0;
-        for (List<Animal> list : afterMoveAnimals.values()){
-            numberOfAnimals += list.size();
-        }
-        System.out.println("Zakończono dzień "+day+". Pozostaje zwierzaków: "+numberOfAnimals);
+
+        statisticsGenerator.totalEnergyUpdate(false);       // informujemy statystyki, że energia wszystkich zwierząt spada o 1
+        printStatisticsPlease();
+
+        // Rozpoczęcie nowego dnia:
 
         ++day;
 
@@ -306,7 +304,6 @@ public abstract class AbstractMap implements WorldMap {
 
         beforeMoveAnimals.clear();
         beforeMoveAnimals.putAll(afterMoveAnimals);
-
         afterMoveAnimals.clear();
 
         return true;
@@ -383,5 +380,30 @@ public abstract class AbstractMap implements WorldMap {
         for (int i = 0; i < observers.size(); i++) {
             observers.get(i).mapChanged(this, changeInfo);
         }
+    }
+
+    public void printStatisticsPlease(){
+        System.out.println("Wypisujemy statystyki z dnia nr "+day);
+
+        SimulationStatistics stats = statisticsGenerator.generateSimulationStatics();
+
+        System.out.println("Ilość żywych zwierząt: " + stats.aliveAnimalCount());
+        System.out.println("Ilość martwych zwierząt: "+stats.deadAnimalCount());
+        System.out.println("Ilość roślin: "+ stats.plantCount());
+        System.out.println("Ilość wolnych pozycji: "+stats.freePositionCount());
+        System.out.print("Średnia energia żywych zwierzaków: "+stats.meanAliveAnimalEnergy());
+        System.out.println("Dominujący genotyp: ");
+        for (int i : stats.dominantGenotype()){
+            System.out.print(i);
+        }
+        System.out.print("\n");
+        System.out.println("Dominujący żyjący genotyp: ");
+        for (int i : stats.dominantAliveGenotype()){
+            System.out.print(i);
+        }
+        System.out.print("\n");
+        System.out.println("Średnia długość życia zwierząt: "+stats.meanAnimalLifeSpan());
+        System.out.println("Średnia ilość potomstwa: "+stats.meanAliveAnimalOffspringCount());
+
     }
 }

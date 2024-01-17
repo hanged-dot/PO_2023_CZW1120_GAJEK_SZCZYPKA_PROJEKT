@@ -8,6 +8,7 @@ public record SimulationStatistics(
         int freePositionCount,
         int[] dominantGenotype,
         int[] dominantAliveGenotype,
+        float meanAliveAnimalEnergy,
         float meanAnimalLifeSpan,
         float meanAliveAnimalOffspringCount
 ) {

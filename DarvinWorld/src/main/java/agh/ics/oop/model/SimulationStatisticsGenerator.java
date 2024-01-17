@@ -19,11 +19,13 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     private int freePositionCount;
     private final int totalPositionCount;
     private int totalAliveAnimalOffspringCount;
+    private int totalEnergy;
+    private int energyFromPlant;
     private HashMap<int[], Integer> allGenotypes;
     private HashMap<int[], Integer> aliveGenotypes;
     private HashMap<Vector2d, Integer> plantHistory;
 
-    public SimulationStatisticsGenerator(MapProperties properties){
+    public SimulationStatisticsGenerator(MapProperties properties, AnimalProperties animalProperties){
         aliveAnimalCount = properties.startAnimalCount();
         deadAnimalCount = 0;
         deadAnimalLifeSpan = 0;
@@ -34,6 +36,8 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
         allGenotypes = new HashMap<>();
         aliveGenotypes = new HashMap<>();
         plantHistory = new HashMap<>();
+        totalEnergy = aliveAnimalCount*animalProperties.startAnimalEnergy();
+        energyFromPlant = animalProperties.energyFromPlant();
     }
 
     @Override
@@ -74,6 +78,15 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
         else {
             Integer recentPlantCount = plantHistory.remove(position);
             plantHistory.put(position, recentPlantCount + 1);
+        }
+    }
+
+    public void totalEnergyUpdate(boolean up){
+
+        if (up){
+            totalEnergy += energyFromPlant;
+        } else {
+            totalEnergy -= aliveAnimalCount;
         }
     }
 
@@ -138,8 +151,11 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
                 genotypes.put(genotype, 1);
             }
         } else {
+            System.out.println("jestem tu");
             int n = genotypes.get(genotype);
+            System.out.println(n);
             genotypes.put(genotype, n - 1);
+            System.out.println("Przechodzi???");
         }
 
     }
@@ -157,9 +173,10 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     }
 
     public void deadAnimalUpdate(Animal deadAnimal){
-//        deadAnimalCountUpdate(deadAnimal.getAge());
-//        aliveGenotypeCountUpdate(deadAnimal.getGenome(), false);
-//        totalKidsCountUpdate(deadAnimal.getNumberOfChildren());
+        deadAnimalCountUpdate(deadAnimal.getAge());
+        aliveGenotypeCountUpdate(deadAnimal.getGenome(), false);
+        System.out.println("Is any probelm there");
+        totalKidsCountUpdate(deadAnimal.getNumberOfChildren());
     }
 
     private float getMeanLifeSpan(){
@@ -187,6 +204,10 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
         return (float) totalAliveAnimalOffspringCount/aliveAnimalCount;
     }
 
+    private float getMeanAliveEnergy(){
+        return (float)this.totalEnergy/(float)this.aliveAnimalCount;
+    }
+
     public SimulationStatistics generateSimulationStatics(){
 
         return new SimulationStatistics(
@@ -196,6 +217,7 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
                 freePositionCount,
                 getDominantGenotype(allGenotypes),
                 getDominantGenotype(aliveGenotypes),
+                getMeanAliveEnergy(),
                 getMeanLifeSpan(),
                 getMeanAliveAnimalOffspringCount()
         );

@@ -69,6 +69,7 @@ public class SimulationPresenter implements MapChangeListener{
 
             mapGrid.add(label2,0,y);
         }
+
 // dodac wyświetlanie najsilnieszego zwierzaka z kolejki chyba ze umalo
         for (int x=1;x<=abs(bounds.rightX()-bounds.leftX())+1;x++){
             for (int y=1;y<=abs(bounds.upperY()-bounds.lowerY())+1;y++){
