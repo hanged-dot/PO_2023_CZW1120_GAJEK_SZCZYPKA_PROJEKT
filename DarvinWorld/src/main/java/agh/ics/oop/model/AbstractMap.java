@@ -311,6 +311,8 @@ public abstract class AbstractMap implements WorldMap {
         beforeMoveAnimals.putAll(afterMoveAnimals);
         afterMoveAnimals.clear();
 
+        removeDeadAnimals();
+
         return true;
     }
 
@@ -435,4 +437,5 @@ public abstract class AbstractMap implements WorldMap {
         System.out.println("Ilość wolnych pozycji: "+((mapBoundary.upperY()+1)*(mapBoundary.rightX()+1)-(beforeMoveAnimals.size()+plants.size()-plantsToEat.size())));
 
     }
+
 }

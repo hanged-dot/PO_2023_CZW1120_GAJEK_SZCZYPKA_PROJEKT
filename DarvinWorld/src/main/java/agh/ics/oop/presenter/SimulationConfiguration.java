@@ -72,15 +72,15 @@ public class SimulationConfiguration extends Application {
         );
 
         tunnelCount = new ConfigurationElement(
-                new Text("Choose number(?percent?) of tunnels: "),
+                new Text("Choose percent of tunnels: "),
                 new TextField("10"),
-                new Vector2d(1, 99) // TODO jak wyznaczyć ile tuneli skoro nie znamy rozmiaru mapy? Chyba że wskażemy w procentach
+                new Vector2d(1, 40)
         );
 
         startPlantCount = new ConfigurationElement(
-                new Text("Choose initial number(?percent?) of plants: "),
-                new TextField("20"),
-                new Vector2d(10, 400) // TODO jw
+                new Text("Choose initial percent of plants: "),
+                new TextField("10"),
+                new Vector2d(1, 30)
         );
 
         plantsPerDay = new ConfigurationElement(
@@ -284,7 +284,7 @@ public class SimulationConfiguration extends Application {
     private void onSimulationStartClicked(){
 
         if(checkConfigurationConstraints()){
-            simulationStart.newSimulationStart(wrapProperties());
+            simulationStart.newSimulationStart(wrapProperties(), saveStatisticsCheckBox.isSelected());
         }
     }
 

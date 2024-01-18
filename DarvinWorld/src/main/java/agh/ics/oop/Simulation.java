@@ -7,7 +7,7 @@ import java.util.List;
 
 import static java.lang.Thread.sleep;
 
-public class Simulation implements Runnable{
+public abstract class Simulation implements Runnable{
 
     private WorldMap map;
     private List<Animal> animals;
@@ -30,29 +30,23 @@ public class Simulation implements Runnable{
     public Animal getAnimal(int x){ return this.animals.get(x); }
 
     public void run() {
-        System.out.println("halo?");
         //zmienic z dirs na liste animali
         // dodać while do czasu stop lub smierci wszystkich
 //        Codziennie będzie wywoływana metoda map.refreshMap(), która zwraca true, jeśli symulacja
 //        może być kontynuowana, albo false, jeśli się okaże, że nie ma już żadnych zwierząt
-        int ctr =0;
+
         do {
 //            TODO Update statystyk symulacji - trzeba ogarnąć ich wyświetlanie
-//            map.getSimulationStatistics();  //
-            map.removeDeadAnimals();        //            Usunięcie martwych zwierzaków z mapy
-            map.moveEveryAnimal();          //            Skręt i przemieszczenie każdego zwierzaka
-            map.removeEatenPlants();        // `          Konsumpcja roślin, na których pola weszły zwierzaki
-            map.procreate();                //            rozmnażanie
-            System.out.println("nowa tura");
-            ctr++;
+            dailyCycle();
+
             try {
-                sleep(1000);
+                sleep(500);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        } while (map.refreshMap() || ctr >15); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy)
+        } while (map.refreshMap()); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy) + usunięcie martwych zwierząt
 
-        System.out.println("Symalacja over");
+        System.out.println("Symulacja over");
 
 //        for(int counter=0; counter< this.dirs.size(); counter++) {
 //            int nr_a= counter%this.animals.size();
@@ -62,6 +56,12 @@ public class Simulation implements Runnable{
 //            //System.out.println("Zwierzę " + nr_a +" : "+ this.animals.get(nr_a).toString());
 //            //System.out.println(map);
 //        }
+    }
+
+    protected void dailyCycle(){
+        map.moveEveryAnimal();
+        map.removeEatenPlants();
+        map.procreate();
     }
 
 //    tu pewnie będzie konieczna zmiana nazwy - metoda, która ma się wywoałać, kiedy po zatrzymaniu
@@ -84,6 +84,5 @@ public class Simulation implements Runnable{
 //            TODO highlight position (może nawet nie potrzeba tej arraylisty wektorów)
         }
     }
-
 }
 
