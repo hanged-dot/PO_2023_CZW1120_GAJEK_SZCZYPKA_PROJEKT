@@ -16,6 +16,7 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     private int deadAnimalCount;
     private int deadAnimalLifeSpan;
     private int plantCount;
+    private int allPositionCount;
     private int freePositionCount;
     private final int totalPositionCount;
     private int totalAliveAnimalOffspringCount;
@@ -30,7 +31,8 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
         deadAnimalCount = 0;
         deadAnimalLifeSpan = 0;
         plantCount = 0;
-        freePositionCount = properties.mapWidth()*properties.mapHeight();
+        allPositionCount = properties.mapWidth()*properties.mapHeight();
+        freePositionCount = allPositionCount;
         totalPositionCount = properties.mapWidth()*properties.mapHeight();
         totalAliveAnimalOffspringCount = 0;
         allGenotypes = new HashMap<>();
@@ -60,15 +62,8 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     }
 
     @Override
-    public void freePositionCountUpdate(boolean up) {
-        if (up) ++ freePositionCount;
-        else --freePositionCount;
-    }
-
-    @Override
-    public void allGenotypeCountUpdate(int[] genotype, boolean up) {
-        genotypeCountUpdate(genotype, allGenotypes, up);
-        genotypeCountUpdate(genotype, aliveGenotypes, up);
+    public void freePositionCountUpdate(int count) {
+        this.freePositionCount = allPositionCount - count;
     }
 
     public void plantHistoryUpdate(Vector2d position){
@@ -137,7 +132,11 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
         return positionAbundanceArrayList;
     }
 
-    // na razie bierze pod uwagę wszystkie genotypy, dorobię jeszcz osobno dla żyjących genotypów
+    @Override
+    public void allGenotypeCountUpdate(int[] genotype, boolean up) {
+        genotypeCountUpdate(genotype, allGenotypes, up);
+        genotypeCountUpdate(genotype, aliveGenotypes, up);
+    }
     public void aliveGenotypeCountUpdate(int[] genotype, boolean up){
         genotypeCountUpdate(genotype, aliveGenotypes, up);
     }
@@ -162,7 +161,6 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
 
     @Override
     public void totalKidsCountUpdate(int kidsCount) {
-//        WAŻNE PYTANIE: liczymy dla każdego zwierzaka liczbę dzieci, czy jedno dziecko na parę? dla kazdego zwierzaka liczbe
         totalAliveAnimalOffspringCount = max(0, totalAliveAnimalOffspringCount + kidsCount);
     }
 
@@ -175,8 +173,7 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     public void deadAnimalUpdate(Animal deadAnimal){
         deadAnimalCountUpdate(deadAnimal.getAge());
         aliveGenotypeCountUpdate(deadAnimal.getGenome(), false);
-        System.out.println("Is any probelm there");
-        totalKidsCountUpdate(deadAnimal.getNumberOfChildren());
+        totalKidsCountUpdate((-1)*deadAnimal.getNumberOfChildren());
     }
 
     private float getMeanLifeSpan(){

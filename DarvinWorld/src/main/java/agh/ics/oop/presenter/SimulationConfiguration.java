@@ -85,7 +85,7 @@ public class SimulationConfiguration extends Application {
 
         plantsPerDay = new ConfigurationElement(
                 new Text("Choose daily number(?percent?) of new plants: "),
-                new TextField("20"),
+                new TextField("10"),
                 new Vector2d(5, 60)
         );
 
@@ -97,19 +97,19 @@ public class SimulationConfiguration extends Application {
 
         startAnimalCount = new ConfigurationElement(
                 new Text("Choose initial number of animals: "),
-                new TextField("50"),
+                new TextField("20"),
                 new Vector2d(10, 50)
         );
 
         startAnimalEnergy = new ConfigurationElement(
                 new Text("Choose initial energy of animals: "),
-                new TextField("15"),
+                new TextField("10"),
                 new Vector2d(3, 100)
         );
 
         minProcreateEnergy = new ConfigurationElement(
                 new Text("Choose minimal energy to procreate: "),
-                new TextField("10"),
+                new TextField("12"),
                 new Vector2d(10, 20)
         );
 

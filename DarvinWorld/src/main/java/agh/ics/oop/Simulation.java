@@ -5,6 +5,8 @@ import agh.ics.oop.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 public class Simulation implements Runnable{
 
     private WorldMap map;
@@ -28,11 +30,12 @@ public class Simulation implements Runnable{
     public Animal getAnimal(int x){ return this.animals.get(x); }
 
     public void run() {
+        System.out.println("halo?");
         //zmienic z dirs na liste animali
         // dodać while do czasu stop lub smierci wszystkich
 //        Codziennie będzie wywoływana metoda map.refreshMap(), która zwraca true, jeśli symulacja
 //        może być kontynuowana, albo false, jeśli się okaże, że nie ma już żadnych zwierząt
-
+        int ctr =0;
         do {
 //            TODO Update statystyk symulacji - trzeba ogarnąć ich wyświetlanie
 //            map.getSimulationStatistics();  //
@@ -41,8 +44,13 @@ public class Simulation implements Runnable{
             map.removeEatenPlants();        // `          Konsumpcja roślin, na których pola weszły zwierzaki
             map.procreate();                //            rozmnażanie
             System.out.println("nowa tura");
-
-        } while (map.refreshMap()); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy)
+            ctr++;
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        } while (map.refreshMap() || ctr >15); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy)
 
         System.out.println("Symalacja over");
 

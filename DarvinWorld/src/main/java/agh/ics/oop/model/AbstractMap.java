@@ -3,6 +3,7 @@ package agh.ics.oop.model;
 import agh.ics.oop.model.util.PlantPositionGenerator;
 import com.sun.scenario.animation.shared.AnimationAccessor;
 
+import javax.management.MBeanFeatureInfo;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -55,10 +56,9 @@ public abstract class AbstractMap implements WorldMap {
 //            tworzymy nowe zwierzątka, generujemy im genom, umieszczamy na mapie
             Animal animal = new Animal(animalProperties, createRandomPosition(mapBoundary));
             animal.setGenome(createRandomGenome(animalProperties.genomeLength()));
-            statisticsGenerator.aliveGenotypeCountUpdate(animal.getGenome(), true);
+            statisticsGenerator.allGenotypeCountUpdate(animal.getGenome(), true);
             place(animal);
         }
-
 
         beforeMoveAnimals.putAll(afterMoveAnimals);
         afterMoveAnimals.clear();
@@ -97,9 +97,6 @@ public abstract class AbstractMap implements WorldMap {
 
         for (Vector2d key : keysToRemove){
             beforeMoveAnimals.remove(key);
-            if (!plants.containsKey(key)){
-                statisticsGenerator.freePositionCountUpdate(false);
-            }
         }
     }
 
@@ -121,12 +118,8 @@ public abstract class AbstractMap implements WorldMap {
 
 //        Jeśli na nowym miejscu zwierzaka znajduje się roślina, dołączamy ją do listy roślin do zjedzenia
 //        w następnym dniu
-        if (plants.containsKey(animalPosition)) {
-            plantsToEat.add(animalPosition);
-        } else {
-//            w przeciwnym wypadku pozycja ta do tej pory była wolna, zatem musimy zmniejszyć licznik wolnych
-//            pozycji
-            statisticsGenerator.freePositionCountUpdate(false);
+            if (plants.containsKey(animalPosition)) {
+                plantsToEat.add(animalPosition);
             }
         }
         mapChanged("Zwierzę zostało umieszczone na mapie na pozycji" + animal.getPosition());
@@ -150,6 +143,7 @@ public abstract class AbstractMap implements WorldMap {
     public void moveEveryAnimal() {
 
         for (List<Animal> animalList : beforeMoveAnimals.values()) {
+
             for (Animal animal : animalList) {
                 move(animal);
                 animal.age();
@@ -291,14 +285,15 @@ public abstract class AbstractMap implements WorldMap {
             return false;
         }
 
-        statisticsGenerator.totalEnergyUpdate(false);       // informujemy statystyki, że energia wszystkich zwierząt spada o 1
-        printStatisticsPlease();
-
         // Rozpoczęcie nowego dnia:
+
+        createNewPlants(dailyPlantCount);
 
         ++day;
 
-        createNewPlants(dailyPlantCount);
+        statisticsGenerator.totalEnergyUpdate(false);       // informujemy statystyki, że energia wszystkich zwierząt spada o 1
+        statisticsGenerator.freePositionCountUpdate(afterMoveAnimals.size()+plants.size()-plantsToEat.size());
+        printStatisticsPlease();
 
         for (Vector2d key : afterMoveAnimals.keySet()) {
 
@@ -333,11 +328,6 @@ public abstract class AbstractMap implements WorldMap {
             statisticsGenerator.plantHistoryUpdate(position);
 //  Przekazujemy do statystyk informację o pojawieniu się kolejnej rośliny
             statisticsGenerator.plantCountUpdate(true);
-//            Jeśli na tym polu nie było do tej pory żadnego zwierzęcia, to przekazujemy również do statystyk
-//            informację, że zmniejszyła się ilość pustych pól
-            if (!afterMoveAnimals.containsKey(position)){
-                statisticsGenerator.freePositionCountUpdate(false);
-            }
         }
     }
 
@@ -349,8 +339,8 @@ public abstract class AbstractMap implements WorldMap {
     protected Vector2d createRandomPosition (Boundary boundary){
 
         Random random = new Random();
-        return new Vector2d(random.nextInt(boundary.leftX(), boundary.rightX()),
-                random.nextInt(boundary.lowerY(), boundary.upperY()));
+        return new Vector2d(random.nextInt(boundary.leftX(), boundary.rightX()+1),
+                random.nextInt(boundary.lowerY(), boundary.upperY()+1));
     }
 
     protected int[] createRandomGenome(int genomeLen){
@@ -389,8 +379,8 @@ public abstract class AbstractMap implements WorldMap {
 
 
     public void mapChanged (String changeInfo){
-        for (int i = 0; i < observers.size(); i++) {
-            observers.get(i).mapChanged(this, changeInfo);
+        for (MapChangeListener mapChangeListener : observers) {
+            mapChangeListener.mapChanged(this, changeInfo);
         }
     }
 
@@ -412,13 +402,13 @@ public abstract class AbstractMap implements WorldMap {
         else return null;
     }
 
-    public void addObserver (MapChangeListener observer){
-        this.observers.add(observer);
-    }
-
-    public void removeObserver (MapChangeListener observer){
-        this.observers.remove(observer);
-    }
+//    public void addObserver (MapChangeListener observer){
+//        this.observers.add(observer);
+//    }
+//
+//    public void removeObserver (MapChangeListener observer){
+//        this.observers.remove(observer);
+//    }
 
     public void printStatisticsPlease(){
         System.out.println("Wypisujemy statystyki z dnia nr "+day);
@@ -428,7 +418,7 @@ public abstract class AbstractMap implements WorldMap {
         System.out.println("Ilość martwych zwierząt: "+stats.deadAnimalCount());
         System.out.println("Ilość roślin: "+ stats.plantCount());
         System.out.println("Ilość wolnych pozycji: "+stats.freePositionCount());
-        System.out.print("Średnia energia żywych zwierzaków: "+stats.meanAliveAnimalEnergy());
+        System.out.println("Średnia energia żywych zwierzaków: "+stats.meanAliveAnimalEnergy());
         System.out.println("Dominujący genotyp: ");
         for (int i : stats.dominantGenotype()){
             System.out.print(i);
@@ -441,6 +431,8 @@ public abstract class AbstractMap implements WorldMap {
         System.out.print("\n");
         System.out.println("Średnia długość życia zwierząt: "+stats.meanAnimalLifeSpan());
         System.out.println("Średnia ilość potomstwa: "+stats.meanAliveAnimalOffspringCount());
+
+        System.out.println("Ilość wolnych pozycji: "+((mapBoundary.upperY()+1)*(mapBoundary.rightX()+1)-(beforeMoveAnimals.size()+plants.size()-plantsToEat.size())));
 
     }
 }
