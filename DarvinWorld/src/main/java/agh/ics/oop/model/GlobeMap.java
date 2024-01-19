@@ -1,9 +1,11 @@
 package agh.ics.oop.model;
 
+import java.util.ArrayList;
+
 public class GlobeMap extends AbstractMap {
     public GlobeMap(MapProperties mapProperties,
                     AnimalProperties animalProperties,
-                    MapChangeListener observer) {
-        super(mapProperties, animalProperties, observer);
+                    ArrayList<MapChangeListener> observers) {
+        super(mapProperties, animalProperties, observers);
     }
 }

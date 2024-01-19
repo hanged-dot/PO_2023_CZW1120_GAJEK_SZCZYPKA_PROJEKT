@@ -11,12 +11,14 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +38,7 @@ public class SimulationPresenter implements MapChangeListener{
 
 //    @FXML
  //   private Button button = new Button("Start");
-    public void setWorldMap (WorldMap map){ mapa=map;}
+    public void setWorldMap (WorldMap map){ this.mapa=map;}
 
     public void drawMap(WorldMap worldMap, String message){
         infoLabel2.setText(message);
@@ -69,16 +71,26 @@ public class SimulationPresenter implements MapChangeListener{
 
             mapGrid.add(label2,0,y);
         }
-// dodac wyświetlanie najsilnieszego zwierzaka z kolejki chyba ze umalo
         for (int x=1;x<=abs(bounds.rightX()-bounds.leftX())+1;x++){
             for (int y=1;y<=abs(bounds.upperY()-bounds.lowerY())+1;y++){
                  {
-                    Button button1 = new Button();
-                    button1.setMinSize(CELL_WIDTH, CELL_HEIGHT);
-                    button1.setAlignment(Pos.CENTER);
-                    GridPane.setHalignment(button1, HPos.CENTER);
+                    Vector2d current = new Vector2d(bounds.leftX()+x-1,bounds.upperY()-y+1);
+                    WorldElement plant = this.mapa.getPlant(current);
+                    WorldElement strongest = this.mapa.getStrongest(current);
+                    if (strongest!=null) {
+                        Button button1 = new Button();
+                        ImageView image = new ImageView(strongest.getPicture().toString());
+                        button1.setGraphic(image);
+                        button1.setMinSize(CELL_WIDTH, CELL_HEIGHT);
+                        button1.setAlignment(Pos.CENTER);
+                        GridPane.setHalignment(button1, HPos.CENTER);
 
-                    mapGrid.add(button1, x,y);
+                        mapGrid.add(button1, current.getX(),current.getY());
+                    }
+                    if (plant!=null){
+                        WorldElementBox plantBox = new WorldElementBox(plant);
+                        mapGrid.add(plantBox.getvBox(),current.getX(),current.getY());
+                    }
                 }
             }
         }
@@ -95,5 +107,7 @@ public class SimulationPresenter implements MapChangeListener{
         Platform.runLater(() -> {drawMap(worldMap,message);});
     }
 // animalChanged
+
+
 
 }

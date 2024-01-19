@@ -1,6 +1,7 @@
 package agh.ics.oop.model.util;
 
 import agh.ics.oop.model.Boundary;
+import agh.ics.oop.model.Plant;
 import agh.ics.oop.model.Vector2d;
 
 import java.util.*;
@@ -29,7 +30,6 @@ public class PlantPositionGenerator {
         southernSteppeBoundary = new Boundary(boundary.leftX(), boundary.rightX(),
                 0, equatorBoundary.lowerY() - 1);
 
-
         equatorPositions = new ArrayList<>();
         northernSteppePositions = new ArrayList<>();
         southernSteppePositions = new ArrayList<>();
@@ -48,9 +48,12 @@ public class PlantPositionGenerator {
                 southernSteppePositions.add(new Vector2d(i, j));
             }
         }
-    }
 
-    private void generatePositions(HashSet<Vector2d> takenPositions, int positionCount){
+    }
+//      zmiana hashsetu z typu vector na plant
+    private void generatePositions(HashMap<Vector2d,Plant> takenPositions, int positionCount){
+
+        positions = new ArrayList<>();
 
         Random random = new Random();
 
@@ -64,35 +67,61 @@ public class PlantPositionGenerator {
 
 //        jeśli na mapie nie ma wystarczająco dużo wolnych miejsc, zajmiemy tylko taką ilość miejsc, jaka jest dostępna
         positionCount = min(positionCount,
-                sum(sum(equatorPositions.size(), northernSteppePositions.size()), southernSteppePositions.size()) -
-                takenPositions.size());
+                sum((sum(equatorPositions.size(), northernSteppePositions.size())), southernSteppePositions.size()) - takenPositions.size());
+
 
         while (positionCount > 0){
 
-            int temp = random.nextInt(0,9);
-            if (temp <= 7 && equatorCtr < equatorPositions.size()){
-                if (!takenPositions.contains(equatorPositions.get(equatorCtr))) {
-                    positions.add(equatorPositions.get(equatorCtr));
+            int temp;
+            if (equatorCtr < equatorPositions.size()){
+                temp = random.nextInt(0, 10);
+            } else {
+                temp = random.nextInt(8, 10);
+            }
+
+            if (temp <= 7){
+
+                while (equatorCtr < equatorPositions.size() && takenPositions.containsKey(equatorPositions.get(equatorCtr))){
                     ++equatorCtr;
                 }
+                if (equatorCtr < equatorPositions.size()) {
+                    positions.add(equatorPositions.get(equatorCtr));
+                    --positionCount;
+                    ++equatorCtr;
+                }
+
             } else if (temp == 8 && northCtr < northernSteppePositions.size()){
-                if (!takenPositions.contains(northernSteppePositions.get(northCtr))){
-                    positions.add(northernSteppePositions.get(northCtr));
+
+                while (northCtr < northernSteppePositions.size() && takenPositions.containsKey(northernSteppePositions.get(northCtr))){
                     ++northCtr;
                 }
+                if (northCtr < northernSteppePositions.size()) {
+                    positions.add(northernSteppePositions.get(northCtr));
+                    --positionCount;
+                    ++northCtr;
+                }
+
+
             } else if (temp == 9 && southCtr < southernSteppePositions.size()) {
-                if (!takenPositions.contains(southernSteppePositions.get(southCtr))){
+
+                while (southCtr < southernSteppePositions.size() && takenPositions.containsKey(southernSteppePositions.get(southCtr))){
+                    ++southCtr;
+                }
+                if (southCtr < southernSteppePositions.size()) {
                     positions.add(southernSteppePositions.get(southCtr));
+                    --positionCount;
                     ++southCtr;
                 }
 
             }
+            if (equatorCtr >= equatorPositions.size() && northCtr >= northernSteppePositions.size() && southCtr >= southernSteppePositions.size()){
+                break;
+            }
 
         }
-
     }
 
-    public ArrayList<Vector2d> getPositions(HashSet<Vector2d> takenPositions, int positionCount){
+    public ArrayList<Vector2d> getPositions(HashMap<Vector2d,Plant> takenPositions, int positionCount){
         generatePositions(takenPositions, positionCount);
         return positions;
     }

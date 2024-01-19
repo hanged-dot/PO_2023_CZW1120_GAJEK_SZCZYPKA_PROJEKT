@@ -2,6 +2,7 @@ package agh.ics.oop.model;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class Animal{
@@ -18,6 +19,7 @@ public class Animal{
     private ArrayList<Animal> kids;
     private int death;
     private int genLen;
+    private int shift;
     protected ArrayList<MapChangeListener> observers = new ArrayList<>();
 
     public Animal(AnimalProperties properties, Vector2d position){
@@ -25,16 +27,16 @@ public class Animal{
         this.properties=properties;
         this.genLen=properties.genomeLength();
         this.energy=properties.startAnimalEnergy();
-        this.orientation=MapDirection.NORTH;
+        this.orientation=newRandomOrientation();
         this.position=position;
         this.life=0;
         this.death=0;
         this.kids= new ArrayList<>();
         this.plants=0;
         this.transferedThroughTunnel=false;
-
-
+        this.shift=(new Random()).nextInt(genLen);
     }
+    public AnimalProperties getProperties() {return this.properties;}
     public MapDirection getOrientation() { return orientation; }  //zwraca orientacje zwierzaka
     public Vector2d getPosition() {
         return position;
@@ -42,10 +44,13 @@ public class Animal{
     public int getEnergy() {return energy;} //zwraca informację o energii zwierzaka
     public void setGenome(int[] genome){this.genome=genome;} //przypisuje zwierzakowi listę ruchów
     public int[] getGenome(){return this.genome;}
-    public void setDeath(int day){this.death=day;} // zwraca dzien smierci zwierzaka
+    public void setDeath(int day){this.death=day;} // ustala dzien smierci zwierzaka
+    public int getDeath(){return this.death;}
     public void addKid(Animal kid){ this.kids.add(kid);} // dodaje zwierzaka do listy dzieci rodzica zwierzaka
     public int getAge(){return this.life;}; //zwraca dotychczasowa dlugosc zycia
-    public void age(){this.life++;} // postarza zwierzaka
+    public void age(){
+        this.life++;
+        this.energy--;} // postarza zwierzaka
     public void eat(){this.energy=this.energy+properties.energyFromPlant();} //zwerzak je
     public void setTransferredThroughTunnel(boolean value){this.transferedThroughTunnel=value;} //zwierzak przeszedl wlasnie przez tunel, ma nim teraz nie wracac
     public boolean isTransferedThroughTunnel(){return this.transferedThroughTunnel;} //zwraca czy zwierzak wlasnie przeszedl przez tunel
@@ -57,6 +62,20 @@ public class Animal{
         }
         return children;
     };
+    public MapDirection newRandomOrientation(){
+        int orientationNumber = (new Random()).nextInt(8);
+        return switch(orientationNumber){
+            case 0 -> MapDirection.NORTH;
+            case 1 -> MapDirection.NORTHEAST;
+            case 2 -> MapDirection.EAST;
+            case 3 -> MapDirection.SOUTHEAST;
+            case 4 -> MapDirection.SOUTH;
+            case 5 -> MapDirection.SOUTHWEST;
+            case 6 -> MapDirection.WEST;
+            case 7 -> MapDirection.NORTHWEST;
+            default -> MapDirection.NORTH;
+        };
+    }
 
     private int compareEnergy(Animal a){return this.getEnergy()-a.getEnergy();};
     private int compareAge(Animal a){return this.getAge()-a.getAge();};
@@ -110,6 +129,14 @@ public class Animal{
         return b;
     }
 
+    public String getPicture() {
+
+            if(0==this.getEnergy()){return "icons/grey_paw.png";}
+            if(0<this.getEnergy() && this.getEnergy()<this.properties.minProcreateEnergy() ){ return "icons/orange_paw.png";}
+            if(this.properties.minProcreateEnergy()<=this.getEnergy() && this.getEnergy()< properties.startAnimalEnergy()){return "icons/green_paw.png";}
+            else{return "icons/blue_paw.png";}
+    }
+
     public boolean isAt (Vector2d position){
         if (this.position.equals(position)){ return true; }
         return false;
@@ -119,7 +146,7 @@ public class Animal{
 
     private MoveDirection getNextDirection(){
 
-        return switch (genome[life%genLen]){
+        return switch (genome[(life+shift)%genLen]){
             case 0 -> MoveDirection.FORWARD;
             case 1 -> MoveDirection.FORWARDRIGHT;
             case 2 -> MoveDirection.RIGHT;
@@ -164,8 +191,8 @@ public class Animal{
     } //zwraca informację czy zwierzak da radę się rozmnożyć
 // jest ok chyba (MG)
 public Animal procreate(Animal other){
-
-    Animal offspring = new Animal(this.properties, this.getPosition());
+    AnimalProperties offspringProperties = new AnimalProperties(this.properties.procreateEnergy()+other.properties.procreateEnergy(),this.properties.energyFromPlant(),this.properties.minProcreateEnergy(),this.properties.procreateEnergy(),this.properties.minMutationCount(),this.properties.maxMutationCount(),this.genLen,this.properties.withLightMutationCorrect());
+    Animal offspring = new Animal(offspringProperties, this.getPosition());
 
     other.addKid(offspring);
     this.addKid(offspring);
@@ -196,11 +223,24 @@ public Animal procreate(Animal other){
             i++;
         }
     }
-    //dodac mutacje
-    offspring.setGenome(genes);
-
+    offspring.mutate(genes);
 
     return offspring;
+}
+public void mutate(int[] genes){
+        int maxMutation = this.properties.maxMutationCount();
+        int minMutation = this.properties.minMutationCount();
+        int mutationCount= (new Random()).nextInt(maxMutation-minMutation) + minMutation;
+        ArrayList<Integer> positionsInGenome = new ArrayList<>();
+        for (int i=0;i<genLen;i++){positionsInGenome.add(i);}
+        Collections.shuffle(positionsInGenome);
+        if(!this.properties.withLightMutationCorrect()) {
+            for (int i = 0; i < mutationCount; i++) {genes[positionsInGenome.get(i)] = (new Random()).nextInt(8);}
+        }
+        else{
+            for (int i = 0; i < mutationCount; i++) {genes[positionsInGenome.get(i)] = (genes[positionsInGenome.get(i)]+((int)Math.pow((-1),(new Random()).nextInt(2))))%8;}
+        }
+        this.setGenome(genes);
 }
 
 //nie jest ok dodac do observatora animala

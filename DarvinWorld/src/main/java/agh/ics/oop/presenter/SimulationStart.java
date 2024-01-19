@@ -1,6 +1,8 @@
 package agh.ics.oop.presenter;
 
+import agh.ics.oop.RegularSimulation;
 import agh.ics.oop.Simulation;
+import agh.ics.oop.SimulationWithStats;
 import agh.ics.oop.model.*;
 import javafx.application.Application;
 import javafx.fxml.FXML;
@@ -18,10 +20,21 @@ public class SimulationStart {
     public SimulationStart(){
         simulations = new ArrayList<>();
     }
-    public void newSimulationStart(SimulationProperties simulationProperties){
-        MapChangeListener observer = new SimulationPresenter();
-        // TODO stworzyć prezentera tutaj i przekazać symulacji
-        simulations.add(new Simulation(simulationProperties, observer));
+    public void newSimulationStart(SimulationProperties simulationProperties, boolean savingStatisticsRequested){
+        ArrayList<MapChangeListener> observers = new ArrayList<>();
+              SimulationPresenter observerSim = new SimulationPresenter();
+              observers.add(observerSim);
+              // TODO dodac sprawdzanie czy saveStatisticsCheckBox.isSelected()
+              FileMapDisplay observerSaveSim = new FileMapDisplay();
+              observers.add(observerSaveSim);
+        //  stworzyć prezentera tutaj i przekazać symulacji - done
+
+        if (savingStatisticsRequested){
+            simulations.add(new SimulationWithStats(simulationProperties, observers));
+        } else {
+            simulations.add(new RegularSimulation(simulationProperties, observers));
+        }
+
         new SimulationEngine(simulations).runAsyncInThreadPool();
 
     }

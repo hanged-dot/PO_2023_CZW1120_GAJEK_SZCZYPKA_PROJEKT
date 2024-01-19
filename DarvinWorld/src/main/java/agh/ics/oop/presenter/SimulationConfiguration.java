@@ -16,9 +16,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import javax.swing.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,21 +72,21 @@ public class SimulationConfiguration extends Application {
         );
 
         tunnelCount = new ConfigurationElement(
-                new Text("Choose number(?percent?) of tunnels: "),
+                new Text("Choose percent of tunnels: "),
                 new TextField("10"),
-                new Vector2d(1, 99) // TODO jak wyznaczyć ile tuneli skoro nie znamy rozmiaru mapy? Chyba że wskażemy w procentach
+                new Vector2d(1, 40)
         );
 
         startPlantCount = new ConfigurationElement(
-                new Text("Choose initial number(?percent?) of plants: "),
-                new TextField("20"),
-                new Vector2d(10, 60) // TODO jw
+                new Text("Choose initial percent of plants: "),
+                new TextField("10"),
+                new Vector2d(1, 30)
         );
 
         plantsPerDay = new ConfigurationElement(
                 new Text("Choose daily number(?percent?) of new plants: "),
-                new TextField("20"),
-                new Vector2d(5, 20)
+                new TextField("10"),
+                new Vector2d(5, 60)
         );
 
         energyPlant = new ConfigurationElement(
@@ -95,14 +97,14 @@ public class SimulationConfiguration extends Application {
 
         startAnimalCount = new ConfigurationElement(
                 new Text("Choose initial number of animals: "),
-                new TextField("50"),
-                new Vector2d(10, 200)
+                new TextField("20"),
+                new Vector2d(10, 50)
         );
 
         startAnimalEnergy = new ConfigurationElement(
                 new Text("Choose initial energy of animals: "),
-                new TextField("15"),
-                new Vector2d(10, 100)
+                new TextField("10"),
+                new Vector2d(3, 100)
         );
 
         minProcreateEnergy = new ConfigurationElement(
@@ -118,19 +120,19 @@ public class SimulationConfiguration extends Application {
         );
 
         minMutation = new ConfigurationElement(
-                new Text("Choose minimal number(?percent?) of mutations: "),
+                new Text("Choose minimal percent of mutations: "),
                 new TextField("0"),
                 new Vector2d(0, 10)
         );
 
         maxMutation = new ConfigurationElement(
                 new Text("Choose maximal number (?percent?) of mutations: "),
-                new TextField("3"),
+                new TextField("11"),
                 new Vector2d(10, 80)
         );
 
         genomeLength = new ConfigurationElement(
-                new Text("Choose maximal number of mutations: "),
+                new Text("Choose genome length: "),
                 new TextField("8"),
                 new Vector2d(2, 100)
         );
@@ -153,16 +155,17 @@ public class SimulationConfiguration extends Application {
 
 //      Potrzebne CheckBoxy:
 
+//        zapisywanie statystyk uruchomionej symulacji:
         saveStatisticsCheckBox = new CheckBox("Save daily statistics");
+//        wybór mapy z tunelami:
         chooseMapWithTunnelsBox = new CheckBox("Tunnels");
         tunnelCount.textField().setDisable(!chooseMapWithTunnelsBox.isSelected());
-
+//        wybór lekkiej korekty
         chooseWithLightMutationCorrectBox = new CheckBox("Light Mutation Correct");
 
 //        Potrzebne przyciski:
         Button saveConfigurationButton = new Button("Save configuration");
         saveConfigurationButton.setOnAction(e -> saveConfiguration());
-//        TODO: zastanowić się jak chcemy przechowywać konfiguracje do wyboru
         Button chooseConfigurationButton = new Button("Choose configuration");
         chooseConfigurationButton.setOnAction(e -> chooseSavedConfiguration());
 
@@ -186,7 +189,7 @@ public class SimulationConfiguration extends Application {
 
 
         VBox rightMenu = new VBox();
-        rightMenu.getChildren().addAll(chooseMapWithTunnelsBox, chooseWithLightMutationCorrectBox);
+        rightMenu.getChildren().addAll(chooseMapWithTunnelsBox, chooseWithLightMutationCorrectBox, saveStatisticsCheckBox);
         rightMenu.setAlignment(Pos.TOP_LEFT);
 
         BorderPane borderPane = new BorderPane();
@@ -217,7 +220,7 @@ public class SimulationConfiguration extends Application {
             }
         }
 
-        if (Integer.parseInt(minMutation.textField().getText()) > Integer.parseInt(maxMutation.text().getText())){
+        if (Integer.parseInt(minMutation.textField().getText()) > Integer.parseInt(maxMutation.textField().getText())){
             AlertBox.display("Incorrect Input", "Minimal Mutation Count cannot be higher than Maximal Mutation Count.");
             return false;
         }
@@ -281,7 +284,7 @@ public class SimulationConfiguration extends Application {
     private void onSimulationStartClicked(){
 
         if(checkConfigurationConstraints()){
-            simulationStart.newSimulationStart(wrapProperties());
+            simulationStart.newSimulationStart(wrapProperties(), saveStatisticsCheckBox.isSelected());
         }
     }
 
@@ -293,8 +296,8 @@ public class SimulationConfiguration extends Application {
     }
 
     private void chooseSavedConfiguration(){
-//        ConfigurationReader.
-//     TODO: umożliwić wybranie jednej z zapisanych konfiguracji
+        ConfigurationReader configurationReader = new ConfigurationReader();
+        configurationReader.choosePredefinedSimulationProperties();
     }
 
 }

@@ -5,25 +5,26 @@ import agh.ics.oop.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Simulation implements Runnable{
+import static java.lang.Thread.sleep;
+
+public abstract class Simulation implements Runnable{
 
     private WorldMap map;
-    private List<Animal> animals = new ArrayList<>();
+    private List<Animal> animals;
 
-// w konstruktorze przekazujemy wszystkie parametry sczytane z okna startowego
+// w konstruktorze przekazujemy wszystkie parametry zczytane z okna startowego
     public Simulation(SimulationProperties simulationProperties,
-                      MapChangeListener observer) {
+                      ArrayList<MapChangeListener> observers) {
 
         if (simulationProperties.hasTunnels()){
             this.map = new TunnelMap(simulationProperties.mapProperties(),
-                    simulationProperties.animalProperties(), observer);
+                    simulationProperties.animalProperties(), observers);
         } else {
             this.map = new GlobeMap(simulationProperties.mapProperties(),
-                    simulationProperties.animalProperties(), observer);
+                    simulationProperties.animalProperties(), observers);
         }
 
-        System.out.println(simulationProperties.animalProperties().energyFromPlant());
-
+        animals = new ArrayList<>();
     }
 
     public Animal getAnimal(int x){ return this.animals.get(x); }
@@ -36,16 +37,16 @@ public class Simulation implements Runnable{
 
         do {
 //            TODO Update statystyk symulacji - trzeba ogarnąć ich wyświetlanie
-            map.getSimulationStatistics();
-//            Usunięcie martwych zwierzaków z mapy
-            map.removeDeadAnimals();
-//            Skręt i przemieszczenie każdego zwierzaka
-            map.moveEveryAnimal();
-//            Konsumpcja roślin, na których pola weszły zwierzaki
-            map.removeEatenPlants();
-//            Rozmnażanie się najedzonych zwierzaków znajdujących się na tym samym polu
-            map.procreate();
-        } while (map.refreshMap()); // Wzrastanie nowych roślin na wybranych polach mapy.
+            dailyCycle();
+
+            try {
+                sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        } while (map.refreshMap()); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy) + usunięcie martwych zwierząt
+
+        System.out.println("Symulacja over");
 
 //        for(int counter=0; counter< this.dirs.size(); counter++) {
 //            int nr_a= counter%this.animals.size();
@@ -55,6 +56,12 @@ public class Simulation implements Runnable{
 //            //System.out.println("Zwierzę " + nr_a +" : "+ this.animals.get(nr_a).toString());
 //            //System.out.println(map);
 //        }
+    }
+
+    protected void dailyCycle(){
+        map.moveEveryAnimal();
+        map.removeEatenPlants();
+        map.procreate();
     }
 
 //    tu pewnie będzie konieczna zmiana nazwy - metoda, która ma się wywoałać, kiedy po zatrzymaniu
@@ -77,6 +84,5 @@ public class Simulation implements Runnable{
 //            TODO highlight position (może nawet nie potrzeba tej arraylisty wektorów)
         }
     }
-
 }
 
