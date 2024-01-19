@@ -16,6 +16,7 @@ public class SimulationWithStats extends Simulation{
     @Override
     protected void dailyCycle(){
         super.dailyCycle();
+        simulationStatisticsSaver.save(map, map.getSimulationStatistics());
 //        i tutaj będzie wywołanie dla simulationStatisticsSaver żeby zapisywał staty
     }
 }

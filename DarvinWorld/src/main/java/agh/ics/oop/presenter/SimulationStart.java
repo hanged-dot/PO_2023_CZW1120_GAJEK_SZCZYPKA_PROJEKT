@@ -24,9 +24,6 @@ public class SimulationStart {
         ArrayList<MapChangeListener> observers = new ArrayList<>();
               SimulationPresenter observerSim = new SimulationPresenter();
               observers.add(observerSim);
-              // TODO dodac sprawdzanie czy saveStatisticsCheckBox.isSelected()
-              FileMapDisplay observerSaveSim = new FileMapDisplay();
-              observers.add(observerSaveSim);
         //  stworzyć prezentera tutaj i przekazać symulacji - done
 
         if (savingStatisticsRequested){
@@ -36,6 +33,8 @@ public class SimulationStart {
         }
 
         new SimulationEngine(simulations).runAsyncInThreadPool();
+        // dołozyc wyswietlanie
 
     }
+    //dołozyc configure stage
 }

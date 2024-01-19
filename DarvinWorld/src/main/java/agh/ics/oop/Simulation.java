@@ -9,7 +9,7 @@ import static java.lang.Thread.sleep;
 
 public abstract class Simulation implements Runnable{
 
-    private WorldMap map;
+    protected WorldMap map;
     private List<Animal> animals;
 
 // w konstruktorze przekazujemy wszystkie parametry zczytane z okna startowego
@@ -84,5 +84,6 @@ public abstract class Simulation implements Runnable{
 //            TODO highlight position (może nawet nie potrzeba tej arraylisty wektorów)
         }
     }
+
 }
 

@@ -120,15 +120,15 @@ public class SimulationConfiguration extends Application {
         );
 
         minMutation = new ConfigurationElement(
-                new Text("Choose minimal percent of mutations: "),
+                new Text("Choose minimal number of mutations: "),
                 new TextField("0"),
                 new Vector2d(0, 10)
         );
 
         maxMutation = new ConfigurationElement(
-                new Text("Choose maximal number (?percent?) of mutations: "),
+                new Text("Choose maximal number of mutations: "),
                 new TextField("11"),
-                new Vector2d(10, 80)
+                new Vector2d(0, 80)
         );
 
         genomeLength = new ConfigurationElement(
@@ -206,7 +206,7 @@ public class SimulationConfiguration extends Application {
             }
         });
 
-        Scene scene = new Scene(borderPane, 500, 1000);
+        Scene scene = new Scene(borderPane, 500, 600);
         primaryStage.setScene(scene);
 
     }
@@ -237,7 +237,7 @@ public class SimulationConfiguration extends Application {
     }
 
     private boolean isCorrect(ConfigurationElement configurationElement) {
-
+// dorobi warunek minmutation<maxmutaton<genLen
         try {
             int value = Integer.parseInt(configurationElement.textField().getText());
             if (value >= configurationElement.limits().getX() && value <= configurationElement.limits().getY()) {

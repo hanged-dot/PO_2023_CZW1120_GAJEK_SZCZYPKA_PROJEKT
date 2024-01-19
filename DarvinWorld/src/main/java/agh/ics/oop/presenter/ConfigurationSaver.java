@@ -9,7 +9,7 @@ public class ConfigurationSaver {
     public static void saveConfiguration(String name, SimulationProperties simulationProperties){
 
         try{
-            FileOutputStream fileOutputStream = new FileOutputStream(new File("/configurations/"+name+".txt"));
+            FileOutputStream fileOutputStream = new FileOutputStream(new File("DarvinWorld/src/main/resources/configurations/"+name+".txt"));
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
             objectOutputStream.writeObject(simulationProperties);
