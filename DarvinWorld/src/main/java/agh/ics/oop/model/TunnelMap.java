@@ -1,6 +1,5 @@
 package agh.ics.oop.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -9,10 +8,9 @@ public class TunnelMap extends AbstractMap {
     private int tunnelCount;
     private HashMap<Vector2d, Vector2d> tunnels;
     public TunnelMap(MapProperties mapProperties,
-                     AnimalProperties animalProperties,
-                     ArrayList<MapChangeListener> observer) {
+                     AnimalProperties animalProperties) {
 
-        super(mapProperties, animalProperties, observer);
+        super(mapProperties, animalProperties);
         tunnels = new HashMap<>();
         this.tunnelCount = mapProperties.tunnelCount();
 

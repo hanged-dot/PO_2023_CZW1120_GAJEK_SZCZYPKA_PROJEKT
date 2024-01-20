@@ -8,14 +8,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.awt.*;
@@ -26,7 +25,6 @@ import static java.lang.Math.abs;
 
 public class SimulationPresenter implements MapChangeListener{
     private WorldMap mapa;
-
     private double CELL_WIDTH=30;
     private double CELL_HEIGHT=30;
     @FXML
@@ -38,16 +36,36 @@ public class SimulationPresenter implements MapChangeListener{
 
 //    @FXML
  //   private Button button = new Button("Start");
-    public void setWorldMap (WorldMap map){ this.mapa=map;}
+
+    public void setWorldMap (WorldMap map){
+
+        Stage window = new Stage();
+        window.setTitle("Map "+map.getID());
+        window.setMinWidth(150);
+
+        Button closeButton = new Button("Close");
+        closeButton.setOnAction(e -> window.close());
+
+        VBox layout = new VBox(10);
+        layout.setAlignment(Pos.CENTER);
+        layout.getChildren().add(closeButton);
+
+        Scene scene = new Scene(layout);
+        window.setScene(scene);
+        window.show();
+
+        this.mapa=map;
+
+    }
 
     public void drawMap(WorldMap worldMap, String message){
+
         infoLabel2.setText(message);
         clearGrid();
         mapGrid.getColumnConstraints().add(new ColumnConstraints(CELL_WIDTH));
         mapGrid.getRowConstraints().add(new RowConstraints(CELL_HEIGHT));
         mapGrid.setGridLinesVisible(true);
         Boundary bounds = worldMap.getCurrentBounds();
-
 
 
         Label labelxy = new Label("y//x");
@@ -104,7 +122,10 @@ public class SimulationPresenter implements MapChangeListener{
     }
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
-        Platform.runLater(() -> {drawMap(worldMap,message);});
+
+        Platform.runLater(() -> {
+            drawMap(worldMap, message);
+        });
     }
 // animalChanged
 

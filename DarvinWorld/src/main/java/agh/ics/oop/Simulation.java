@@ -12,18 +12,16 @@ public abstract class Simulation implements Runnable{
     protected WorldMap map;
     private List<Animal> animals;
 
-// w konstruktorze przekazujemy wszystkie parametry zczytane z okna startowego
-    public Simulation(SimulationProperties simulationProperties,
-                      ArrayList<MapChangeListener> observers) {
+// w konstruktorze przekazujemy wszystkie parametry czytane z okna startowego
+    public Simulation(SimulationProperties simulationProperties){
 
         if (simulationProperties.hasTunnels()){
             this.map = new TunnelMap(simulationProperties.mapProperties(),
-                    simulationProperties.animalProperties(), observers);
+                    simulationProperties.animalProperties());
         } else {
             this.map = new GlobeMap(simulationProperties.mapProperties(),
-                    simulationProperties.animalProperties(), observers);
+                    simulationProperties.animalProperties());
         }
-
         animals = new ArrayList<>();
     }
 
@@ -38,7 +36,6 @@ public abstract class Simulation implements Runnable{
         do {
 //            TODO Update statystyk symulacji - trzeba ogarnąć ich wyświetlanie
             dailyCycle();
-
             try {
                 sleep(500);
             } catch (InterruptedException e) {

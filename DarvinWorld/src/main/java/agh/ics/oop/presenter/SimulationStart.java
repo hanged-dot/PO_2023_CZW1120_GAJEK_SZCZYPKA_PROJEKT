@@ -18,18 +18,17 @@ public class SimulationStart {
     private ArrayList<Simulation> simulations;
 
     public SimulationStart(){
+
         simulations = new ArrayList<>();
     }
     public void newSimulationStart(SimulationProperties simulationProperties, boolean savingStatisticsRequested){
-        ArrayList<MapChangeListener> observers = new ArrayList<>();
-              SimulationPresenter observerSim = new SimulationPresenter();
-              observers.add(observerSim);
+
         //  stworzyć prezentera tutaj i przekazać symulacji - done
 
         if (savingStatisticsRequested){
-            simulations.add(new SimulationWithStats(simulationProperties, observers));
+            simulations.add(new SimulationWithStats(simulationProperties));
         } else {
-            simulations.add(new RegularSimulation(simulationProperties, observers));
+            simulations.add(new RegularSimulation(simulationProperties));
         }
 
         new SimulationEngine(simulations).runAsyncInThreadPool();
