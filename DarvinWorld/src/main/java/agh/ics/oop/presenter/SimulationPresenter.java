@@ -33,6 +33,8 @@ public class SimulationPresenter implements MapChangeListener{
     private Label infoLabel2;
     @FXML private Label infoLabel;
 
+    boolean isPaused;
+
 
 //    @FXML
  //   private Button button = new Button("Start");
@@ -43,12 +45,37 @@ public class SimulationPresenter implements MapChangeListener{
         window.setTitle("Map "+map.getID());
         window.setMinWidth(150);
 
+        isPaused = false;
+
         Button closeButton = new Button("Close");
         closeButton.setOnAction(e -> window.close());
 
+        Button stopButton = new Button("Stop");
+
+        // ponizszy kod na razie nie dzała, bo całość naszej symulacji jeszcze nie wywołuje się w jednym wątku, ale z tego co rozumiem docelowo ma działać\
+//         na pojedynczym wątku i wtedy powinno być ok
+
+        stopButton.setOnAction(e -> {
+            setPause(true);
+            while (isPaused){
+                try {
+                    wait();
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        Button resumeButton = new Button("Resume");
+
+        resumeButton.setOnAction(e -> {
+            setPause(false);
+            notify();
+        });
+
         VBox layout = new VBox(10);
         layout.setAlignment(Pos.CENTER);
-        layout.getChildren().add(closeButton);
+        layout.getChildren().addAll(closeButton, stopButton, resumeButton);
 
         Scene scene = new Scene(layout);
         window.setScene(scene);
@@ -56,6 +83,10 @@ public class SimulationPresenter implements MapChangeListener{
 
         this.mapa=map;
 
+    }
+
+    private void setPause(boolean b){
+        this.isPaused = b;
     }
 
     public void drawMap(WorldMap worldMap, String message){
