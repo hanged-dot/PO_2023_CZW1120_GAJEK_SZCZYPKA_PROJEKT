@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import java.io.*;
 
 public class ConfigurationReader {
-    public void choosePredefinedSimulationProperties(){
+    public void choosePredefinedSimulationProperties(SimulationStart simulationStart, boolean isSaveStatisticsSelected){
 
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
@@ -22,28 +22,28 @@ public class ConfigurationReader {
 
         Label label = new Label("Choose configuration: ");
 
-        File folder = new File("src/main/java/agh/ics/oop/presenter/configurations");
+        File folder = new File("src/main/resources/configurations/");
         File[] files = folder.listFiles();
 
         ChoiceBox choiceBox = new ChoiceBox<>();
 
         try {
+            assert files != null;
             for (File file: files){
                 if (file.isFile() && file.getName().endsWith(".txt")){
                     String name = file.getName();
                     int len = name.length();
-                    choiceBox.getItems().add(name.substring(0, len - 5));
+                    choiceBox.getItems().add(name.substring(0, len - 4));
                 }
             }
         } catch (Exception e){
             AlertBox.display("Error", "Error");
         }
 
-
         Button acceptButton = new Button("Start simulation");
         acceptButton.setOnAction(e -> {
             try {
-                this.onSimulationStartClicked((String)choiceBox.getValue());
+                this.onSimulationStartClicked((String)choiceBox.getValue(), simulationStart, isSaveStatisticsSelected);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -60,16 +60,15 @@ public class ConfigurationReader {
         Scene scene = new Scene(layout);
         window.setScene(scene);
         window.showAndWait();
-
     }
 
-    private void onSimulationStartClicked(String configurationName) throws Exception{
-        try {
-            FileInputStream fi = new FileInputStream(new File("/configurations/"+configurationName+".txt"));
-            ObjectInputStream oi = new ObjectInputStream(fi);
-            SimulationProperties simulationProperties = (SimulationProperties) oi.readObject();
-//            TODO: zmienić tak żeby stąd też się dało dodawać symulacje i uruchamiac
+    private void onSimulationStartClicked(String configurationName, SimulationStart simulationStart, boolean isSaveStatisticsSelected) throws Exception{
 
+        try {
+            FileInputStream fi = new FileInputStream(new File("src/main/resources/configurations/"+configurationName+".txt"));
+            ObjectInputStream oi = new ObjectInputStream(fi);
+            SimulationProperties simulationProperties = (SimulationProperties)oi.readObject();
+            simulationStart.newSimulationStart(simulationProperties, isSaveStatisticsSelected);
         } catch (FileNotFoundException e){
             System.out.println("File not found");
         } catch (IOException e){

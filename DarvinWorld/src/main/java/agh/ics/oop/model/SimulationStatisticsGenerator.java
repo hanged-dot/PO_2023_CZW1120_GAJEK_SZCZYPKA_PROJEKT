@@ -150,11 +150,8 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
                 genotypes.put(genotype, 1);
             }
         } else {
-            System.out.println("jestem tu");
             int n = genotypes.get(genotype);
-            System.out.println(n);
             genotypes.put(genotype, n - 1);
-            System.out.println("Przechodzi???");
         }
 
     }

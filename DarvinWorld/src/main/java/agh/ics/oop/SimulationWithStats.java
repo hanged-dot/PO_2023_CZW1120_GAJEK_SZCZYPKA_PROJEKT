@@ -6,6 +6,8 @@ import agh.ics.oop.model.SimulationStatisticsSaver;
 
 import java.util.ArrayList;
 
+import static java.lang.Thread.sleep;
+
 public class SimulationWithStats extends Simulation{
 
     private SimulationStatisticsSaver simulationStatisticsSaver;
@@ -14,7 +16,7 @@ public class SimulationWithStats extends Simulation{
         this.simulationStatisticsSaver = new SimulationStatisticsSaver();
     }
     @Override
-    protected void dailyCycle(){
+    protected void dailyCycle() {
         super.dailyCycle();
         simulationStatisticsSaver.save(map, map.getSimulationStatistics());
 //        i tutaj będzie wywołanie dla simulationStatisticsSaver żeby zapisywał staty

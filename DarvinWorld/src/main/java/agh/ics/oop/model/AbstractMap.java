@@ -82,7 +82,6 @@ public abstract class AbstractMap implements WorldMap {
             animalList.removeIf(a ->
             {
                 if (a.getEnergy() == 0){
-                    System.out.println("Somebody dies!");
                     statisticsGenerator.deadAnimalUpdate(a);
                     return true;
                 }
@@ -266,6 +265,7 @@ public abstract class AbstractMap implements WorldMap {
 
                     Animal child = procreatingAnimals.get(i).procreate(procreatingAnimals.get(i - 1));
                     children.add(child);
+                    System.out.println("Someoe has baby!");
                     statisticsGenerator.newbornAnimalUpdate(child);     // informujemy statystyki, że doszło nowe zwierzę z nowym genomem
                 }
 
@@ -293,7 +293,7 @@ public abstract class AbstractMap implements WorldMap {
 
         statisticsGenerator.totalEnergyUpdate(false);       // informujemy statystyki, że energia wszystkich zwierząt spada o 1
         statisticsGenerator.freePositionCountUpdate(afterMoveAnimals.size()+plants.size()-plantsToEat.size());
-        printStatisticsPlease();
+//        printStatisticsPlease();
 
         for (Vector2d key : afterMoveAnimals.keySet()) {
 

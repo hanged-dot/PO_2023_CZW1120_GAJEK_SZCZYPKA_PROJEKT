@@ -297,8 +297,12 @@ public class SimulationConfiguration extends Application {
 
     private void chooseSavedConfiguration(){
         ConfigurationReader configurationReader = new ConfigurationReader();
-        configurationReader.choosePredefinedSimulationProperties();
+        configurationReader.choosePredefinedSimulationProperties(this.simulationStart, saveStatisticsCheckBox.isSelected());
     }
+
+
+
+
 
 }
 
