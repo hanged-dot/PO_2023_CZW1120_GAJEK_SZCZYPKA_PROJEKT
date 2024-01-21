@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 
-public class WorldElementBox extends Image {
+public class WorldElementBox {
     private final VBox vBox;
     private final int height = 20;
     private final int width = 20;
@@ -27,31 +27,6 @@ public class WorldElementBox extends Image {
         //vBox.getChildren().add(label);
     }
     public VBox getvBox(){ return vBox;};
-
-    @Override
-    public int getWidth(ImageObserver observer) {
-        return width;
-    }
-
-    @Override
-    public int getHeight(ImageObserver observer) {
-        return height;
-    }
-
-    @Override
-    public ImageProducer getSource() {
-        return null;
-    }
-
-    @Override
-    public Graphics getGraphics() {
-        return null;
-    }
-
-    @Override
-    public Object getProperty(String name, ImageObserver observer) {
-        return null;
-    }
 }
 
 
