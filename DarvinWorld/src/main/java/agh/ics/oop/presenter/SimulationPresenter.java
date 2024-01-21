@@ -34,7 +34,14 @@ public class SimulationPresenter implements MapChangeListener{
     @FXML private Label infoLabel;
     @FXML private Label statsLabel;
 
-    boolean isPaused;
+    private final Simulation simulation;
+
+    Button positionsPreferredByPlantsButton;
+    Button animalsWithDominantGenotypeButton;
+
+    public SimulationPresenter(Simulation simulation){
+        this.simulation = simulation;
+    }
 
     public void setWorldMap (WorldMap map){
 
@@ -46,11 +53,10 @@ public class SimulationPresenter implements MapChangeListener{
         window.setMinWidth(500);
         window.setMinHeight(500);
 
-        isPaused = false;
 
         // button do wyświetlania najchętniej zarastanych pól
 
-        Button positionsPreferredByPlantsButton = new Button("Get positions preferred by plants");
+        positionsPreferredByPlantsButton = new Button("Get positions preferred by plants");
         positionsPreferredByPlantsButton.setDisable(true);
 
         positionsPreferredByPlantsButton.setOnAction(e -> {
@@ -63,7 +69,7 @@ public class SimulationPresenter implements MapChangeListener{
 
         // Button do wyświetlania zwierząt o najpopularniejszym genotypie
 
-        Button animalsWithDominantGenotypeButton = new Button("Get animals with dominant genotype");
+        animalsWithDominantGenotypeButton = new Button("Get animals with dominant genotype");
         animalsWithDominantGenotypeButton.setDisable(true);
 
         animalsWithDominantGenotypeButton.setOnAction(e -> {
@@ -75,37 +81,28 @@ public class SimulationPresenter implements MapChangeListener{
         });
 
         Button closeButton = new Button("Close");
-        closeButton.setOnAction(e -> window.close());
-        Button stopButton = new Button("Stop");
+        closeButton.setOnAction(e -> {
+            simulation.terminate();
+            window.close();
+        });
+        Button pauseButton = new Button("Pause");
 
         // ponizszy kod na razie nie dzała, bo całość naszej symulacji jeszcze nie wywołuje się w jednym wątku, ale z tego co rozumiem docelowo ma działać\
 //         na pojedynczym wątku i wtedy powinno być ok
 
-        stopButton.setOnAction(e -> {
-            setPause(true);
-            while (isPaused){
-                try {
-                    positionsPreferredByPlantsButton.setDisable(false);
-                    animalsWithDominantGenotypeButton.setDisable(false);
-                    wait();
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
+        pauseButton.setOnAction(e -> {
+            simulation.pause();
         });
 
         Button resumeButton = new Button("Resume");
 
         resumeButton.setOnAction(e -> {
-            setPause(false);
-            positionsPreferredByPlantsButton.setDisable(true);
-            animalsWithDominantGenotypeButton.setDisable(true);
-            notify();
+            simulation.resume();
         });
 
         HBox bottomMenu = new HBox(10);
         bottomMenu.setAlignment(Pos.CENTER);
-        bottomMenu.getChildren().addAll(closeButton, stopButton, resumeButton);
+        bottomMenu.getChildren().addAll(closeButton, pauseButton, resumeButton);
 
         VBox leftPane = new VBox();
 
@@ -121,10 +118,6 @@ public class SimulationPresenter implements MapChangeListener{
         window.setScene(scene);
         window.show();
 
-    }
-
-    private void setPause(boolean b){
-        this.isPaused = b;
     }
 
     public void drawMap(WorldMap worldMap, String message){
@@ -221,6 +214,16 @@ public class SimulationPresenter implements MapChangeListener{
         String message =  "AliveAnimalCount: %d\nDeadAnimalCount: %d\nNumber of plants: %d\nNumber of free positions: %d\nMean energy of alive animals: %f\nMean life span of dead animals: %f\nMean count of children: %f\nDominant genotype for alive animalss: %s\nDominant genotype for dead animals: %s".formatted(statistics.aliveAnimalCount(), statistics.deadAnimalCount(), statistics.plantCount(), statistics.freePositionCount(),
                 statistics.meanAliveAnimalEnergy(), statistics.meanAnimalLifeSpan(), statistics.meanAliveAnimalOffspringCount(),  dominantGenotypeOfAliveAnimals, dominantGenotypeOfAllAnimals);
         return message;
+    }
+
+    public void pauseUpdate() {
+        positionsPreferredByPlantsButton.setDisable(false);
+        animalsWithDominantGenotypeButton.setDisable(false);
+    }
+
+    public void resumeUpdate() {
+        positionsPreferredByPlantsButton.setDisable(true);
+        animalsWithDominantGenotypeButton.setDisable(true);
     }
 
 // animalChanged

@@ -30,12 +30,11 @@ public abstract class AbstractMap implements WorldMap {
     int day; // current map day
 
     private MapChangeListener observer;
-    private SimulationPresenter simulationPresenter;
+    SimulationPresenter simulationPresenter;
 
-    public AbstractMap(MapProperties mapProperties, AnimalProperties animalProperties) {
+    public AbstractMap(MapProperties mapProperties, AnimalProperties animalProperties, SimulationPresenter simulationPresenter) {
 
-        simulationPresenter = new SimulationPresenter();
-
+        this.simulationPresenter = simulationPresenter;
         this.identifier= UUID.randomUUID();
 
         this.statisticsGenerator = new SimulationStatisticsGenerator(mapProperties, animalProperties);
@@ -67,7 +66,7 @@ public abstract class AbstractMap implements WorldMap {
         afterMoveAnimals.clear();
         createNewPlants(mapProperties.startPlantCount());
 
-        simulationPresenter.setWorldMap(this);
+        this.simulationPresenter.setWorldMap(this);
         mapChanged("New map created");
     }
     @Override

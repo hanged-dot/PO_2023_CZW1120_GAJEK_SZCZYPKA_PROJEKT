@@ -15,19 +15,18 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 
 public class SimulationStart {
-    private ArrayList<Simulation> simulations;
 
     public SimulationStart(){
-        simulations = new ArrayList<>();
     }
     public void newSimulationStart(SimulationProperties simulationProperties, boolean savingStatisticsRequested){
 
+        Simulation s;
         if (savingStatisticsRequested){
-            simulations.add(new SimulationWithStats(simulationProperties));
+            s = new SimulationWithStats(simulationProperties);
         } else {
-            simulations.add(new RegularSimulation(simulationProperties));
+            s = new RegularSimulation(simulationProperties);
         }
 
-        new SimulationEngine(simulations).runAsyncInThreadPool();
+        SimulationEngine.getInstance().runSimAsyncInThreadPool(s);
     }
 }
