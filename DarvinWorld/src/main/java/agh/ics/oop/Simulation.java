@@ -25,7 +25,9 @@ public abstract class Simulation implements Runnable{
         animals = new ArrayList<>();
     }
 
-    public Animal getAnimal(int x){ return this.animals.get(x); }
+    public Animal getAnimal(int x){
+        return this.animals.get(x);
+    }
 
     public void run() {
 
@@ -48,27 +50,6 @@ public abstract class Simulation implements Runnable{
         map.moveEveryAnimal();
         map.removeEatenPlants();
         map.procreate();
-    }
-
-//    tu pewnie będzie konieczna zmiana nazwy - metoda, która ma się wywoałać, kiedy po zatrzymaniu
-//    symulacji użytkownik naciśnie odpowiedni przycisk
-    public void highlightAnimalsWithMostPopularGenome(){
-        ArrayList<Animal> animals = map.getAnimalsWithDominantGenotype();
-//        TODO highlighting animals
-    }
-
-//    j.w. ale tym razem jak użytkownik zażyczy sobie podświetlenie pól najchętniej zarastanych
-//    przez rośliny
-
-    public void highlightPositionsPreferredByPlants(){
-
-        ArrayList<PositionAbundance> positionsWithPlantCount = map.getPositionsPreferredByPlants();
-
-        ArrayList<Vector2d> positions = new ArrayList<>();
-        for (PositionAbundance p : positionsWithPlantCount){
-            positions.add(p.position());
-//            TODO highlight position (może nawet nie potrzeba tej arraylisty wektorów)
-        }
     }
 
 }

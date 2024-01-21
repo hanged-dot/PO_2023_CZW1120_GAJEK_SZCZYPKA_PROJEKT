@@ -48,6 +48,32 @@ public class SimulationPresenter implements MapChangeListener{
 
         isPaused = false;
 
+        // button do wyświetlania najchętniej zarastanych pól
+
+        Button positionsPreferredByPlantsButton = new Button("Get positions preferred by plants");
+        positionsPreferredByPlantsButton.setDisable(true);
+
+        positionsPreferredByPlantsButton.setOnAction(e -> {
+            ArrayList<PositionAbundance>  positionAbundances = mapa.getPositionsPreferredByPlants();
+            System.out.println("Preferowane pozycje roślin: ");
+            for (PositionAbundance p : positionAbundances){
+                System.out.println(p.position()+" : "+p.numberOfPlants());
+            }
+        });
+
+        // Button do wyświetlania zwierząt o najpopularniejszym genotypie
+
+        Button animalsWithDominantGenotypeButton = new Button("Get animals with dominant genotype");
+        animalsWithDominantGenotypeButton.setDisable(true);
+
+        animalsWithDominantGenotypeButton.setOnAction(e -> {
+            ArrayList<Animal> animals = mapa.getAnimalsWithDominantGenotype();
+            System.out.println("Zwierzęta z dominującym genotypem: ");
+            for (Animal a : animals){
+                System.out.println(a.getPosition());
+            }
+        });
+
         Button closeButton = new Button("Close");
         closeButton.setOnAction(e -> window.close());
         Button stopButton = new Button("Stop");
@@ -59,6 +85,8 @@ public class SimulationPresenter implements MapChangeListener{
             setPause(true);
             while (isPaused){
                 try {
+                    positionsPreferredByPlantsButton.setDisable(false);
+                    animalsWithDominantGenotypeButton.setDisable(false);
                     wait();
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
@@ -70,34 +98,14 @@ public class SimulationPresenter implements MapChangeListener{
 
         resumeButton.setOnAction(e -> {
             setPause(false);
+            positionsPreferredByPlantsButton.setDisable(true);
+            animalsWithDominantGenotypeButton.setDisable(true);
             notify();
         });
-
 
         HBox bottomMenu = new HBox(10);
         bottomMenu.setAlignment(Pos.CENTER);
         bottomMenu.getChildren().addAll(closeButton, stopButton, resumeButton);
-
-
-        Button positionsPreferredByPlantsButton = new Button("Get positions preferred by plants");
-
-        positionsPreferredByPlantsButton.setOnAction(e -> {
-            ArrayList<PositionAbundance>  positionAbundances = mapa.getPositionsPreferredByPlants();
-            System.out.println("Preferowane pozycje roślin: ");
-            for (PositionAbundance p : positionAbundances){
-                System.out.println(p.position()+" : "+p.numberOfPlants());
-            }
-        });
-
-        Button animalsWithDominantGenotypeButton = new Button("Get animals with dominant genotype");
-
-        animalsWithDominantGenotypeButton.setOnAction(e -> {
-            ArrayList<Animal> animals = mapa.getAnimalsWithDominantGenotype();
-            System.out.println("Zwierzęta z dominującym genotypem: ");
-            for (Animal a : animals){
-                System.out.println(a.getPosition());
-            }
-        });
 
         VBox leftPane = new VBox();
 

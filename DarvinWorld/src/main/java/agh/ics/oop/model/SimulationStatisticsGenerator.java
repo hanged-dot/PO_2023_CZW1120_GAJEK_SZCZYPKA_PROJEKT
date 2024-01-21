@@ -88,7 +88,7 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     public ArrayList<PositionAbundance> generatePreferredPlantPositions(){
 
         int preferredPositionsCount = min(plantHistory.size(),
-                (int) round(0.1 * (float) totalPositionCount));
+                (int)(0.1 * (float)totalPositionCount));
 
         ArrayList<PositionAbundance> positionAbundanceArrayList = new ArrayList<>();
 
@@ -119,11 +119,11 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
                 }
 
                 if(plantHist.getValue() > positionAbundanceArrayList.get(lowestIndex).numberOfPlants()) {
-                    positionAbundanceArrayList.add(lowestIndex, plantPositionAbundance);
+                    positionAbundanceArrayList.remove(lowestIndex);
+                    positionAbundanceArrayList.add(plantPositionAbundance);
                 }
             }
         }
-
         return positionAbundanceArrayList;
     }
 
