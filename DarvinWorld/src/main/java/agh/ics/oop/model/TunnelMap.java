@@ -10,7 +10,7 @@ public class TunnelMap extends AbstractMap {
     private HashMap<Vector2d, Vector2d> tunnels;
     public TunnelMap(MapProperties mapProperties,
                      AnimalProperties animalProperties,
-                     ArrayList<MapChangeListener> observer) {
+                     MapChangeListener observer) {
 
         super(mapProperties, animalProperties, observer);
         tunnels = new HashMap<>();

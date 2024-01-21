@@ -3,7 +3,10 @@ package agh.ics.oop.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
+
+import static agh.ics.oop.OptionsParser.parse;
 
 public class Animal{
 
@@ -14,6 +17,7 @@ public class Animal{
     private Vector2d position;
     private int life;
     private int[] genome;
+    private List<MoveDirection> genomeMoves;
     private int energy;
     private int plants;
     private ArrayList<Animal> kids;
@@ -23,7 +27,6 @@ public class Animal{
     protected ArrayList<MapChangeListener> observers = new ArrayList<>();
 
     public Animal(AnimalProperties properties, Vector2d position){
-
         this.properties=properties;
         this.genLen=properties.genomeLength();
         this.energy=properties.startAnimalEnergy();
@@ -48,10 +51,16 @@ public class Animal{
     public int getDeath(){return this.death;}
     public void addKid(Animal kid){ this.kids.add(kid);} // dodaje zwierzaka do listy dzieci rodzica zwierzaka
     public int getAge(){return this.life;}; //zwraca dotychczasowa dlugosc zycia
+    public int getGenomePart(){ return (life+shift)%genLen;}
+    public int getPlants(){ return this.plants;}
+    public int getKidsLen(){return this.kids.size();}
     public void age(){
         this.life++;
         this.energy--;} // postarza zwierzaka
-    public void eat(){this.energy=this.energy+properties.energyFromPlant();} //zwerzak je
+    public void eat(){
+        this.energy=this.energy+properties.energyFromPlant();
+        this.plants+=1;
+    } //zwerzak je
     public void setTransferredThroughTunnel(boolean value){this.transferedThroughTunnel=value;} //zwierzak przeszedl wlasnie przez tunel, ma nim teraz nie wracac
     public boolean isTransferedThroughTunnel(){return this.transferedThroughTunnel;} //zwraca czy zwierzak wlasnie przeszedl przez tunel
 
@@ -145,19 +154,8 @@ public class Animal{
 // ANIMAL TURNING & MOVING
 
     private MoveDirection getNextDirection(){
-
-        return switch (genome[(life+shift)%genLen]){
-            case 0 -> MoveDirection.FORWARD;
-            case 1 -> MoveDirection.FORWARDRIGHT;
-            case 2 -> MoveDirection.RIGHT;
-            case 3 -> MoveDirection.BACKWARDRIGHT;
-            case 4 -> MoveDirection.BACKWARD;
-            case 5 -> MoveDirection.BACKWARDLEFT;
-            case 6 -> MoveDirection.LEFT;
-            case 7 -> MoveDirection.FORWARDLEFT;
-            default -> throw new IllegalStateException("Unexpected value: " + genome[life % genLen]);
-        };
-    }
+    return parse(genome[(life+shift)%genLen]);
+        }
 
     public void move(Vector2d targetPosition){
         this.position = targetPosition;
@@ -243,12 +241,6 @@ public void mutate(int[] genes){
         this.setGenome(genes);
 }
 
-//nie jest ok dodac do observatora animala
-    public void addObserver(MapChangeListener observer) {
-        this.observers.add(observer);
-    }
 
-    public void removeObserver(MapChangeListener observer) {
-        this.observers.remove(observer);
-    }
+
 }

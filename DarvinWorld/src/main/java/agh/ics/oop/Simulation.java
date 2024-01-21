@@ -11,10 +11,11 @@ public abstract class Simulation implements Runnable{
 
     protected WorldMap map;
     private List<Animal> animals;
+    boolean isPaused=false;
 
 // w konstruktorze przekazujemy wszystkie parametry zczytane z okna startowego
     public Simulation(SimulationProperties simulationProperties,
-                      ArrayList<MapChangeListener> observers) {
+                      MapChangeListener observers) {
 
         if (simulationProperties.hasTunnels()){
             this.map = new TunnelMap(simulationProperties.mapProperties(),
@@ -25,37 +26,29 @@ public abstract class Simulation implements Runnable{
         }
 
         animals = new ArrayList<>();
+
     }
 
     public Animal getAnimal(int x){ return this.animals.get(x); }
-
+    public void setPause(){ this.isPaused= !isPaused;}
+    public boolean getPause() { return this.isPaused;}
     public void run() {
-        //zmienic z dirs na liste animali
-        // dodać while do czasu stop lub smierci wszystkich
-//        Codziennie będzie wywoływana metoda map.refreshMap(), która zwraca true, jeśli symulacja
-//        może być kontynuowana, albo false, jeśli się okaże, że nie ma już żadnych zwierząt
-
+        Boolean continuation=true;
         do {
 //            TODO Update statystyk symulacji - trzeba ogarnąć ich wyświetlanie
-            dailyCycle();
-
+            if (!getPause()) {
+                dailyCycle();
+                continuation=map.refreshMap();
+            }
             try {
                 sleep(500);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        } while (map.refreshMap()); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy) + usunięcie martwych zwierząt
+        } while (continuation); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy) + usunięcie martwych zwierząt
 
         System.out.println("Symulacja over");
 
-//        for(int counter=0; counter< this.dirs.size(); counter++) {
-//            int nr_a= counter%this.animals.size();
-//            if (nr_a==0) {try {Thread.sleep(500);}catch(InterruptedException e){e.printStackTrace();}}
-//            this.map.move(animals.get(nr_a), this.dirs.get(counter));
-////            animals.get(nr_a).age();
-//            //System.out.println("Zwierzę " + nr_a +" : "+ this.animals.get(nr_a).toString());
-//            //System.out.println(map);
-//        }
     }
 
     protected void dailyCycle(){

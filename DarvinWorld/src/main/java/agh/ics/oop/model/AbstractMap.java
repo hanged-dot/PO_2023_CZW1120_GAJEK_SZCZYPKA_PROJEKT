@@ -21,7 +21,7 @@ public abstract class AbstractMap implements WorldMap {
 
     protected ArrayList<MapChangeListener> observers = new ArrayList<>();
     protected MapChangeListener MapObserver;
-    protected AnimalChangeListener AnimalObserver;
+    protected MapChangeListener AnimalObserver;
     private HashMap<Vector2d,Plant> plants;
     private HashSet<Vector2d> plantsToEat;
     private final PlantPositionGenerator plantPositionGenerator;
@@ -29,11 +29,15 @@ public abstract class AbstractMap implements WorldMap {
     protected SimulationStatisticsGenerator statisticsGenerator;
     private final AnimalComparator animalComparator;
     int day; // current map day
+    private Animal ObservedAnimal;
+    private MapChangeListener statisticObserver;
 
 
     public AbstractMap(MapProperties mapProperties, AnimalProperties animalProperties, MapChangeListener observers) {
 
         this.MapObserver = observers;
+        this.AnimalObserver= null;
+        this.ObservedAnimal=null;
         this.identifier= UUID.randomUUID();
 
         this.statisticsGenerator = new SimulationStatisticsGenerator(mapProperties, animalProperties);
@@ -50,7 +54,7 @@ public abstract class AbstractMap implements WorldMap {
         plants = new HashMap<>();
         plantsToEat = new HashSet<>();
 
-        plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
+        this.plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
 
 
         for (int i = 0; i < mapProperties.startAnimalCount(); ++i) {
@@ -67,6 +71,8 @@ public abstract class AbstractMap implements WorldMap {
     }
     @Override
     public UUID getID() {return identifier;}
+    @Override
+    public int getDay() {return this.day;}
     public HashMap<Vector2d,LinkedList<Animal>> getAnimals(){ return this.animals;}
 
 //    Usunięcie martwych zwierzaków z mapy
@@ -79,22 +85,20 @@ public abstract class AbstractMap implements WorldMap {
         for (Vector2d key : beforeMoveAnimals.keySet()) {
 //            pozyskanie setu zwierzaków na danej pozycji
             ArrayList<Animal> animalList = beforeMoveAnimals.get(key);
-
             animalList.removeIf(a ->
             {
                 if (a.getEnergy() == 0){
+                    a.setDeath(this.day);
                     statisticsGenerator.deadAnimalUpdate(a);
                     return true;
                 }
                 return false;
             });
-
 //            Jeśli lista została pusta, usuwamy ją z hashmapy i update wolnych pozycji na mapie
             if (animalList.isEmpty()) {
                 keysToRemove.add(key);
             }
         }
-
         for (Vector2d key : keysToRemove){
             beforeMoveAnimals.remove(key);
         }
@@ -135,7 +139,6 @@ public abstract class AbstractMap implements WorldMap {
         animal.move(targetPosition);
 //        Umieszczamy zwierzaka na odpowiednim miejscu na mapie
         this.place(animal);
-        mapChanged("Zwierzę poruszyło się z pozycji "+ pos1 + " na pozycję " +targetPosition);
 
     }
 
@@ -314,6 +317,7 @@ public abstract class AbstractMap implements WorldMap {
 
         removeDeadAnimals();
 
+        mapChanged("Nowy dzien update");
         return true;
     }
 
@@ -383,7 +387,8 @@ public abstract class AbstractMap implements WorldMap {
 
     public void mapChanged (String changeInfo){
             MapObserver.mapChanged(this, changeInfo);
-
+            MapObserver.statisticsChanged(this,getSimulationStatistics());
+            if (ObservedAnimal!=null) AnimalObserver.animalChanged(this.ObservedAnimal,this,changeInfo);
     }
 
     public WorldElement getStrongest(Vector2d position){
@@ -404,14 +409,18 @@ public abstract class AbstractMap implements WorldMap {
         else return null;
     }
 
-    public void addAnimalObserver (AnimalChangeListener observer){
+    public void addAnimalObserver (MapChangeListener observer, Animal animal){
         this.AnimalObserver=observer;
+        this.ObservedAnimal = animal;
+
     }
     public void removeAnimalObserver (MapChangeListener observer) {
         this.AnimalObserver = null;
+        this.ObservedAnimal = null;
     }
 
     public void printStatisticsPlease(){
+
         System.out.println("Wypisujemy statystyki z dnia nr "+day);
         SimulationStatistics stats = statisticsGenerator.generateSimulationStatics();
 

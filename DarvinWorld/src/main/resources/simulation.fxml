@@ -7,18 +7,45 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.text.Text?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            minHeight="550.0" minWidth="850.0"
+            minHeight="750.0" minWidth="850.0"
             fx:controller="agh.ics.oop.presenter.SimulationPresenter">
+    <top>
+        <Button fx:id="startStopButton" text="Start/Stop" alignment="CENTER" onAction="#pause" />
+    </top>
     <center>
-        <VBox>
-            <HBox>
-                <TextField fx:id="argsTextField" alignment="CENTER"/>
-                <Button fx:id="startButton" text="Start" textAlignment="CENTER" />
-            </HBox>
-            <Label fx:id="movementLabel" alignment="CENTER"/>
-            <GridPane fx:id="mapGrid" gridLinesVisible="true" alignment="CENTER"/>
-        </VBox>
+            <GridPane fx:id="mapGrid" gridLinesVisible="true" alignment="CENTER" onMouseClicked="#clickGrid"/>
     </center>
+    <bottom>
+        <Button fx:id="closeButton" text="close" alignment="CENTER"/>
+    </bottom>
+    <left>
+        <VBox>
+            <Label fx:id="t1" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="t2" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="t3" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="t4" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="t5" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="t6" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="t7" textAlignment="CENTER" alignment="CENTER"></Label>
+        </VBox>
+    </left>
+    <right>
+        <VBox>
+            <Label fx:id="s1" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="s2" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="s3" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="s4" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="s5" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="s6" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="s7" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="s8" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="s9" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="s10" textAlignment="CENTER" alignment="CENTER"></Label>
+            <Label fx:id="s11" textAlignment="CENTER" alignment="CENTER"></Label>
+        </VBox>
+    </right>
+
 </BorderPane>

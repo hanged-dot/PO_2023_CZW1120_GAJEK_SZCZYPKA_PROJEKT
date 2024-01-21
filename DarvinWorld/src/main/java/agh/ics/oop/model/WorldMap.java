@@ -19,4 +19,5 @@ public interface WorldMap {
     public WorldElement getStrongest(Vector2d position);
     public WorldElement getPlant(Vector2d position);
     UUID getID();
+    int getDay();
 }

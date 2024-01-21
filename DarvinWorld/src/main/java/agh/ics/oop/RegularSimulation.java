@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class RegularSimulation extends Simulation{
 
-    public RegularSimulation(SimulationProperties simulationProperties, ArrayList<MapChangeListener> observers) {
+    public RegularSimulation(SimulationProperties simulationProperties, MapChangeListener observers) {
         super(simulationProperties, observers);
     }
 }

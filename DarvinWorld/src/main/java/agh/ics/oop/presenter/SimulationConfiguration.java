@@ -61,14 +61,14 @@ public class SimulationConfiguration extends Application {
 //        All texts needed:
         mapHeight = new ConfigurationElement(
                 new Text("Choose map height: "),
-                new TextField("20"),
-                new Vector2d(10, 1000)
+                new TextField("5"),
+                new Vector2d(5, 1000)
                 );
 
         mapWidth = new ConfigurationElement(
                 new Text("Choose map width: "),
-                new TextField("20"),
-                new Vector2d(10, 1000)
+                new TextField("5"),
+                new Vector2d(5, 1000)
         );
 
         tunnelCount = new ConfigurationElement(
@@ -79,44 +79,44 @@ public class SimulationConfiguration extends Application {
 
         startPlantCount = new ConfigurationElement(
                 new Text("Choose initial percent of plants: "),
-                new TextField("10"),
-                new Vector2d(1, 30)
+                new TextField("0"),
+                new Vector2d(0, 30)
         );
 
         plantsPerDay = new ConfigurationElement(
                 new Text("Choose daily number(?percent?) of new plants: "),
-                new TextField("10"),
-                new Vector2d(5, 60)
+                new TextField("1"),
+                new Vector2d(1, 60)
         );
 
         energyPlant = new ConfigurationElement(
                 new Text("Choose energy from eating one plant: "),
                 new TextField("2"),
-                new Vector2d(1, 5)
+                new Vector2d(1, 20)
         );
 
         startAnimalCount = new ConfigurationElement(
                 new Text("Choose initial number of animals: "),
-                new TextField("20"),
-                new Vector2d(10, 50)
+                new TextField("2"),
+                new Vector2d(1, 100)
         );
 
         startAnimalEnergy = new ConfigurationElement(
                 new Text("Choose initial energy of animals: "),
                 new TextField("10"),
-                new Vector2d(3, 100)
+                new Vector2d(1, 100)
         );
 
         minProcreateEnergy = new ConfigurationElement(
                 new Text("Choose minimal energy to procreate: "),
                 new TextField("10"),
-                new Vector2d(10, 20)
+                new Vector2d(1, 20)
         );
 
         procreateEnergy = new ConfigurationElement(
                 new Text("Choose energy used by procreating: "),
                 new TextField("5"),
-                new Vector2d(2, 10)
+                new Vector2d(1, 10)
         );
 
         minMutation = new ConfigurationElement(
@@ -127,7 +127,7 @@ public class SimulationConfiguration extends Application {
 
         maxMutation = new ConfigurationElement(
                 new Text("Choose maximal number of mutations: "),
-                new TextField("11"),
+                new TextField("0"),
                 new Vector2d(0, 80)
         );
 
@@ -230,8 +230,19 @@ public class SimulationConfiguration extends Application {
             AlertBox.display("Incorrect Input", "Too many tunnels.");
             return false;
         }
+        if (Integer.parseInt(startPlantCount.textField().getText())>=area){
+            AlertBox.display("Incorrect Input","Too many plants.");
+        }
+        if (Integer.parseInt(plantsPerDay.textField().getText())>=area){
+            AlertBox.display("Incorrect Input","Too many plants per day.");
+        }
+        if (Integer.parseInt(startAnimalCount.textField().getText())>=area){
+            AlertBox.display("Incorrect Input","Too many start animals.");
+        }
+
 
         // TODO sprawdzenie pozostałych warunków
+        // raczej done
 
         return true;
     }

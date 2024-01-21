@@ -11,7 +11,7 @@ import static java.lang.Thread.sleep;
 public class SimulationWithStats extends Simulation{
 
     private SimulationStatisticsSaver simulationStatisticsSaver;
-    public SimulationWithStats(SimulationProperties simulationProperties, ArrayList<MapChangeListener> observers) {
+    public SimulationWithStats(SimulationProperties simulationProperties, MapChangeListener observers) {
         super(simulationProperties, observers);
         this.simulationStatisticsSaver = new SimulationStatisticsSaver();
     }

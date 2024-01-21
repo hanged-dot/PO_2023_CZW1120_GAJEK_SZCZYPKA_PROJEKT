@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class GlobeMap extends AbstractMap {
     public GlobeMap(MapProperties mapProperties,
                     AnimalProperties animalProperties,
-                    ArrayList<MapChangeListener> observers) {
+                    MapChangeListener observers) {
         super(mapProperties, animalProperties, observers);
     }
 }
