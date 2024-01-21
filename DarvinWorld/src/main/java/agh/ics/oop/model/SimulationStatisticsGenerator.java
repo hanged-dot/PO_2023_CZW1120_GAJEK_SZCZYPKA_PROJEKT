@@ -87,13 +87,9 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
 
     public ArrayList<PositionAbundance> generatePreferredPlantPositions(){
 
-//        Uznałam żeby brać za każdym razem 20% najbardziej urodzajnych pól na mapie,
-//        chyba że mniej niż 20% pól w ogóle było zarośniętych
-
         int preferredPositionsCount = min(plantHistory.size(),
-                (int) round(0.2 * (float) totalPositionCount));
+                (int) round(0.1 * (float) totalPositionCount));
 
-// lista na najbardziej preferowane pozycje przez rośliny
         ArrayList<PositionAbundance> positionAbundanceArrayList = new ArrayList<>();
 
 //        iterujemy po wszystkich polach na których rosły kiedykolwiek rośliny
@@ -107,8 +103,7 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
             {
                 positionAbundanceArrayList.add(plantPositionAbundance);
             }
-//            w przeciwnym wypadku sprawdzamy, czy dana pozycja jest
-//            bardziej preferowana niz któraś z pozycji na liście
+//            w przeciwnym wypadku sprawdzamy, czy dana pozycja jest bardziej preferowana niz któraś z pozycji na liście
             else
             {
 //                w lowestIndex szukamy najmniej preferowanej pozycji z naszej wynikowej listy

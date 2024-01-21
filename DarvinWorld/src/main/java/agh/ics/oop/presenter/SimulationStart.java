@@ -18,12 +18,9 @@ public class SimulationStart {
     private ArrayList<Simulation> simulations;
 
     public SimulationStart(){
-
         simulations = new ArrayList<>();
     }
     public void newSimulationStart(SimulationProperties simulationProperties, boolean savingStatisticsRequested){
-
-        //  stworzyć prezentera tutaj i przekazać symulacji - done
 
         if (savingStatisticsRequested){
             simulations.add(new SimulationWithStats(simulationProperties));
@@ -32,8 +29,5 @@ public class SimulationStart {
         }
 
         new SimulationEngine(simulations).runAsyncInThreadPool();
-        // dołozyc wyswietlanie
-
     }
-    //dołozyc configure stage
 }

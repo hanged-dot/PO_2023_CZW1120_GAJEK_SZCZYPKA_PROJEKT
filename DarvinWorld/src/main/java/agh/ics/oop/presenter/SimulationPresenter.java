@@ -32,24 +32,24 @@ public class SimulationPresenter implements MapChangeListener{
     @FXML
     private Label infoLabel2;
     @FXML private Label infoLabel;
+    @FXML private Label statsLabel;
 
     boolean isPaused;
 
-
-//    @FXML
- //   private Button button = new Button("Start");
-
     public void setWorldMap (WorldMap map){
+
+        statsLabel = new Label();
+        this.mapa=map;
 
         Stage window = new Stage();
         window.setTitle("Map "+map.getID());
-        window.setMinWidth(150);
+        window.setMinWidth(500);
+        window.setMinHeight(500);
 
         isPaused = false;
 
         Button closeButton = new Button("Close");
         closeButton.setOnAction(e -> window.close());
-
         Button stopButton = new Button("Stop");
 
         // ponizszy kod na razie nie dzała, bo całość naszej symulacji jeszcze nie wywołuje się w jednym wątku, ale z tego co rozumiem docelowo ma działać\
@@ -73,15 +73,45 @@ public class SimulationPresenter implements MapChangeListener{
             notify();
         });
 
-        VBox layout = new VBox(10);
-        layout.setAlignment(Pos.CENTER);
-        layout.getChildren().addAll(closeButton, stopButton, resumeButton);
 
-        Scene scene = new Scene(layout);
+        HBox bottomMenu = new HBox(10);
+        bottomMenu.setAlignment(Pos.CENTER);
+        bottomMenu.getChildren().addAll(closeButton, stopButton, resumeButton);
+
+
+        Button positionsPreferredByPlantsButton = new Button("Get positions preferred by plants");
+
+        positionsPreferredByPlantsButton.setOnAction(e -> {
+            ArrayList<PositionAbundance>  positionAbundances = mapa.getPositionsPreferredByPlants();
+            System.out.println("Preferowane pozycje roślin: ");
+            for (PositionAbundance p : positionAbundances){
+                System.out.println(p.position()+" : "+p.numberOfPlants());
+            }
+        });
+
+        Button animalsWithDominantGenotypeButton = new Button("Get animals with dominant genotype");
+
+        animalsWithDominantGenotypeButton.setOnAction(e -> {
+            ArrayList<Animal> animals = mapa.getAnimalsWithDominantGenotype();
+            System.out.println("Zwierzęta z dominującym genotypem: ");
+            for (Animal a : animals){
+                System.out.println(a.getPosition());
+            }
+        });
+
+        VBox leftPane = new VBox();
+
+        leftPane.getChildren().addAll(statsLabel,positionsPreferredByPlantsButton, animalsWithDominantGenotypeButton);
+
+        BorderPane borderPane = new BorderPane();
+        borderPane.setBottom(bottomMenu);
+        borderPane.setLeft(leftPane);
+//        TODO: right menu to miejsce na mapę
+//        borderPane.setRight(rightMenu);
+
+        Scene scene = new Scene(borderPane);
         window.setScene(scene);
         window.show();
-
-        this.mapa=map;
 
     }
 
@@ -154,12 +184,37 @@ public class SimulationPresenter implements MapChangeListener{
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
 
-        Platform.runLater(() -> {
-            drawMap(worldMap, message);
-        });
+//        na razie testowałam same statystyki, jka będzie mapa gotowa to dokomentujemy ten fragment
+
+//        Platform.runLater(() -> {
+//            drawMap(worldMap, message);
+//        });
     }
+    @Override
+    public void statisticsChanged(){
+        Platform.runLater(this::showStatistics);
+    }
+
+    private void showStatistics(){
+        statsLabel.setText(getStatisticsMessage());
+    }
+
+    private String getStatisticsMessage(){
+
+        SimulationStatistics statistics = mapa.getSimulationStatistics();
+
+        String dominantGenotypeOfAliveAnimals = "";
+        String dominantGenotypeOfAllAnimals = "";
+        for (int i = 0; i < statistics.dominantGenotype().length; ++i){
+            dominantGenotypeOfAllAnimals+="%d".formatted(statistics.dominantGenotype()[i]);
+            dominantGenotypeOfAliveAnimals+="%d".formatted(statistics.dominantAliveGenotype()[i]);
+        }
+
+        String message =  "AliveAnimalCount: %d\nDeadAnimalCount: %d\nNumber of plants: %d\nNumber of free positions: %d\nMean energy of alive animals: %f\nMean life span of dead animals: %f\nMean count of children: %f\nDominant genotype for alive animalss: %s\nDominant genotype for dead animals: %s".formatted(statistics.aliveAnimalCount(), statistics.deadAnimalCount(), statistics.plantCount(), statistics.freePositionCount(),
+                statistics.meanAliveAnimalEnergy(), statistics.meanAnimalLifeSpan(), statistics.meanAliveAnimalOffspringCount(),  dominantGenotypeOfAliveAnimals, dominantGenotypeOfAllAnimals);
+        return message;
+    }
+
 // animalChanged
-
-
 
 }

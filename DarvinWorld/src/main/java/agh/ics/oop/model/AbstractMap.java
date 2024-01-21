@@ -30,10 +30,11 @@ public abstract class AbstractMap implements WorldMap {
     int day; // current map day
 
     private MapChangeListener observer;
+    private SimulationPresenter simulationPresenter;
 
     public AbstractMap(MapProperties mapProperties, AnimalProperties animalProperties) {
 
-        SimulationPresenter simulationPresenter = new SimulationPresenter();
+        simulationPresenter = new SimulationPresenter();
 
         this.identifier= UUID.randomUUID();
 
@@ -304,7 +305,7 @@ public abstract class AbstractMap implements WorldMap {
 
         statisticsGenerator.totalEnergyUpdate(false);       // informujemy statystyki, że energia wszystkich zwierząt spada o 1
         statisticsGenerator.freePositionCountUpdate(afterMoveAnimals.size()+plants.size()-plantsToEat.size());
-//        printStatisticsPlease();
+        statisticsChanged();
 
         for (Vector2d key : afterMoveAnimals.keySet()) {
 
@@ -392,10 +393,15 @@ public abstract class AbstractMap implements WorldMap {
     }
 
     public void mapChanged (String changeInfo){
-        System.out.println(changeInfo);
-        for (MapChangeListener mapChangeListener : observers) {
-            mapChangeListener.mapChanged(this, changeInfo);
-        }
+//        System.out.println(changeInfo);
+        simulationPresenter.mapChanged(this, changeInfo);
+//        for (MapChangeListener mapChangeListener : observers) {
+//            mapChangeListener.mapChanged(this, changeInfo);
+//        }
+    }
+
+    public void statisticsChanged(){
+        simulationPresenter.statisticsChanged();
     }
 
     public WorldElement getStrongest(Vector2d position){
@@ -423,31 +429,5 @@ public abstract class AbstractMap implements WorldMap {
 //    public void removeObserver (MapChangeListener observer){
 //        this.observers.remove(observer);
 //    }
-
-    public void printStatisticsPlease(){
-        System.out.println("Wypisujemy statystyki z dnia nr "+day);
-        SimulationStatistics stats = statisticsGenerator.generateSimulationStatics();
-
-        System.out.println("Ilość żywych zwierząt: " + stats.aliveAnimalCount());
-        System.out.println("Ilość martwych zwierząt: "+stats.deadAnimalCount());
-        System.out.println("Ilość roślin: "+ stats.plantCount());
-        System.out.println("Ilość wolnych pozycji: "+stats.freePositionCount());
-        System.out.println("Średnia energia żywych zwierzaków: "+stats.meanAliveAnimalEnergy());
-        System.out.println("Dominujący genotyp: ");
-        for (int i : stats.dominantGenotype()){
-            System.out.print(i);
-        }
-        System.out.print("\n");
-        System.out.println("Dominujący żyjący genotyp: ");
-        for (int i : stats.dominantAliveGenotype()){
-            System.out.print(i);
-        }
-        System.out.print("\n");
-        System.out.println("Średnia długość życia zwierząt: "+stats.meanAnimalLifeSpan());
-        System.out.println("Średnia ilość potomstwa: "+stats.meanAliveAnimalOffspringCount());
-
-        System.out.println("Ilość wolnych pozycji: "+((mapBoundary.upperY()+1)*(mapBoundary.rightX()+1)-(beforeMoveAnimals.size()+plants.size()-plantsToEat.size())));
-
-    }
 
 }
