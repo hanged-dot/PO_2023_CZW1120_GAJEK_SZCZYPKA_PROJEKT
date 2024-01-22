@@ -17,7 +17,7 @@ public class WorldElementBox {
     private final int width = 20;
 
     public WorldElementBox(WorldElement worldElement) {
-        ImageView view = new ImageView(worldElement.getPicture().toString());
+        ImageView view = new ImageView(worldElement.getPicture());
         view.setFitHeight(height);
         view.setFitWidth(width);
         //Label label = new Label(worldElement.getPosition().toString());

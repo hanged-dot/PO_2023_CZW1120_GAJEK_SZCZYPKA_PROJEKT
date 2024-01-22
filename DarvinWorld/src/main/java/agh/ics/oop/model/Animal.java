@@ -8,7 +8,7 @@ import java.util.Random;
 
 import static agh.ics.oop.OptionsParser.parse;
 
-public class Animal{
+public class Animal implements WorldElement{
 
     private final AnimalProperties properties;
     private boolean transferedThroughTunnel;
@@ -138,6 +138,7 @@ public class Animal{
         return b;
     }
 
+    @Override
     public String getPicture() {
 
             if(0==this.getEnergy()){return "icons/grey_paw.png";}

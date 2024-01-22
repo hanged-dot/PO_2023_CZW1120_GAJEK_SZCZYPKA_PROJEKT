@@ -12,6 +12,7 @@ public abstract class Simulation implements Runnable{
     protected WorldMap map;
     private List<Animal> animals;
     boolean isPaused=false;
+    boolean end =false;
 
 // w konstruktorze przekazujemy wszystkie parametry zczytane z okna startowego
     public Simulation(SimulationProperties simulationProperties,
@@ -26,12 +27,14 @@ public abstract class Simulation implements Runnable{
         }
 
         animals = new ArrayList<>();
+        observers.setWorldMap(this.map);
 
     }
 
     public Animal getAnimal(int x){ return this.animals.get(x); }
     public void setPause(){ this.isPaused= !isPaused;}
     public boolean getPause() { return this.isPaused;}
+    public void setEnd() { this.end = !this.end;}
     public void run() {
         Boolean continuation=true;
         do {
@@ -45,7 +48,7 @@ public abstract class Simulation implements Runnable{
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        } while (continuation); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy) + usunięcie martwych zwierząt
+        } while (continuation && !end); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy) + usunięcie martwych zwierząt
 
         System.out.println("Symulacja over");
 

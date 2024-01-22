@@ -12,7 +12,7 @@
 <?import javafx.scene.control.ChoiceBox?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            minHeight="550.0" minWidth="850.0"
+            minHeight="800.0" minWidth="1000.0"
             fx:controller="agh.ics.oop.presenter.SimulationStart" >
     <top>
 

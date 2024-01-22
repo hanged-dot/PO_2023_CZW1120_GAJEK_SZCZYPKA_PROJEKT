@@ -20,4 +20,5 @@ public interface WorldMap {
     public WorldElement getPlant(Vector2d position);
     UUID getID();
     int getDay();
+    void addAnimalObserver(Animal animal);
 }

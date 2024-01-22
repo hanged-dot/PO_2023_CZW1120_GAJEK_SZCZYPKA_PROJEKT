@@ -21,7 +21,6 @@ public abstract class AbstractMap implements WorldMap {
 
     protected ArrayList<MapChangeListener> observers = new ArrayList<>();
     protected MapChangeListener MapObserver;
-    protected MapChangeListener AnimalObserver;
     private HashMap<Vector2d,Plant> plants;
     private HashSet<Vector2d> plantsToEat;
     private final PlantPositionGenerator plantPositionGenerator;
@@ -36,7 +35,6 @@ public abstract class AbstractMap implements WorldMap {
     public AbstractMap(MapProperties mapProperties, AnimalProperties animalProperties, MapChangeListener observers) {
 
         this.MapObserver = observers;
-        this.AnimalObserver= null;
         this.ObservedAnimal=null;
         this.identifier= UUID.randomUUID();
 
@@ -67,7 +65,6 @@ public abstract class AbstractMap implements WorldMap {
         beforeMoveAnimals.putAll(afterMoveAnimals);
         afterMoveAnimals.clear();
         createNewPlants(mapProperties.startPlantCount());
-        this.AnimalObserver =null;
     }
     @Override
     public UUID getID() {return identifier;}
@@ -388,15 +385,16 @@ public abstract class AbstractMap implements WorldMap {
     public void mapChanged (String changeInfo){
             MapObserver.mapChanged(this, changeInfo);
             MapObserver.statisticsChanged(this,getSimulationStatistics());
-            if (ObservedAnimal!=null) AnimalObserver.animalChanged(this.ObservedAnimal,this,changeInfo);
+            if (ObservedAnimal!=null) MapObserver.animalChanged(this.ObservedAnimal,this);
     }
 
     public WorldElement getStrongest(Vector2d position){
-        LinkedList<Animal> pos1 = this.animals.get(position);
+        ArrayList<Animal> pos1 = this.beforeMoveAnimals.get(position);
         int energy=0;
         WorldElement strongest = null;
+        if(pos1==null){return strongest;}
         for (Animal a : pos1){
-            if(a.getEnergy()>energy && a.getDeath()!=0){
+            if(a.getEnergy()>energy && a.getDeath()==0){
                 energy=a.getEnergy();
                 strongest= (WorldElement) a;
             }
@@ -409,13 +407,11 @@ public abstract class AbstractMap implements WorldMap {
         else return null;
     }
 
-    public void addAnimalObserver (MapChangeListener observer, Animal animal){
-        this.AnimalObserver=observer;
+    public void addAnimalObserver (Animal animal){
         this.ObservedAnimal = animal;
 
     }
-    public void removeAnimalObserver (MapChangeListener observer) {
-        this.AnimalObserver = null;
+    public void removeAnimalObserver (Animal animal) {
         this.ObservedAnimal = null;
     }
 
