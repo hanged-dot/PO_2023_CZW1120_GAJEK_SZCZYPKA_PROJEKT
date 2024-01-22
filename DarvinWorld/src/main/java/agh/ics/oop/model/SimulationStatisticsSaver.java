@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Locale;
 
 public class SimulationStatisticsSaver {
 
@@ -46,7 +47,7 @@ public class SimulationStatisticsSaver {
         String dominantGenotypeOfAliveAnimals = genomeToString(statistics.dominantAliveGenotype());
         String dominantGenotypeOfAllAnimals = genomeToString(statistics.dominantGenotype());
 
-        return "%d,%d,%d,%d,%f,%f,%f,%s,%s".formatted(statistics.aliveAnimalCount(), statistics.deadAnimalCount(), statistics.plantCount(), statistics.freePositionCount(),
+        return String.format(Locale.US, "%d,%d,%d,%d,%.2f,%.2f,%.2f,%s,%s", statistics.aliveAnimalCount(), statistics.deadAnimalCount(), statistics.plantCount(), statistics.freePositionCount(),
                 statistics.meanAliveAnimalEnergy(), statistics.meanAnimalLifeSpan(), statistics.meanAliveAnimalOffspringCount(),  dominantGenotypeOfAliveAnimals, dominantGenotypeOfAllAnimals);
     }
 
