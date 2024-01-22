@@ -151,6 +151,7 @@ public class SimulationPresenter implements MapChangeListener{
         //s11.setText("Ilość wolnych pozycji: "+((bounds.upperY()+1)*(bounds.rightX()+1)-(stats.beforeMoveAnimals.size()+plants.size()-plantsToEat.size())));
 
     }
+//    no usage nie jest prawda intelliJ klamie
     public void pause(){
         this.simulation.setPause();
     }
@@ -173,22 +174,110 @@ public class SimulationPresenter implements MapChangeListener{
 
         }
     }
+//    prezenter do wyświetlania pozycji najbardziej wybieranych przez roślinki, no usage nie jest prawda intelliJ klamie
+
     public void preferredPositions(){
+        clearGrid();
+        mapGrid.getColumnConstraints().add(new ColumnConstraints(CELL_WIDTH));
+        mapGrid.getRowConstraints().add(new RowConstraints(CELL_HEIGHT));
+        mapGrid.setGridLinesVisible(true);
+        Boundary bounds = this.mapa.getCurrentBounds();
+
         ArrayList<PositionAbundance>  positionAbundances = mapa.getPositionsPreferredByPlants();
         String s = ("Preferowane pozycje roślin: ");
         for (PositionAbundance p : positionAbundances){
             s+=(p.position()+" : "+p.numberOfPlants());
         }
         plantPos.setText(s);
+        for (int y=0;y<=abs(bounds.upperY()-bounds.lowerY());y++){
+            Label label2 = new Label(Integer.toString(bounds.upperY()-y));
+            label2.setMinSize(CELL_WIDTH,CELL_HEIGHT);
+            label2.setAlignment(Pos.CENTER);
+            GridPane.setHalignment(label2, HPos.CENTER);
+
+            mapGrid.add(label2,0,y);
+        }
+        Label labelxy = new Label("y//x");
+        labelxy.setMinSize(CELL_WIDTH,CELL_HEIGHT);
+        labelxy.setAlignment(Pos.CENTER);
+        mapGrid.add(labelxy,0,bounds.upperY()+1);
+
+        for (int x=1;x<=abs(bounds.rightX()-bounds.leftX())+1;x++){
+            Label label3 = new Label(Integer.toString(bounds.leftX()+x-1));
+            label3.setMinSize(CELL_WIDTH,CELL_HEIGHT);
+            label3.setAlignment(Pos.CENTER);
+            GridPane.setHalignment(label3, HPos.CENTER);
+
+            mapGrid.add(label3,x,bounds.upperY()+1);
+        }
+
+        for (int x=0;x<=bounds.rightX();x++){
+            for (int y=1;y<=bounds.upperY()+1;y++){
+                {
+                    Vector2d current = new Vector2d(bounds.rightX()-x, y-1);
+                    // TODO zmienic na znajdowanie pozycji w liscie lubianych pozycji
+                    WorldElement plant = null;
+                    WorldElementBox plantBox = new WorldElementBox(plant);
+                    mapGrid.add(plantBox.getvBox(),y ,x);
+
+
+                }
+            }
+        }
     }
+//    prezenter do wyświetlania tych animali z najbardziej dominującym genomem no usage nie jest prawda intelliJ klamie
     public void dominantGenotypeAnimals(){
+        clearGrid();
+        mapGrid.getColumnConstraints().add(new ColumnConstraints(CELL_WIDTH));
+        mapGrid.getRowConstraints().add(new RowConstraints(CELL_HEIGHT));
+        mapGrid.setGridLinesVisible(true);
+        Boundary bounds = this.mapa.getCurrentBounds();
+
         ArrayList<Animal> animals = mapa.getAnimalsWithDominantGenotype();
         String s ="Zwierzęta z dominującym genotypem:";
         for (Animal a : animals){
             s+=(a.getPosition());
         }
         animalGen.setText(s);
+
+        for (int y=0;y<=abs(bounds.upperY()-bounds.lowerY());y++){
+            Label label2 = new Label(Integer.toString(bounds.upperY()-y));
+            label2.setMinSize(CELL_WIDTH,CELL_HEIGHT);
+            label2.setAlignment(Pos.CENTER);
+            GridPane.setHalignment(label2, HPos.CENTER);
+
+            mapGrid.add(label2,0,y);
+        }
+        Label labelxy = new Label("y//x");
+        labelxy.setMinSize(CELL_WIDTH,CELL_HEIGHT);
+        labelxy.setAlignment(Pos.CENTER);
+        mapGrid.add(labelxy,0,bounds.upperY()+1);
+
+        for (int x=1;x<=abs(bounds.rightX()-bounds.leftX())+1;x++){
+            Label label3 = new Label(Integer.toString(bounds.leftX()+x-1));
+            label3.setMinSize(CELL_WIDTH,CELL_HEIGHT);
+            label3.setAlignment(Pos.CENTER);
+            GridPane.setHalignment(label3, HPos.CENTER);
+
+            mapGrid.add(label3,x,bounds.upperY()+1);
+        }
+
+        for (int x=0;x<=bounds.rightX();x++){
+            for (int y=1;y<=bounds.upperY()+1;y++){
+                {
+                    Vector2d current = new Vector2d(bounds.rightX()-x, y-1);
+                    //zmienic na znajdowanie w animalu
+                    WorldElement dominantGenomeAnimal = null;
+                    WorldElementBox animalBox = new WorldElementBox(dominantGenomeAnimal);
+                        mapGrid.add(animalBox.getvBox(),y ,x);
+
+
+                }
+            }
+        }
+
     }
+//    no usage nie jest prawda intelliJ klamie
     public void closeSimulation(){
         simulation.setEnd();
         ((Stage) borderPane.getScene().getWindow()).close();
