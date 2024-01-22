@@ -13,11 +13,7 @@ public abstract class Simulation implements Runnable{
     protected WorldMap map;
     private List<Animal> animals;
     boolean isPaused=false;
-    boolean end =false;
-
     int executorServiceThreadID;
-
-    boolean isPaused;
     boolean simulating;
 
     SimulationPresenter simPresenter;
@@ -26,7 +22,7 @@ public abstract class Simulation implements Runnable{
     public Simulation(SimulationProperties simulationProperties){
 
         simulating = true;
-        simPresenter = new SimulationPresenter(this); // because java doesn't support basic objective programming language tools we have to make code more dirty in order to simply notify Simulations of happening things instead of implementing observator for every button action
+        simPresenter = new SimulationPresenter(this);
 
         if (simulationProperties.hasTunnels()){
             this.map = new TunnelMap(simulationProperties.mapProperties(),
@@ -90,7 +86,6 @@ public abstract class Simulation implements Runnable{
     public void pause() {
         if(!isPaused) {
             simPresenter.pauseUpdate();
-
             isPaused = true;
         }
     }
@@ -98,7 +93,6 @@ public abstract class Simulation implements Runnable{
     public void resume() {
         if(isPaused) {
             simPresenter.resumeUpdate();
-
             isPaused = false;
         }
     }

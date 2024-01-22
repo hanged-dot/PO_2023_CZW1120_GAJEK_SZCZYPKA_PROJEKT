@@ -40,7 +40,6 @@ public class SimulationConfiguration extends Application {
     private ConfigurationElement minMutation;
     private ConfigurationElement maxMutation;
     private ConfigurationElement genomeLength;
-
     private CheckBox chooseMapWithTunnelsBox;
     private CheckBox chooseWithLightMutationCorrectBox;
     private CheckBox saveStatisticsCheckBox;
@@ -212,8 +211,8 @@ public class SimulationConfiguration extends Application {
     }
 
 
-// Sprawdzanie, czy wszystkie elementy są poprawnie wypełnione
     private boolean checkConfigurationConstraints(){
+
         for(ConfigurationElement configurationElement: configurationElementArrayList){
             if (!isCorrect(configurationElement)){
                 return false;
@@ -240,15 +239,11 @@ public class SimulationConfiguration extends Application {
             AlertBox.display("Incorrect Input","Too many start animals.");
         }
 
-
-        // TODO sprawdzenie pozostałych warunków
-        // raczej done
-
         return true;
     }
 
     private boolean isCorrect(ConfigurationElement configurationElement) {
-// dorobi warunek minmutation<maxmutaton<genLen
+
         try {
             int value = Integer.parseInt(configurationElement.textField().getText());
             if (value >= configurationElement.limits().getX() && value <= configurationElement.limits().getY()) {
@@ -263,6 +258,8 @@ public class SimulationConfiguration extends Application {
                     configurationElement.text().getText() + "value shoud be a natural number between %d and %d.".formatted(configurationElement.limits().getX(), configurationElement.limits().getY()));
             return false;
         }
+
+
     }
 
     private SimulationProperties wrapProperties(){

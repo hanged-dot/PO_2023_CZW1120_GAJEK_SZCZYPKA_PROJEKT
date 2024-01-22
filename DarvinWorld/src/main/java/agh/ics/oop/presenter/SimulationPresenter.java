@@ -10,10 +10,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
-import javafx.stage.Modality;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -26,8 +22,8 @@ public class SimulationPresenter implements MapChangeListener{
     private Simulation simulation;
     private double CELL_WIDTH=25;
     private double CELL_HEIGHT=25;
-    @FXML private Button startStopButton;
-    @FXML private Button closeButton;
+//    @FXML private Button startStopButton;
+//    @FXML private Button closeButton;
     @FXML private GridPane mapGrid;
     @FXML private Label t1;
     @FXML private Label t2;
@@ -37,17 +33,17 @@ public class SimulationPresenter implements MapChangeListener{
     @FXML private Label t6;
     @FXML private Label t7;
 
-    @FXML private Label s1;
-    @FXML private Label s2;
-    @FXML private Label s3;
-    @FXML private Label s4;
-    @FXML private Label s5;
-    @FXML private Label s6;
-    @FXML private Label s7;
-    @FXML private Label s8;
-    @FXML private Label s9;
-    @FXML private Label s10;
-    @FXML private Label s11;
+//    @FXML private Label s1;
+//    @FXML private Label s2;
+//    @FXML private Label s3;
+//    @FXML private Label s4;
+//    @FXML private Label s5;
+//    @FXML private Label s6;
+//    @FXML private Label s7;
+//    @FXML private Label s8;
+//    @FXML private Label s9;
+//    @FXML private Label s10;
+//    @FXML private Label s11;
     @FXML private Button positionsPreferredByPlantsButton;
     @FXML private Button animalsWithDominantGenotypeButton;
     @FXML private Label plantPos;
@@ -63,7 +59,9 @@ public class SimulationPresenter implements MapChangeListener{
 //    @FXML
  //   private Button button = new Button("Start");
     public void setWorldMap (WorldMap map){
+
         statsLabel = new Label();
+        mapGrid = new GridPane();
         this.mapa=map;
 
         Stage window = new Stage();
@@ -105,9 +103,6 @@ public class SimulationPresenter implements MapChangeListener{
         });
         Button pauseButton = new Button("Pause");
 
-        // ponizszy kod na razie nie dzała, bo całość naszej symulacji jeszcze nie wywołuje się w jednym wątku, ale z tego co rozumiem docelowo ma działać\
-//         na pojedynczym wątku i wtedy powinno być ok
-
         pauseButton.setOnAction(e -> {
             simulation.pause();
         });
@@ -126,11 +121,10 @@ public class SimulationPresenter implements MapChangeListener{
 
         leftPane.getChildren().addAll(statsLabel,positionsPreferredByPlantsButton, animalsWithDominantGenotypeButton);
 
-        BorderPane borderPane = new BorderPane();
+        borderPane = new BorderPane();
         borderPane.setBottom(bottomMenu);
         borderPane.setLeft(leftPane);
-//        TODO: right menu to miejsce na mapę
-//        borderPane.setRight(rightMenu);
+        borderPane.setRight(mapGrid);
 
         Scene scene = new Scene(borderPane);
         window.setScene(scene);
@@ -145,7 +139,7 @@ public class SimulationPresenter implements MapChangeListener{
         mapGrid.setGridLinesVisible(true);
         Boundary bounds = worldMap.getCurrentBounds();
 
-        for (int y=0;y<=abs(bounds.upperY()-bounds.lowerY());y++){
+        for (int y = 0; y<=abs(bounds.upperY()-bounds.lowerY()); y++){
             Label label2 = new Label(Integer.toString(bounds.upperY()-y));
             label2.setMinSize(CELL_WIDTH,CELL_HEIGHT);
             label2.setAlignment(Pos.CENTER);
@@ -167,8 +161,8 @@ public class SimulationPresenter implements MapChangeListener{
             mapGrid.add(label3,x,bounds.upperY()+1);
         }
 
-        for (int x=0;x<=bounds.rightX();x++){
-            for (int y=1;y<=bounds.upperY()+1;y++){
+        for (int x = 0; x<=bounds.rightX(); x++){
+            for (int y=1; y<=bounds.upperY()+1; y++){
                  {
                     Vector2d current = new Vector2d(bounds.rightX()-x, y-1);
                     WorldElement plant = worldMap.getPlant(current);
@@ -185,7 +179,6 @@ public class SimulationPresenter implements MapChangeListener{
             }
         }
 
-
     }
     private void clearGrid() {
         mapGrid.getChildren().retainAll(mapGrid.getChildren().get(0)); // hack to retain visible grid lines
@@ -194,12 +187,9 @@ public class SimulationPresenter implements MapChangeListener{
     }
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
-
-//        na razie testowałam same statystyki, jka będzie mapa gotowa to dokomentujemy ten fragment
-
-//        Platform.runLater(() -> {
-//            drawMap(worldMap, message);
-//        });
+        Platform.runLater(() -> {
+            drawMap(worldMap, message);
+        });
     }
     @Override
     public void statisticsChanged(){
@@ -228,7 +218,7 @@ public class SimulationPresenter implements MapChangeListener{
 
     @Override
     public void statisticsChanged(WorldMap worldMap, SimulationStatistics statistics) {
-        Platform.runLater(()->{showStatisticsPlease(worldMap,statistics);});
+        Platform.runLater(this::showStatistics);
     }
 
     @Override
@@ -247,25 +237,25 @@ public class SimulationPresenter implements MapChangeListener{
         t7.setText("Umarło: "+ animal.getDeath());
 
     }
-    public void showStatisticsPlease(WorldMap worldMap, SimulationStatistics stats){
-        Boundary bounds = worldMap.getCurrentBounds();
-        s1.setText("Statystyki z dnia nr "+worldMap.getDay());
-        s2.setText("Ilosc zywych zwierzat: " + stats.aliveAnimalCount());
-        s3.setText("Ilosc martwych zwierzat: "+stats.deadAnimalCount());
-        s4.setText("Ilosc roslin: "+ stats.plantCount());
-        s5.setText("Ilosc wolnych pozycji: "+stats.freePositionCount());
-        s6.setText("Srednia energia zywych zwierzakow: "+stats.meanAliveAnimalEnergy());
-        s7.setText("Dominujący genotyp: " + stats.dominantGenotype().toString());
-        s8.setText("Dominujacy zyjący genotyp: " + stats.dominantAliveGenotype().toString());
-        s9.setText("Srednia dlugosc zycia zwierzat: "+stats.meanAnimalLifeSpan());
-        s10.setText("Srednia ilosc potomstwa: "+stats.meanAliveAnimalOffspringCount());
-        //s11.setText("Ilość wolnych pozycji: "+((bounds.upperY()+1)*(bounds.rightX()+1)-(stats.beforeMoveAnimals.size()+plants.size()-plantsToEat.size())));
-
-    }
+//    public void showStatisticsPlease(WorldMap worldMap, SimulationStatistics stats){
+//        Boundary bounds = worldMap.getCurrentBounds();
+//        s1.setText("Statystyki z dnia nr "+worldMap.getDay());
+//        s2.setText("Ilosc zywych zwierzat: " + stats.aliveAnimalCount());
+//        s3.setText("Ilosc martwych zwierzat: "+stats.deadAnimalCount());
+//        s4.setText("Ilosc roslin: "+ stats.plantCount());
+//        s5.setText("Ilosc wolnych pozycji: "+stats.freePositionCount());
+//        s6.setText("Srednia energia zywych zwierzakow: "+stats.meanAliveAnimalEnergy());
+//        s7.setText("Dominujący genotyp: " + stats.dominantGenotype().toString());
+//        s8.setText("Dominujacy zyjący genotyp: " + stats.dominantAliveGenotype().toString());
+//        s9.setText("Srednia dlugosc zycia zwierzat: "+stats.meanAnimalLifeSpan());
+//        s10.setText("Srednia ilosc potomstwa: "+stats.meanAliveAnimalOffspringCount());
+//        //s11.setText("Ilość wolnych pozycji: "+((bounds.upperY()+1)*(bounds.rightX()+1)-(stats.beforeMoveAnimals.size()+plants.size()-plantsToEat.size())));
+//
+//    }
 //    no usage nie jest prawda intelliJ klamie
-    public void pause(){
-        this.simulation.setPause();
-    }
+//    public void pause(){
+//        this.simulation.setPause();
+//    }
 
     public void clickGrid(javafx.scene.input.MouseEvent event) {
         // TODO znalezc blad
@@ -337,7 +327,7 @@ public class SimulationPresenter implements MapChangeListener{
         }
     }
 //    prezenter do wyświetlania tych animali z najbardziej dominującym genomem no usage nie jest prawda intelliJ klamie
-    public void dominantGenotypeAnimals(){
+    public void dominantGenotypeAnimals() {
         clearGrid();
         mapGrid.getColumnConstraints().add(new ColumnConstraints(CELL_WIDTH));
         mapGrid.getRowConstraints().add(new RowConstraints(CELL_HEIGHT));
@@ -345,42 +335,46 @@ public class SimulationPresenter implements MapChangeListener{
         Boundary bounds = this.mapa.getCurrentBounds();
 
         ArrayList<Animal> animals = mapa.getAnimalsWithDominantGenotype();
-        String s ="Zwierzęta z dominującym genotypem:";
-        for (Animal a : animals){
-            s+=(a.getPosition());
+        String s = "Zwierzęta z dominującym genotypem:";
+        for (Animal a : animals) {
+            s += (a.getPosition());
         }
         animalGen.setText(s);
 
-        for (int y=0;y<=abs(bounds.upperY()-bounds.lowerY());y++){
-            Label label2 = new Label(Integer.toString(bounds.upperY()-y));
-            label2.setMinSize(CELL_WIDTH,CELL_HEIGHT);
+        for (int y = 0; y <= abs(bounds.upperY() - bounds.lowerY()); y++) {
+            Label label2 = new Label(Integer.toString(bounds.upperY() - y));
+            label2.setMinSize(CELL_WIDTH, CELL_HEIGHT);
             label2.setAlignment(Pos.CENTER);
             GridPane.setHalignment(label2, HPos.CENTER);
 
-            mapGrid.add(label2,0,y);
+            mapGrid.add(label2, 0, y);
         }
         Label labelxy = new Label("y//x");
-        labelxy.setMinSize(CELL_WIDTH,CELL_HEIGHT);
+        labelxy.setMinSize(CELL_WIDTH, CELL_HEIGHT);
         labelxy.setAlignment(Pos.CENTER);
-        mapGrid.add(labelxy,0,bounds.upperY()+1);
+        mapGrid.add(labelxy, 0, bounds.upperY() + 1);
 
-        for (int x=1;x<=abs(bounds.rightX()-bounds.leftX())+1;x++){
-            Label label3 = new Label(Integer.toString(bounds.leftX()+x-1));
-            label3.setMinSize(CELL_WIDTH,CELL_HEIGHT);
+        for (int x = 1; x <= abs(bounds.rightX() - bounds.leftX()) + 1; x++) {
+            Label label3 = new Label(Integer.toString(bounds.leftX() + x - 1));
+            label3.setMinSize(CELL_WIDTH, CELL_HEIGHT);
             label3.setAlignment(Pos.CENTER);
             GridPane.setHalignment(label3, HPos.CENTER);
 
-            mapGrid.add(label3,x,bounds.upperY()+1);
+            mapGrid.add(label3, x, bounds.upperY() + 1);
         }
 
-        for (int x=0;x<=bounds.rightX();x++){
-            for (int y=1;y<=bounds.upperY()+1;y++){
+        for (int x = 0; x <= bounds.rightX(); x++) {
+            for (int y = 1; y <= bounds.upperY() + 1; y++) {
                 {
-                    Vector2d current = new Vector2d(bounds.rightX()-x, y-1);
+                    Vector2d current = new Vector2d(bounds.rightX() - x, y - 1);
                     //zmienic na znajdowanie w animalu
                     WorldElement dominantGenomeAnimal = null;
                     WorldElementBox animalBox = new WorldElementBox(dominantGenomeAnimal);
-                        mapGrid.add(animalBox.getvBox(),y ,x);
+                    mapGrid.add(animalBox.getvBox(), y, x);
+                }
+            }
+        }
+    }
 
     public void pauseUpdate() {
         positionsPreferredByPlantsButton.setDisable(false);
@@ -391,9 +385,5 @@ public class SimulationPresenter implements MapChangeListener{
         positionsPreferredByPlantsButton.setDisable(true);
         animalsWithDominantGenotypeButton.setDisable(true);
     }
-
-// animalChanged
-
-
 
 }
