@@ -12,6 +12,8 @@ public abstract class Simulation implements Runnable{
 
     protected WorldMap map;
     private List<Animal> animals;
+    boolean isPaused=false;
+    boolean end =false;
 
     int executorServiceThreadID;
 
@@ -33,6 +35,7 @@ public abstract class Simulation implements Runnable{
             this.map = new GlobeMap(simulationProperties.mapProperties(),
                     simulationProperties.animalProperties(), simPresenter);
         }
+
         animals = new ArrayList<>();
     }
 

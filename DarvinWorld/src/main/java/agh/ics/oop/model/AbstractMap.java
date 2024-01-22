@@ -28,6 +28,8 @@ public abstract class AbstractMap implements WorldMap {
     protected SimulationStatisticsGenerator statisticsGenerator;
     private final AnimalComparator animalComparator;
     int day; // current map day
+    private Animal ObservedAnimal;
+    private MapChangeListener statisticObserver;
 
     private MapChangeListener observer;
     SimulationPresenter simulationPresenter;
@@ -35,6 +37,7 @@ public abstract class AbstractMap implements WorldMap {
     public AbstractMap(MapProperties mapProperties, AnimalProperties animalProperties, SimulationPresenter simulationPresenter) {
 
         this.simulationPresenter = simulationPresenter;
+        this.ObservedAnimal=null;
         this.identifier= UUID.randomUUID();
 
         this.statisticsGenerator = new SimulationStatisticsGenerator(mapProperties, animalProperties);
@@ -51,7 +54,7 @@ public abstract class AbstractMap implements WorldMap {
         plants = new HashMap<>();
         plantsToEat = new HashSet<>();
 
-        plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
+        this.plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
 
 
         for (int i = 0; i < mapProperties.startAnimalCount(); ++i) {
@@ -73,6 +76,9 @@ public abstract class AbstractMap implements WorldMap {
     public UUID getID() {
         return identifier;
     }
+
+    @Override
+    public int getDay() {return this.day;}
     public HashMap<Vector2d,LinkedList<Animal>> getAnimals(){
         return this.animals;
     }
@@ -91,6 +97,7 @@ public abstract class AbstractMap implements WorldMap {
             animalList.removeIf(a ->
             {
                 if (a.getEnergy() == 0){
+                    a.setDeath(this.day);
                     statisticsGenerator.deadAnimalUpdate(a);
                     mapChanged("dead animal disappears");
                     return true;
@@ -324,6 +331,7 @@ public abstract class AbstractMap implements WorldMap {
 
         removeDeadAnimals();
 
+        mapChanged("Nowy dzien update");
         return true;
     }
 
@@ -391,12 +399,11 @@ public abstract class AbstractMap implements WorldMap {
         return statisticsGenerator.generatePreferredPlantPositions();
     }
 
+
     public void mapChanged (String changeInfo){
-//        System.out.println(changeInfo);
+
         simulationPresenter.mapChanged(this, changeInfo);
-//        for (MapChangeListener mapChangeListener : observers) {
-//            mapChangeListener.mapChanged(this, changeInfo);
-//        }
+        if (ObservedAnimal!=null) simulationPresenter.animalChanged(this.ObservedAnimal,this);
     }
 
     public void statisticsChanged(){
@@ -404,11 +411,12 @@ public abstract class AbstractMap implements WorldMap {
     }
 
     public WorldElement getStrongest(Vector2d position){
-        LinkedList<Animal> pos1 = this.animals.get(position);
+        ArrayList<Animal> pos1 = this.beforeMoveAnimals.get(position);
         int energy=0;
         WorldElement strongest = null;
+        if(pos1==null){return strongest;}
         for (Animal a : pos1){
-            if(a.getEnergy()>energy && a.getDeath()!=0){
+            if(a.getEnergy()>energy && a.getDeath()==0){
                 energy=a.getEnergy();
                 strongest= (WorldElement) a;
             }
@@ -421,12 +429,12 @@ public abstract class AbstractMap implements WorldMap {
         else return null;
     }
 
-//    public void addObserver (MapChangeListener observer){
-//        this.observers.add(observer);
-//    }
-//
-//    public void removeObserver (MapChangeListener observer){
-//        this.observers.remove(observer);
-//    }
+    public void addAnimalObserver (Animal animal){
+        this.ObservedAnimal = animal;
+
+    }
+    public void removeAnimalObserver (Animal animal) {
+        this.ObservedAnimal = null;
+    }
 
 }
