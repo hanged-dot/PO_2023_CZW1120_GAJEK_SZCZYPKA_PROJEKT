@@ -234,6 +234,8 @@ public Animal procreate(Animal other){
     return offspring;
 }
 public void mutate(int[] genes){
+        setGenome(genes);
+
         if(this.properties.maxMutationCount() == 0){
             return;
         }
