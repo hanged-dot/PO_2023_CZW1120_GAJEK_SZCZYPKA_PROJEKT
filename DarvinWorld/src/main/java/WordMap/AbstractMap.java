@@ -101,7 +101,7 @@ public abstract class AbstractMap implements WorldMap {
                 if (a.getEnergy() == 0){
                     a.setDeath(this.day);
                     statisticsGenerator.deadAnimalUpdate(a);
-                    mapChanged("dead animal disappears");
+//                    mapChanged("dead animal disappears");
                     return true;
                 }
                 return false;
@@ -140,7 +140,7 @@ public abstract class AbstractMap implements WorldMap {
                 plantsToEat.add(animalPosition);
             }
         }
-        mapChanged("Zwierzę zostało umieszczone na mapie na pozycji" + animal.getPosition());
+//        mapChanged("Zwierzę zostało umieszczone na mapie na pozycji" + animal.getPosition());
     }
 
     //    Skręt i przemieszczanie każdego zwierzaka
@@ -153,7 +153,7 @@ public abstract class AbstractMap implements WorldMap {
         animal.move(targetPosition);
 //        Umieszczamy zwierzaka na odpowiednim miejscu na mapie
         this.place(animal);
-        mapChanged("Zwierzę poruszyło się z pozycji "+ pos1 + " na pozycję " +targetPosition);
+//        mapChanged("Zwierzę poruszyło się z pozycji "+ pos1 + " na pozycję " +targetPosition);
 
     }
 
@@ -167,8 +167,9 @@ public abstract class AbstractMap implements WorldMap {
                 animal.age();
             }
         }
+        var comparator = new AnimalComparator();
         for (List<Animal> animalList: afterMoveAnimals.values()){
-            animalList.sort(new AnimalComparator());
+            animalList.sort(comparator);
         }
     }
 
@@ -208,7 +209,7 @@ public abstract class AbstractMap implements WorldMap {
 
             Animal eatingAnimal = chooseEatingAnimal(plantPosition);
             eatingAnimal.eat();
-            mapChanged("roślinka na pozycji "+plantPosition+" została zjedzona");
+//            mapChanged("roślinka na pozycji "+plantPosition+" została zjedzona");
             statisticsGenerator.totalEnergyUpdate(true);    // informujemy statystyki, że wzrosła energia jednego zwierzaka
             statisticsGenerator.plantCountUpdate(false);    // informujemy statystyki, że zmniejszyła się liczba roślin
             //             zwracamy najedzonego zwierzaka do listy
@@ -281,7 +282,7 @@ public abstract class AbstractMap implements WorldMap {
                     }
                 }
 
-                for (int i = procreatingAnimals.size() - 1; i > 0; i = i - 2) {
+                for (int i = procreatingAnimals.size() - 1; i > 0; i-=2) {
 
                     Animal child = procreatingAnimals.get(i).procreate(procreatingAnimals.get(i - 1));
                     children.add(child);
@@ -346,7 +347,7 @@ public abstract class AbstractMap implements WorldMap {
         for (Vector2d position : positions) {
             Plant p = new Plant(position);
             plants.put(position, p);
-            mapChanged("wyrosła nowa roślinka na pozycji "+position);
+//            mapChanged("wyrosła nowa roślinka na pozycji "+position);
 
 //  Na każdym polu, na którym wyrasta roślina, zwiększamy licznik roślin
             statisticsGenerator.plantHistoryUpdate(position);
