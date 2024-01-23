@@ -194,11 +194,17 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     }
 
     private float getMeanAliveAnimalOffspringCount(){
-        return (float) totalAliveAnimalOffspringCount/aliveAnimalCount;
+        if(aliveAnimalCount > 0) {
+            return (float) totalAliveAnimalOffspringCount / aliveAnimalCount;
+        }
+        return 0;
     }
 
     private float getMeanAliveEnergy(){
-        return (float)this.totalEnergy/(float)this.aliveAnimalCount;
+        if(this.aliveAnimalCount > 0) {
+            return (float) this.totalEnergy / (float) this.aliveAnimalCount;
+        }
+        return 0;
     }
 
     public SimulationStatistics generateSimulationStatics(){
