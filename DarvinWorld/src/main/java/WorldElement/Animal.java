@@ -234,6 +234,10 @@ public Animal procreate(Animal other){
     return offspring;
 }
 public void mutate(int[] genes){
+        if(this.properties.maxMutationCount() == 0){
+            return;
+        }
+
         int maxMutation = this.properties.maxMutationCount();
         int minMutation = this.properties.minMutationCount();
         int mutationCount= (new Random()).nextInt(maxMutation-minMutation) + minMutation;
