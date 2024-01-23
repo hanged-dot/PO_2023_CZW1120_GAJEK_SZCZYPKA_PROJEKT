@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.text.Text?>
+<BorderPane fx:id="borderPane"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            minHeight="750.0" minWidth="850.0"
+            fx:controller="Presenter.SimulationPresenter">
+    <top>
+        <HBox>
+
+            <Button fx:id ="positionsPreferredByPlantsButton" text="Get positions preferred by plants" alignment="CENTER" onAction="#preferredPositions" disable="true"/>
+            <Button fx:id = "animalsWithDominantGenotypeButton" text="Get animals with dominant genotype" alignment="CENTER" onAction="#dominantGenotypeAnimals" disable="true"/>
+
+        </HBox>
+    </top>
+    <center>
+            <GridPane fx:id="mapGrid" gridLinesVisible="true" alignment="CENTER" onMouseClicked="#clickGrid"/>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER">
+            <Button fx:id="closeButton" text="Close" alignment="CENTER" onAction="#closeSimulation"/>
+            <Button fx:id="pauseButton" text="Pause" alignment="CENTER" onAction="#pause" />
+            <Button fx:id="resumeButton" text="Resume" alignment="CENTER" onAction="#resume" />
+
+        </HBox>
+    </bottom>
+    <left>
+        <VBox>
+            <Label fx:id="t1" textAlignment="CENTER" alignment="CENTER"/>
+            <Label fx:id="t2" textAlignment="CENTER" alignment="CENTER"/>
+            <Label fx:id="t3" textAlignment="CENTER" alignment="CENTER"/>
+            <Label fx:id="t4" textAlignment="CENTER" alignment="CENTER"/>
+            <Label fx:id="t5" textAlignment="CENTER" alignment="CENTER"/>
+            <Label fx:id="t6" textAlignment="CENTER" alignment="CENTER"/>
+            <Label fx:id="t7" textAlignment="CENTER" alignment="CENTER"/>
+        </VBox>
+    </left>
+    <right>
+        <VBox>
+            <Label fx:id="statsLabel" textAlignment="CENTER"/>
+            <Label fx:id="plantPos" textAlignment="CENTER" alignment="CENTER"/>
+            <Label fx:id="animalGen" textAlignment="CENTER" alignment="CENTER"/>
+        </VBox>
+    </right>
+
+</BorderPane>
