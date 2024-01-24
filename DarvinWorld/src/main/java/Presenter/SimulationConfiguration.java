@@ -96,30 +96,28 @@ public class SimulationConfiguration {
     private ArrayList<ConfigurationElement> configurationElementArrayList;
 
 
-
-
     public void initialize() {
 
         simulationStart = new SimulationStart();
         configurationElementArrayList = new ArrayList<>();
 
 //        All texts needed:
-        mapHeight = new ConfigurationElement(mapHeightText, mapHeightTextField, new Vector2d(5, 1000));
+        mapHeight = new ConfigurationElement(mapHeightText, mapHeightTextField, new Vector2d(5, 50));
 
-        mapWidth = new ConfigurationElement(mapWidthText,mapWidthTextField,new Vector2d(5, 1000));
+        mapWidth = new ConfigurationElement(mapWidthText,mapWidthTextField,new Vector2d(5, 50));
 
-        tunnelCount = new ConfigurationElement(tunnelCountText,tunnelCountTextField,new Vector2d(1, 40));
+        tunnelCount = new ConfigurationElement(tunnelCountText,tunnelCountTextField,new Vector2d(1, 500));
         tunnelCount.textField().setDisable(true);
 
-        startPlantCount = new ConfigurationElement(startPlantCountText,startPlantCountTextField,new Vector2d(0, 30));
+        startPlantCount = new ConfigurationElement(startPlantCountText,startPlantCountTextField,new Vector2d(0, 1000));
 
-        plantsPerDay = new ConfigurationElement(plantsPerDayText,plantsPerDayTextField,new Vector2d(1, 60));
+        plantsPerDay = new ConfigurationElement(plantsPerDayText,plantsPerDayTextField,new Vector2d(1, 500));
 
-        energyPlant = new ConfigurationElement(energyPlantText,energyPlantTextField,new Vector2d(1, 20));
+        energyPlant = new ConfigurationElement(energyPlantText,energyPlantTextField,new Vector2d(1, 5));
 
-        startAnimalCount = new ConfigurationElement(startAnimalCountText,startAnimalCountTextField, new Vector2d(1, 100));
+        startAnimalCount = new ConfigurationElement(startAnimalCountText,startAnimalCountTextField, new Vector2d(1, 1000));
 
-        startAnimalEnergy = new ConfigurationElement(startAnimalEnergyText,startAnimalEnergyTextField, new Vector2d(1, 100));
+        startAnimalEnergy = new ConfigurationElement(startAnimalEnergyText,startAnimalEnergyTextField, new Vector2d(1, 20));
 
         minProcreateEnergy = new ConfigurationElement(minProcreateEnergyText,minProcreateEnergyTextField, new Vector2d(1, 20));
 
@@ -127,9 +125,9 @@ public class SimulationConfiguration {
 
         minMutation = new ConfigurationElement(minMutationText,minMutationTextField,new Vector2d(0, 10));
 
-        maxMutation = new ConfigurationElement(maxMutationText,maxMutationTextField,new Vector2d(0, 80));
+        maxMutation = new ConfigurationElement(maxMutationText,maxMutationTextField,new Vector2d(0, 50));
 
-        genomeLength = new ConfigurationElement(genomeLengthText,genomeLengthTextField,new Vector2d(2, 100));
+        genomeLength = new ConfigurationElement(genomeLengthText,genomeLengthTextField,new Vector2d(2, 50));
 
         this.configurationElementArrayList.add(mapHeight);
         this.configurationElementArrayList.add(mapWidth);
@@ -168,19 +166,25 @@ public class SimulationConfiguration {
             AlertBox.display("Incorrect Input", "Minimal Mutation Count cannot be higher than Maximal Mutation Count.");
             return false;
         }
+
+        if (Integer.parseInt(maxMutation.textField().getText()) > Integer.parseInt(genomeLength.textField().getText())){
+            AlertBox.display("Incorrect Input", "Maximal Mutation Count cannot be higher than genome length.");
+            return false;
+        }
+
         int area = Integer.parseInt(mapHeight.textField().getText()) * Integer.parseInt(mapWidth.textField().getText());
 
-        if (Integer.parseInt(tunnelCount.textField().getText()) >= area){
+        if (Integer.parseInt(tunnelCount.textField().getText()) >= (0.2*area)){
             AlertBox.display("Incorrect Input", "Too many tunnels.");
             return false;
         }
-        if (Integer.parseInt(startPlantCount.textField().getText())>=area){
+        if (Integer.parseInt(startPlantCount.textField().getText())>=(0.4*area)){
             AlertBox.display("Incorrect Input","Too many plants.");
         }
-        if (Integer.parseInt(plantsPerDay.textField().getText())>=area){
+        if (Integer.parseInt(plantsPerDay.textField().getText())>=(0.2*area)){
             AlertBox.display("Incorrect Input","Too many plants per day.");
         }
-        if (Integer.parseInt(startAnimalCount.textField().getText())>=area){
+        if (Integer.parseInt(startAnimalCount.textField().getText())>=(0.4*area)){
             AlertBox.display("Incorrect Input","Too many start animals.");
         }
 
@@ -203,7 +207,6 @@ public class SimulationConfiguration {
                     configurationElement.text().getText() + "value shoud be a natural number between %d and %d.".formatted(configurationElement.limits().getX(), configurationElement.limits().getY()));
             return false;
         }
-
     }
 
     private SimulationProperties wrapProperties(){

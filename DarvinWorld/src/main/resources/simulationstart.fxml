@@ -25,13 +25,13 @@
             <Text fx:id="mapWidthText" text="Choose map width: " />
             <TextField fx:id="mapWidthTextField" text="5" />
 
-            <Text fx:id="tunnelCountText" text="Choose percent of tunnels: "/>
+            <Text fx:id="tunnelCountText" text="Choose number of tunnels: "/>
             <TextField fx:id="tunnelCountTextField" text="10" />
 
-            <Text fx:id="startPlantCountText" text="Choose initial percent of plants: " />
+            <Text fx:id="startPlantCountText" text="Choose initial number of plants: " />
             <TextField fx:id="startPlantCountTextField" text="2" />
 
-            <Text fx:id="plantsPerDayText" text="Choose daily number(?percent?) of new plants: " />
+            <Text fx:id="plantsPerDayText" text="Choose daily number of new plants: " />
             <TextField fx:id="plantsPerDayTextField" text="1" />
 
             <Text fx:id="energyPlantText" text="Choose energy from eating one plant: " />
