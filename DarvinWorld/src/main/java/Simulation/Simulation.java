@@ -95,7 +95,6 @@ public abstract class Simulation implements Runnable{
 
         SimulationEngine.getInstance().threadFinished(getThreadId());
         System.out.println("Simulation over");
-
     }
 
     protected void dailyCycle(){
@@ -132,6 +131,7 @@ public abstract class Simulation implements Runnable{
 
     public void terminateAndClose(){
         simPresenter.closeSimulation();
+        terminate();
     }
 }
 

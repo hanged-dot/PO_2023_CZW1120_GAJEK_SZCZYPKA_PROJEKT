@@ -33,6 +33,7 @@ public class SimulationEngine {
     }
 
     public void threadFinished(int threadId) {
+
         sims.remove(threadId);
     }
 
@@ -40,5 +41,6 @@ public class SimulationEngine {
         for (Simulation sim : sims){
             sim.terminateAndClose();
         }
+        executorService.shutdownNow();
     }
 }
