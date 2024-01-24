@@ -22,4 +22,8 @@ public class SimulationStart {
 
         SimulationEngine.getInstance().runSimAsyncInThreadPool(s);
     }
+
+    public void terminateAllSimulations(){
+        SimulationEngine.getInstance().terminateAllThreads();
+    }
 }

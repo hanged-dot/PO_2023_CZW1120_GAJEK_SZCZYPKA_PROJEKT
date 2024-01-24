@@ -83,10 +83,14 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     public void totalEnergyUpdate(boolean up){
 
         if (up){
+            System.out.println("laczna energia: "+totalEnergy);
             totalEnergy += energyFromPlant;
+            System.out.println("Po zmianie "+totalEnergy);
         } else {
             totalEnergy -= aliveAnimalCount;
         }
+
+        System.out.println("Zmiana łącznej energii na "+totalEnergy + " przy licznie zwierzaków "+aliveAnimalCount);
     }
 
     public ArrayList<PositionAbundance> generatePreferredPlantPositions(){

@@ -28,12 +28,17 @@ public class SimulationEngine {
     public void runSimAsyncInThreadPool(Simulation sim){
 
         sim.setThreadID(sims.size());
-
         executorService.submit(sim);
         sims.add(sim);
     }
 
     public void threadFinished(int threadId) {
         sims.remove(threadId);
+    }
+
+    public void terminateAllThreads(){
+        for (Simulation sim : sims){
+            sim.terminateAndClose();
+        }
     }
 }

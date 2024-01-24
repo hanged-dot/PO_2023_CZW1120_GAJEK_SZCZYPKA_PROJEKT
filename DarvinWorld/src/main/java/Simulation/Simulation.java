@@ -129,5 +129,9 @@ public abstract class Simulation implements Runnable{
     public void terminate() {
         simulating = false;
     }
+
+    public void terminateAndClose(){
+        simPresenter.closeSimulation();
+    }
 }
 

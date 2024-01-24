@@ -51,11 +51,7 @@ public class SimulationPresenter implements MapChangeListener{
     @FXML private BorderPane borderPane;
     @FXML private Label statsLabel;
 
-    public SimulationPresenter() {
-
-    }
-
-
+    public SimulationPresenter() {}
 
     public SimulationPresenter(Simulation simulation){this.simulation = simulation;}
     public void setSimulation(Simulation simulation) {this.simulation = simulation;}
@@ -253,6 +249,7 @@ public class SimulationPresenter implements MapChangeListener{
         positionsPreferredByPlantsButton.setDisable(true);
         animalsWithDominantGenotypeButton.setDisable(true);
     }
+
     public void closeSimulation(){
         simulation.terminate();
         ((Stage) borderPane.getScene().getWindow()).close();

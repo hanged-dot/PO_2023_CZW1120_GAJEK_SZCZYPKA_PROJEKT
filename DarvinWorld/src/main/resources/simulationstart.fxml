@@ -73,7 +73,7 @@
             <Button fx:id="saveConfigurationButton" text="Save configuration" onAction="#saveConfiguration" alignment="CENTER"/>
             <Button fx:id="chooseConfigurationButton" text="Choose configuration" onAction="#chooseSavedConfiguration" alignment="CENTER"/>
             <Button fx:id="startSimulationButton" text="Start simulation" onAction="#onSimulationStartClicked" alignment="CENTER"/>
-
+            <Button fx:id="closeButton" text="Close" onAction="#onCloseButtonClicked" alignment="CENTER"/>
         </HBox>
     </bottom>
 </BorderPane>

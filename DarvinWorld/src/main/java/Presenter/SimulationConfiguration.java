@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SimulationConfiguration {
+    @FXML private Button closeButton;
 
     @FXML private Text mapHeightText;
     @FXML private TextField mapHeightTextField;
@@ -108,6 +109,7 @@ public class SimulationConfiguration {
         mapWidth = new ConfigurationElement(mapWidthText,mapWidthTextField,new Vector2d(5, 1000));
 
         tunnelCount = new ConfigurationElement(tunnelCountText,tunnelCountTextField,new Vector2d(1, 40));
+        tunnelCount.textField().setDisable(true);
 
         startPlantCount = new ConfigurationElement(startPlantCountText,startPlantCountTextField,new Vector2d(0, 30));
 
@@ -142,7 +144,6 @@ public class SimulationConfiguration {
         this.configurationElementArrayList.add(minMutation);
         this.configurationElementArrayList.add(maxMutation);
         this.configurationElementArrayList.add(genomeLength);
-
 
 
         chooseMapWithTunnelsBox.selectedProperty().addListener((o, oldValue, newValue) -> {
@@ -203,7 +204,6 @@ public class SimulationConfiguration {
             return false;
         }
 
-
     }
 
     private SimulationProperties wrapProperties(){
@@ -250,5 +250,11 @@ public class SimulationConfiguration {
     public void chooseSavedConfiguration(){
         ConfigurationReader configurationReader = new ConfigurationReader();
         configurationReader.choosePredefinedSimulationProperties(this.simulationStart, saveStatisticsCheckBox.isSelected());
+    }
+
+    public void onCloseButtonClicked(){
+        simulationStart.terminateAllSimulations();
+        Stage stage = (Stage) closeButton.getScene().getWindow();
+        stage.close();
     }
 }
