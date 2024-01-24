@@ -174,7 +174,7 @@ public class SimulationConfiguration {
 
         int area = Integer.parseInt(mapHeight.textField().getText()) * Integer.parseInt(mapWidth.textField().getText());
 
-        if (Integer.parseInt(tunnelCount.textField().getText()) >= (0.2*area)){
+        if (chooseMapWithTunnelsBox.isSelected() && Integer.parseInt(tunnelCount.textField().getText()) >= (0.2*area)){
             AlertBox.display("Incorrect Input", "Too many tunnels.");
             return false;
         }
