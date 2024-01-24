@@ -1,7 +1,7 @@
 package Records;
 
 public record SimulationStatistics(
-
+        int day,
         int aliveAnimalCount,
         int deadAnimalCount,
         int plantCount,

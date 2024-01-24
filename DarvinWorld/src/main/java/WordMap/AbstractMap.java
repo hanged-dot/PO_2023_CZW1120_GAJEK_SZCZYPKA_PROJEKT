@@ -4,7 +4,6 @@ package WordMap;
 import Presenter.MapChangeListener;
 import Presenter.SimulationPresenter;
 import Records.*;
-import Simulation.SimulationStatisticsGenerator;
 import WorldElement.Animal;
 import WorldElement.AnimalComparator;
 import WorldElement.Plant;
@@ -12,6 +11,9 @@ import WorldElement.PlantPositionGenerator;
 import WorldElement.WorldElement;
 
 import java.util.*;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 
 public abstract class AbstractMap implements WorldMap {
@@ -27,14 +29,26 @@ public abstract class AbstractMap implements WorldMap {
     private HashSet<Vector2d> plantsToEat;
     private final PlantPositionGenerator plantPositionGenerator;
     private final int dailyPlantCount;
-    protected SimulationStatisticsGenerator statisticsGenerator;
     private final AnimalComparator animalComparator;
-    int day; // current map day
     private Animal ObservedAnimal;
-    private MapChangeListener statisticObserver;
-
-    private MapChangeListener observer;
     SimulationPresenter simulationPresenter;
+
+//    Statistics:
+
+    int day;
+    private int aliveAnimalCount;
+    private int deadAnimalCount;
+    private int deadAnimalLifeSpan;
+    private final int allPositionCount;
+    private final int totalPositionCount;
+    private int totalAliveAnimalOffspringCount;
+    private int totalEnergy;
+    private int energyFromPlant;
+    private HashMap<int[], Integer> allGenotypes;
+    private HashMap<int[], Integer> aliveGenotypes;
+    private HashMap<Vector2d, Integer> plantHistory;
+
+    private SimulationStatistics simulationStatistics;
 
     public AbstractMap(MapProperties mapProperties, AnimalProperties animalProperties, SimulationPresenter simulationPresenter) {
 
@@ -42,9 +56,7 @@ public abstract class AbstractMap implements WorldMap {
         this.ObservedAnimal=null;
         this.identifier= UUID.randomUUID();
 
-        this.statisticsGenerator = new SimulationStatisticsGenerator(mapProperties, animalProperties);
         this.animalComparator = new AnimalComparator();
-        this.day = 0;
         this.mapBoundary = new Boundary(0, mapProperties.mapWidth() - 1, 0, mapProperties.mapHeight() - 1);
         this.animals = new HashMap<>();
 
@@ -58,12 +70,25 @@ public abstract class AbstractMap implements WorldMap {
 
         this.plantPositionGenerator = new PlantPositionGenerator(mapBoundary);
 
+        this.day = 0;
+        this.aliveAnimalCount = mapProperties.startAnimalCount();
+        this.deadAnimalCount = 0;
+        this.deadAnimalLifeSpan = 0;
+        this.allPositionCount = mapProperties.mapWidth()*mapProperties.mapHeight();
+        this.totalPositionCount = allPositionCount;
+        this.totalAliveAnimalOffspringCount = 0;
+        this.allGenotypes = new HashMap<>();
+        this.aliveGenotypes = new HashMap<>();
+        this.plantHistory = new HashMap<>();
+        this.totalEnergy = aliveAnimalCount * animalProperties.startAnimalEnergy();
+        this.energyFromPlant = animalProperties.energyFromPlant();
+
 
         for (int i = 0; i < mapProperties.startAnimalCount(); ++i) {
 //            tworzymy nowe zwierzątka, generujemy im genom, umieszczamy na mapie
             Animal animal = new Animal(animalProperties, createRandomPosition(mapBoundary));
             animal.setGenome(createRandomGenome(animalProperties.genomeLength()));
-            statisticsGenerator.allGenotypeCountUpdate(animal.getGenome(), true);
+            allGenotypeCountUpdate(animal.getGenome(), true);
             place(animal);
         }
 
@@ -71,7 +96,10 @@ public abstract class AbstractMap implements WorldMap {
         afterMoveAnimals.clear();
         createNewPlants(mapProperties.startPlantCount());
 
+        simulationStatistics = generateSimulationStatistics();
+
         this.simulationPresenter.setWorldMap(this);
+
         mapChanged("New map created");
     }
     @Override
@@ -88,20 +116,21 @@ public abstract class AbstractMap implements WorldMap {
 //    Usunięcie martwych zwierzaków z mapy
 
     @Override
-    public void removeDeadAnimals() {
+    public ArrayList<Vector2d> getDeadAnimals() {
 
         ArrayList<Vector2d> keysToRemove = new ArrayList<>();
 
         for (Vector2d key : beforeMoveAnimals.keySet()) {
-//            pozyskanie setu zwierzaków na danej pozycji
+//            pozyskanie listy zwierzaków na danej pozycji
             ArrayList<Animal> animalList = beforeMoveAnimals.get(key);
 
             animalList.removeIf(a ->
             {
                 if (a.getEnergy() == 0){
                     a.setDeath(this.day);
-                    statisticsGenerator.deadAnimalUpdate(a);
-//                    mapChanged("dead animal disappears");
+                    deadAnimalCount++;
+                    deadAnimalLifeSpan += a.getAge();
+                    aliveGenotypeCountUpdate(a.getGenome(), false);
                     return true;
                 }
                 return false;
@@ -113,9 +142,7 @@ public abstract class AbstractMap implements WorldMap {
             }
         }
 
-        for (Vector2d key : keysToRemove){
-            beforeMoveAnimals.remove(key);
-        }
+        return keysToRemove;
     }
 
 //    Rozmieszczanie zwierzaków na mapie (zarówno przy budowaniu nowej mapy jak i po każdym ruchu zwierzęcia)
@@ -140,21 +167,17 @@ public abstract class AbstractMap implements WorldMap {
                 plantsToEat.add(animalPosition);
             }
         }
-//        mapChanged("Zwierzę zostało umieszczone na mapie na pozycji" + animal.getPosition());
     }
 
     //    Skręt i przemieszczanie każdego zwierzaka
     private void move(Animal animal) {
 
-        Vector2d pos1 = animal.getPosition();
 //        Wyznaczamy docelową pozycję zwierzaka
         Vector2d targetPosition = getNextPosition(animal);
 //        Informujemy zwierzaka o zmianie jego położenia
         animal.move(targetPosition);
 //        Umieszczamy zwierzaka na odpowiednim miejscu na mapie
         this.place(animal);
-//        mapChanged("Zwierzę poruszyło się z pozycji "+ pos1 + " na pozycję " +targetPosition);
-
     }
 
     @Override
@@ -209,9 +232,6 @@ public abstract class AbstractMap implements WorldMap {
 
             Animal eatingAnimal = chooseEatingAnimal(plantPosition);
             eatingAnimal.eat();
-//            mapChanged("roślinka na pozycji "+plantPosition+" została zjedzona");
-            statisticsGenerator.totalEnergyUpdate(true);    // informujemy statystyki, że wzrosła energia jednego zwierzaka
-            statisticsGenerator.plantCountUpdate(false);    // informujemy statystyki, że zmniejszyła się liczba roślin
             //             zwracamy najedzonego zwierzaka do listy
             afterMoveAnimals.get(plantPosition).add(eatingAnimal);
             plants.remove(plantPosition);
@@ -259,11 +279,6 @@ public abstract class AbstractMap implements WorldMap {
 
     public void procreate() {
 
-        int numberOfAnimals = 0;
-        for (List<Animal> list : afterMoveAnimals.values()){
-            numberOfAnimals += list.size();
-        }
-
         for (Vector2d position : afterMoveAnimals.keySet()) {
 
             List<Animal> animalList = afterMoveAnimals.get(position);
@@ -286,8 +301,9 @@ public abstract class AbstractMap implements WorldMap {
 
                     Animal child = procreatingAnimals.get(i).procreate(procreatingAnimals.get(i - 1));
                     children.add(child);
-                    System.out.println("Someoe has baby!");
-                    statisticsGenerator.newbornAnimalUpdate(child);     // informujemy statystyki, że doszło nowe zwierzę z nowym genomem
+                    aliveAnimalCount++;
+                    totalKidsCountUpdate(1);
+                    allGenotypeCountUpdate(child.getGenome(), true);
                 }
 
                 for (Animal animal : children) {
@@ -297,12 +313,11 @@ public abstract class AbstractMap implements WorldMap {
         }
     }
 
-
     @Override
     public boolean refreshMap () {
 
-//        TODO: wyświetlić pojawiające się roślinki
         if (afterMoveAnimals.isEmpty()){
+            simulationStatistics = generateSimulationStatistics();
             return false;
         }
 
@@ -312,9 +327,6 @@ public abstract class AbstractMap implements WorldMap {
 
         ++day;
 
-        statisticsGenerator.totalEnergyUpdate(false);       // informujemy statystyki, że energia wszystkich zwierząt spada o 1
-        statisticsGenerator.freePositionCountUpdate(afterMoveAnimals.size()+plants.size()-plantsToEat.size());
-        statisticsChanged();
 
         for (Vector2d key : afterMoveAnimals.keySet()) {
 
@@ -332,33 +344,165 @@ public abstract class AbstractMap implements WorldMap {
         beforeMoveAnimals.putAll(afterMoveAnimals);
         afterMoveAnimals.clear();
 
-        removeDeadAnimals();
+        var animalsToRemove = getDeadAnimals();
+        for (var animalToRemove : animalsToRemove){
+            beforeMoveAnimals.remove(animalToRemove);
+        }
+        animalsToRemove.clear();
 
-        mapChanged("Nowy dzien update");
+        if (beforeMoveAnimals.isEmpty()){
+            return false;
+        }
+
+        totalEnergy -= getAliveAnimalCount();
+
+        mapChanged("It's a new day! update");
+        simulationStatistics = generateSimulationStatistics();
         return true;
     }
 
     //        Wzrastanie nowych roślin na wybranych polach mapy
 
-    public void createNewPlants (int plantCount){
+    private void createNewPlants (int numOfPlants){
 
 //       parametr plantCount to albo startowa ilość roślin, albo ilość roślin wyrastająca w 1 dzień
-        ArrayList<Vector2d> positions = plantPositionGenerator.getPositions(plants, plantCount);
+        ArrayList<Vector2d> positions = plantPositionGenerator.getPositions(plants, numOfPlants);
         for (Vector2d position : positions) {
             Plant p = new Plant(position);
             plants.put(position, p);
-//            mapChanged("wyrosła nowa roślinka na pozycji "+position);
 
 //  Na każdym polu, na którym wyrasta roślina, zwiększamy licznik roślin
-            statisticsGenerator.plantHistoryUpdate(position);
-//  Przekazujemy do statystyk informację o pojawieniu się kolejnej rośliny
-            statisticsGenerator.plantCountUpdate(true);
+            plantHistoryUpdate(position);
+        }
+    }
+
+    private void plantHistoryUpdate(Vector2d position){
+
+        if (!plantHistory.containsKey(position)){
+            plantHistory.put(position, 1);
+        }
+        else {
+            Integer recentPlantCount = plantHistory.remove(position);
+            plantHistory.put(position, recentPlantCount + 1);
         }
     }
 
     @Override
     public SimulationStatistics getSimulationStatistics(){
-        return statisticsGenerator.generateSimulationStatics();
+        return this.simulationStatistics;
+    }
+
+    private SimulationStatistics generateSimulationStatistics(){
+
+        return new SimulationStatistics(
+                day,
+                getAliveAnimalCount(),
+                deadAnimalCount,
+                plants.size(),
+                getFreePositionCount(),
+                getDominantGenotype(aliveGenotypes),
+                getDominantGenotype(allGenotypes),
+                getMeanAliveEnergy(),
+                getMeanLifeSpan(),
+                getMeanAliveAnimalOffspringCount()
+        );
+    }
+
+    private int getTotalEnergy(){
+        int totalEnergy = 0;
+        for (List<Animal> animalList : beforeMoveAnimals.values()){
+            for (Animal a : animalList){
+                totalEnergy += a.getEnergy();
+            }
+        }
+        return totalEnergy;
+    }
+
+    private int getFreePositionCount(){
+        int ctr = allPositionCount - getAliveAnimalCount() - plants.size();
+        for (Vector2d v : plants.keySet()){
+            if (beforeMoveAnimals.containsKey(v)){
+                ctr++;
+            }
+        }
+        return ctr;
+    }
+
+    private int getAliveAnimalCount(){
+
+        int ctr = 0;
+        for (List<Animal> animalList: beforeMoveAnimals.values()){
+            ctr += animalList.size();
+        }
+        return ctr;
+    }
+
+    private int[] getDominantGenotype(HashMap<int[], Integer> genotypes){
+
+        if (genotypes == null){
+            return new int[0];
+        }
+
+        int[] genotype = new int[0];
+        int maxCount = 0;
+
+        var genotypesKS = genotypes.keySet();
+        for (int[] g: genotypesKS){
+            if (genotypes.get(g) > maxCount){
+                genotype = g;
+            }
+        }
+        return genotype;
+    }
+
+    private float getMeanAliveEnergy(){
+        int aliveAnimalCount = getAliveAnimalCount();
+        if(aliveAnimalCount > 0) {
+            return (float) getTotalEnergy() / (float) aliveAnimalCount;
+        }
+        return 0;
+    }
+
+    private float getMeanLifeSpan(){
+        if (deadAnimalCount != 0){
+            return (float) deadAnimalLifeSpan / deadAnimalCount;
+        } else {
+            return 0;
+        }
+    }
+
+    public void allGenotypeCountUpdate(int[] genotype, boolean up) {
+        genotypeCountUpdate(genotype, allGenotypes, up);
+        genotypeCountUpdate(genotype, aliveGenotypes, up);
+    }
+    public void aliveGenotypeCountUpdate(int[] genotype, boolean up){
+        genotypeCountUpdate(genotype, aliveGenotypes, up);
+    }
+
+    private void genotypeCountUpdate(int[] genotype, HashMap<int[], Integer> genotypes, boolean up) {
+
+        if (up){
+            if (genotypes.containsKey(genotype)){
+                int n = genotypes.get(genotype);
+                genotypes.put(genotype, n + 1);
+            } else {
+                genotypes.put(genotype, 1);
+            }
+        } else {
+            int n = genotypes.get(genotype);
+            genotypes.put(genotype, n - 1);
+        }
+    }
+
+    public void totalKidsCountUpdate(int kidsCount) {
+        totalAliveAnimalOffspringCount = max(0, totalAliveAnimalOffspringCount + kidsCount);
+    }
+
+    private float getMeanAliveAnimalOffspringCount(){
+        if(aliveAnimalCount > 0) {
+            return (float) totalAliveAnimalOffspringCount / aliveAnimalCount;
+        }
+        return 0;
     }
 
     protected Vector2d createRandomPosition (Boundary boundary){
@@ -385,7 +529,7 @@ public abstract class AbstractMap implements WorldMap {
     public ArrayList<Animal> getAnimalsWithDominantGenotype(){
 
         ArrayList<Animal> animalsWithDominantGenotype = new ArrayList<>();
-        int[] dominantGenotype = statisticsGenerator.generateSimulationStatics().dominantGenotype();
+        int[] dominantGenotype = getSimulationStatistics().dominantGenotype();
 
         for (ArrayList<Animal> animalList : beforeMoveAnimals.values()){
             for (Animal animal : animalList){
@@ -399,7 +543,45 @@ public abstract class AbstractMap implements WorldMap {
     }
 
     public ArrayList<PositionAbundance> getPositionsPreferredByPlants(){
-        return statisticsGenerator.generatePreferredPlantPositions();
+
+        int preferredPositionsCount = min(plantHistory.size(),
+                (int)(0.1 * (float)totalPositionCount));
+
+        ArrayList<PositionAbundance> positionAbundanceArrayList = new ArrayList<>();
+
+//        iterujemy po wszystkich polach na których rosły kiedykolwiek rośliny
+        for (var plantHist : plantHistory.entrySet())
+        {
+//            tworzymy rekord zawierający pozycję i ilość roślin, które na niej wyrosły
+            var plantPositionAbundance = new PositionAbundance(plantHist.getKey(), plantHist.getValue());
+
+//            jeśli w liście są jeszcze miejsca na nowe pozycje, zapełniamy ją
+            if(positionAbundanceArrayList.size() < preferredPositionsCount)
+            {
+                positionAbundanceArrayList.add(plantPositionAbundance);
+            }
+//            w przeciwnym wypadku sprawdzamy, czy dana pozycja jest bardziej preferowana niz któraś z pozycji na liście
+            else
+            {
+//                w lowestIndex szukamy najmniej preferowanej pozycji z naszej wynikowej listy
+                int lowestIndex = 0;
+
+                for(int i = lowestIndex + 1; i < preferredPositionsCount; ++i)
+                {
+                    if(positionAbundanceArrayList.get(lowestIndex).numberOfPlants() >
+                            positionAbundanceArrayList.get(i).numberOfPlants())
+                    {
+                        lowestIndex = i;
+                    }
+                }
+
+                if(plantHist.getValue() > positionAbundanceArrayList.get(lowestIndex).numberOfPlants()) {
+                    positionAbundanceArrayList.remove(lowestIndex);
+                    positionAbundanceArrayList.add(plantPositionAbundance);
+                }
+            }
+        }
+        return positionAbundanceArrayList;
     }
 
 
@@ -407,10 +589,6 @@ public abstract class AbstractMap implements WorldMap {
 
         simulationPresenter.mapChanged(this, changeInfo);
         if (ObservedAnimal!=null) simulationPresenter.animalChanged(this.ObservedAnimal,this);
-    }
-
-    public void statisticsChanged(){
-        simulationPresenter.statisticsChanged();
     }
 
     public WorldElement getStrongest(Vector2d position){

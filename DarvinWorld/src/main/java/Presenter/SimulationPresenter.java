@@ -87,6 +87,8 @@ public class SimulationPresenter implements MapChangeListener{
         }
     }
     public void drawMap(WorldMap worldMap, String message){
+
+        showStatistics();
         drawBounds(worldMap);
         Boundary bounds = worldMap.getCurrentBounds();
 
@@ -117,15 +119,19 @@ public class SimulationPresenter implements MapChangeListener{
     }
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
-        Platform.runLater(() -> {drawMap(worldMap, message);});
+        Platform.runLater(() -> {
+            drawMap(worldMap, message);
+//            showStatistics();
+        });
     }
     @Override
     public void statisticsChanged(){
-        Platform.runLater(this::showStatistics);
+
     }
 
     private void showStatistics(){
-        statsLabel.setText(getStatisticsMessage());
+        var message = getStatisticsMessage();
+        statsLabel.setText(message);
     }
 
     private String getStatisticsMessage(){
@@ -139,7 +145,6 @@ public class SimulationPresenter implements MapChangeListener{
             if (statistics.dominantAliveGenotype().length ==0){dominantGenotypeOfAliveAnimals="-";}
             else {dominantGenotypeOfAliveAnimals+="%d".formatted(statistics.dominantAliveGenotype()[i]);}
         }
-
         String message =  "AliveAnimalCount: %d\nDeadAnimalCount: %d\nNumber of plants: %d\nNumber of free positions: %d\nMean energy of alive animals: %f\nMean life span of dead animals: %f\nMean count of children: %f\nDominant genotype for alive animals: %s\nDominant genotype for dead animals: %s".formatted(statistics.aliveAnimalCount(), statistics.deadAnimalCount(), statistics.plantCount(), statistics.freePositionCount(),
                 statistics.meanAliveAnimalEnergy(), statistics.meanAnimalLifeSpan(), statistics.meanAliveAnimalOffspringCount(),  dominantGenotypeOfAliveAnimals, dominantGenotypeOfAllAnimals);
         return message;
@@ -147,7 +152,7 @@ public class SimulationPresenter implements MapChangeListener{
 
     @Override
     public void statisticsChanged(WorldMap worldMap, SimulationStatistics statistics) {
-        Platform.runLater(this::showStatistics);
+
     }
 
     @Override

@@ -13,11 +13,12 @@ import java.util.UUID;
 
 public interface WorldMap {
     HashMap<Vector2d, LinkedList<Animal>> getAnimals();
-    void removeDeadAnimals();
+    ArrayList<Vector2d> getDeadAnimals();
     void moveEveryAnimal();
     void removeEatenPlants();
     void procreate();
     boolean refreshMap();
+
     Boundary getCurrentBounds();
     SimulationStatistics getSimulationStatistics();
     ArrayList<Animal> getAnimalsWithDominantGenotype();
@@ -27,4 +28,5 @@ public interface WorldMap {
     UUID getID();
     int getDay();
     void addAnimalObserver(Animal animal);
+
 }
