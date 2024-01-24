@@ -34,6 +34,7 @@ public class SimulationEngine {
 
     public void threadFinished(int threadId) {
 
+        sims.get(threadId).terminate();
         sims.remove(threadId);
     }
 
