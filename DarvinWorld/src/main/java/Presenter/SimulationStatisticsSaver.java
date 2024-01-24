@@ -18,7 +18,6 @@ public class SimulationStatisticsSaver {
         File file = new File("PO_2023_CZW1120_GAJEK_SZCZYPKA_PROJEKT/DarvinWorld/src/main/resources/statistics/map_"+worldMap.getID()+".csv");
         if(!file.exists() && !file.isDirectory()) {
             try{
-                System.out.println("Preóbujemy zapisać");
                 file.createNewFile();
                 FileWriter fileWriter = new FileWriter(file,true);
                 BufferedWriter fileWriterBuffer = new BufferedWriter(fileWriter);
@@ -41,7 +40,6 @@ public class SimulationStatisticsSaver {
         } catch (IOException e){
             throw new RuntimeException(e);
         };
-        System.out.println("zapisano");
     }
 
     private String constructMessage(SimulationStatistics statistics){

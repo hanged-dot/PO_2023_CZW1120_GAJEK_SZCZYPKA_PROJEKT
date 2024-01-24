@@ -42,7 +42,7 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
         allGenotypes = new HashMap<>();
         aliveGenotypes = new HashMap<>();
         plantHistory = new HashMap<>();
-        totalEnergy = aliveAnimalCount*animalProperties.startAnimalEnergy();
+        totalEnergy = aliveAnimalCount * animalProperties.startAnimalEnergy();
         energyFromPlant = animalProperties.energyFromPlant();
     }
 
@@ -83,14 +83,10 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     public void totalEnergyUpdate(boolean up){
 
         if (up){
-            System.out.println("laczna energia: "+totalEnergy);
             totalEnergy += energyFromPlant;
-            System.out.println("Po zmianie "+totalEnergy);
         } else {
             totalEnergy -= aliveAnimalCount;
         }
-
-        System.out.println("Zmiana łącznej energii na "+totalEnergy + " przy licznie zwierzaków "+aliveAnimalCount);
     }
 
     public ArrayList<PositionAbundance> generatePreferredPlantPositions(){
@@ -165,7 +161,7 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
     }
 
     public void newbornAnimalUpdate(Animal newbornAnimal){
-        totalKidsCountUpdate(2);
+        totalKidsCountUpdate(1);
         aliveAnimalCountUpdate(true);
         allGenotypeCountUpdate(newbornAnimal.getGenome(), true);
     }
@@ -189,11 +185,13 @@ public class SimulationStatisticsGenerator implements SimulationChangeListener {
         int[] genotype = new int[0];
         int maxCount = 0;
 
-        for (int[] g: genotypes.keySet()){
+        var genotypesKS = genotypes.keySet();
+        for (int[] g: genotypesKS){
             if (genotypes.get(g) > maxCount){
                 genotype = g;
             }
         }
+
         return genotype;
     }
 
