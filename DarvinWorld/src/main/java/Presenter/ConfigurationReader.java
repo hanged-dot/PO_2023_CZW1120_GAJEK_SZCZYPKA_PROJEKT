@@ -22,7 +22,7 @@ public class ConfigurationReader {
 
         Label label = new Label("Choose configuration: ");
 
-        File folder = new File("PO_2023_CZW1120_GAJEK_SZCZYPKA_PROJEKT/DarvinWorld/src/main/resources/configurations/");
+        File folder = new File("src/main/resources/configurations/");
         File[] files = folder.listFiles();
 
         ChoiceBox choiceBox = new ChoiceBox<>();
@@ -65,7 +65,7 @@ public class ConfigurationReader {
     private void onSimulationStartClicked(String configurationName, SimulationStart simulationStart, boolean isSaveStatisticsSelected) throws Exception{
 
         try {
-            FileInputStream fi = new FileInputStream(new File("main/resources/configurations"+configurationName+".txt"));
+            FileInputStream fi = new FileInputStream(new File("src/main/resources/configurations/"+configurationName+".txt"));
             ObjectInputStream oi = new ObjectInputStream(fi);
             SimulationProperties simulationProperties = (SimulationProperties)oi.readObject();
             simulationStart.newSimulationStart(simulationProperties, isSaveStatisticsSelected);
