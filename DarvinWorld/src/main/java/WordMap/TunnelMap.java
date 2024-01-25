@@ -58,5 +58,8 @@ public class TunnelMap extends AbstractMap {
     public HashMap<Vector2d, Vector2d> getTunnels(){
         return this.tunnels;
     }
+    public Vector2d getTunnelPair(Vector2d key){
+        return this.tunnels.get(key);
+    }
 
 }

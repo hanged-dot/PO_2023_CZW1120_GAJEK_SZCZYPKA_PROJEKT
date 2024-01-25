@@ -71,20 +71,23 @@ public abstract class Simulation implements Runnable{
     }
 
     public void run() {
-
 //        Codziennie będzie wywoływana metoda map.refreshMap(), która zwraca true, jeśli symulacja może być kontynuowana, albo false, jeśli się okaże, że nie ma już żadnych zwierząt
 
         while(simulating) {
+            boolean refresh;
 
             if(!isPaused) {
                 do {
+                    map.mapChanged("It's a new day! update");
                     dailyCycle();
+                    refresh=map.refreshMap();
+
                     try {
-                        sleep(500);
+                        sleep(1000);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                } while (map.refreshMap() && !isPaused && simulating); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy) + usunięcie martwych zwierząt
+                } while (refresh && !isPaused && simulating); // Wzrastanie nowych roślin na wybranych polach mapy. + sprawdzenie czy są jakieś zwierzęta (inaczej symulacja się kończy) + usunięcie martwych zwierząt
             }
             else {
                 try {

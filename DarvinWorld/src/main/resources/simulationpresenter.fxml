@@ -22,7 +22,7 @@
         </HBox>
     </top>
     <center>
-            <GridPane fx:id="mapGrid" gridLinesVisible="true" alignment="CENTER" onMouseClicked="#clickGrid"/>
+            <GridPane fx:id="mapGrid" gridLinesVisible="true" alignment="CENTER" />
     </center>
     <bottom>
         <HBox alignment="CENTER">

@@ -33,4 +33,5 @@ public interface WorldMap {
     int getDay();
     void addAnimalObserver(Animal animal);
 
+    void mapChanged(String s);
 }

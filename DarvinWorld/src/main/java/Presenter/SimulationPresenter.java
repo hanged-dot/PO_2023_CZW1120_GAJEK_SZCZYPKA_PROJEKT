@@ -21,11 +21,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import javax.swing.text.html.parser.Parser;
 import java.awt.*;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -33,9 +35,10 @@ import static java.lang.Math.abs;
 
 public class SimulationPresenter implements MapChangeListener{
     private WorldMap mapa;
+    private Boundary bounds;
     private Simulation simulation;
-    private double CELL_WIDTH=25;
-    private double CELL_HEIGHT=25;
+    private double CELL_WIDTH=30;
+    private double CELL_HEIGHT=30;
 
     @FXML private GridPane mapGrid;
     @FXML private Label t1;
@@ -60,7 +63,8 @@ public class SimulationPresenter implements MapChangeListener{
     public SimulationPresenter(Simulation simulation){this.simulation = simulation;}
     public void setSimulation(Simulation simulation) {this.simulation = simulation;}
 
-    public void setWorldMap (WorldMap map){this.mapa=map;}
+    public void setWorldMap (WorldMap map){this.mapa=map;
+    this.bounds= this.mapa.getCurrentBounds();}
 
     public void drawBounds(WorldMap worldMap){
         clearGrid();
@@ -68,6 +72,7 @@ public class SimulationPresenter implements MapChangeListener{
         mapGrid.getRowConstraints().add(new RowConstraints(CELL_HEIGHT));
         mapGrid.setGridLinesVisible(true);
         Boundary bounds = worldMap.getCurrentBounds();
+        Boundary equator = this.mapa.getPlantPositionGenerator().getEquatorBoundary();
 
         for (int y = 0; y<=abs(bounds.upperY()-bounds.lowerY()); y++){
             Label label2 = new Label(Integer.toString(bounds.upperY()-y));
@@ -89,35 +94,40 @@ public class SimulationPresenter implements MapChangeListener{
 
             mapGrid.add(label3,x,bounds.upperY()+1);
         }
+        for (int x=1;x<=bounds.rightX()+1;x++){
+            for (int y=0;y<=bounds.upperY();y++){
+                {
+                    Rectangle equatorRectanle = new Rectangle(CELL_WIDTH,CELL_HEIGHT);
+                    Vector2d current = new Vector2d(bounds.rightX()-x+1, y);
+                    if (current.follows(new Vector2d(equator.leftX(),equator.lowerY())) && current.precedes(new Vector2d(equator.rightX(),equator.upperY()))){
+                        equatorRectanle.setFill(Color.DARKGREEN);
+                    }
+                    else{equatorRectanle.setFill(Color.GREENYELLOW);}
+                    mapGrid.add(equatorRectanle,x,y);
+                }
+            }
+        }
+        drawTunnels();
     }
     public void drawMap(WorldMap worldMap, String message){
-
         showStatistics();
         drawBounds(worldMap);
         Boundary bounds = worldMap.getCurrentBounds();
-
-
         for (int x = 1; x<=bounds.rightX()+1; x++){
-            for (int y=0; y<=bounds.upperY()+1; y++){
+            for (int y=1; y<=bounds.upperY()+1; y++){
                  {
                     Vector2d current = new Vector2d(bounds.rightX()-x+1, y);
                     WorldElement plant = worldMap.getPlant(current);
                     WorldElement strongest = worldMap.getStrongest(current);
+
                     if (strongest!=null) {
-                        WorldElementBox animalBox = new WorldElementBox(strongest);
+                        WorldElementBox animalBox = new WorldElementBox(strongest,this);
+                        animalBox.addMouseClickEvent();
                         mapGrid.add(animalBox.getvBox(),x ,y);
                     }
                     else if (plant!=null){
-                        WorldElementBox plantBox = new WorldElementBox(plant);
+                        WorldElementBox plantBox = new WorldElementBox(plant,this);
                         mapGrid.add(plantBox.getvBox(),x,y);
-                    }
-                    if (simulation.isTunnel()){
-                        TunnelMap tunnelMap = (TunnelMap) this.mapa;
-                        if(tunnelMap.getTunnels().containsKey(current)){
-                            Rectangle tunnel = new Rectangle(CELL_WIDTH,CELL_HEIGHT);
-                            tunnel.setFill(Color.SANDYBROWN);
-                            mapGrid.add(tunnel,x,y);
-                        }
                     }
                 }
             }
@@ -135,10 +145,6 @@ public class SimulationPresenter implements MapChangeListener{
             drawMap(worldMap, message);
 //            showStatistics();
         });
-    }
-    @Override
-    public void statisticsChanged(){
-
     }
 
     private void showStatistics(){
@@ -162,10 +168,6 @@ public class SimulationPresenter implements MapChangeListener{
         return message;
     }
 
-    @Override
-    public void statisticsChanged(WorldMap worldMap, SimulationStatistics statistics) {
-
-    }
 
     @Override
     public void animalChanged(Animal animal, WorldMap worldMap) {
@@ -182,7 +184,7 @@ public class SimulationPresenter implements MapChangeListener{
         t3.setText("Energy: "+ animal.getEnergy());
         t4.setText("Plants eaten: " + animal.getPlants());
         t5.setText("Number of children:" + animal.getKidsLen());
-        t6.setText("Number of descendants: +" + animal.getNumberOfChildren());
+        t6.setText("Number of descendants: " + animal.getNumberOfChildren());
         if (animal.getDeath()==0){t7.setText("Days alive: "+ animal.getAge());}
         t7.setText("Death: "+ animal.getDeath());
     }
@@ -190,26 +192,7 @@ public class SimulationPresenter implements MapChangeListener{
 
     public void pause(){simulation.pause();}
     public void resume(){simulation.resume();}
-
-    public void clickGrid(javafx.scene.input.MouseEvent event) {
-        Node clickedNode = event.getPickResult().getIntersectedNode();
-        if (clickedNode != mapGrid) {
-            Node parent = clickedNode.getParent();
-            while (parent != mapGrid) {
-                clickedNode = parent;
-                parent = clickedNode.getParent();
-            }
-            Integer colIndex = GridPane.getColumnIndex(clickedNode);
-            Integer rowIndex = GridPane.getRowIndex(clickedNode);
-            Vector2d position = new Vector2d(this.mapa.getCurrentBounds().rightX()-rowIndex,colIndex-1);
-            WorldElement animal = this.mapa.getStrongest(position);
-            System.out.println("Mouse clicked cell: " + colIndex + " And: " + rowIndex);
-            if (animal!=null) { this.mapa.addAnimalObserver((Animal) animal);}
-
-
-        }
-    }
-//    prezenter do wyświetlania pozycji najbardziej wybieranych przez roślinki, no usage nie jest prawda intelliJ klamie
+    public WorldMap getMapa(){return this.mapa;}
 
     public void preferredPositions(){
         drawBounds(this.mapa);
@@ -227,22 +210,19 @@ public class SimulationPresenter implements MapChangeListener{
                     if (elOpt.isPresent()) {
                         var el = elOpt.get();
                         Label plantnr = new Label();
+                        HBox plants = new HBox();
+                        plants.setPrefSize(CELL_WIDTH,CELL_HEIGHT);
                         plantnr.setText(Integer.toString(el.numberOfPlants()));
-                        mapGrid.add(plantnr, x,y);
-                    }
-                    else {
-                        if (current.follows(new Vector2d(equator.leftX(),equator.lowerY())) && current.precedes(new Vector2d(equator.rightX(),equator.upperY()))){
-                            Rectangle equatorRectanle = new Rectangle(CELL_WIDTH,CELL_HEIGHT);
-                            equatorRectanle.setFill(Color.LAWNGREEN);
-                            mapGrid.add(equatorRectanle,x,y);
-                        }
+                        plantnr.setTextFill(Color.YELLOW);
+                        plants.getChildren().addAll(plantnr);
+                        plants.setAlignment(Pos.CENTER_RIGHT);
+                        mapGrid.add(plants, x,y);
                     }
 
                 }
             }
         }
     }
-//    prezenter do wyświetlania tych animali z najbardziej dominującym genomem no usage nie jest prawda intelliJ klamie
     public void dominantGenotypeAnimals() {
         drawBounds(this.mapa);
         Boundary bounds = this.mapa.getCurrentBounds();
@@ -256,11 +236,49 @@ public class SimulationPresenter implements MapChangeListener{
                     Optional <Animal> elOpt = animals.stream().filter(e-> e.getPosition().equals(current)).findFirst();
                     if (elOpt.isPresent()) {
                         WorldElement dominantGenomeAnimal = (WorldElement) elOpt.get();
-                        WorldElementBox animalBox = new WorldElementBox(dominantGenomeAnimal);
+                        WorldElementBox animalBox = new WorldElementBox(dominantGenomeAnimal,this);
+                        animalBox.addMouseClickEvent();
                         mapGrid.add(animalBox.getvBox(), x,y);
+
                     }
                 }
             }
+        }
+    }
+    public void drawTunnels(){
+
+        if (simulation.isTunnel()) {
+            TunnelMap tunnelMap = (TunnelMap) this.mapa;
+            int i=0;
+            ArrayList<Vector2d> drawn = new ArrayList<>();
+            for (int x=1;x<=bounds.rightX()+1;x++){
+                for (int y=0;y<=bounds.upperY();y++)
+                    {
+                        Vector2d current = new Vector2d(bounds.rightX() - x + 1, y);
+                        if (tunnelMap.getTunnels().containsKey(current)&& !drawn.contains(current)) {
+                            Vector2d pair = tunnelMap.getTunnelPair(current);
+                            Circle tunnelStart = new Circle(CELL_WIDTH / 2);
+                            Circle tunnelEnd = new Circle(CELL_WIDTH / 2);
+
+                            tunnelStart.setFill(Color.SANDYBROWN);
+                            tunnelEnd.setFill(Color.SANDYBROWN);
+
+                            Label tunnelStartNumber = new Label(Integer.toString(i));
+                            Label tunnelEndNumber = new Label(Integer.toString(i));
+
+                            tunnelStartNumber.setAlignment(Pos.CENTER);
+                            tunnelEndNumber.setAlignment(Pos.CENTER);
+                            mapGrid.add(tunnelStart, x, y);
+                            mapGrid.add(tunnelStartNumber,x,y);
+                            mapGrid.add(tunnelEnd,bounds.rightX()+1-pair.getX(),pair.getY());
+                            mapGrid.add(tunnelEndNumber,bounds.rightX()+1-pair.getX(),pair.getY());
+
+                            drawn.add(current);
+                            drawn.add(pair);
+                            i++;
+                        }
+                    }
+                }
         }
     }
 

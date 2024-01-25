@@ -23,8 +23,6 @@ public abstract class AbstractMap implements WorldMap {
     private HashMap<Vector2d, LinkedList<Animal>> animals;
     protected HashMap<Vector2d, ArrayList<Animal>> beforeMoveAnimals;
     protected HashMap<Vector2d, ArrayList<Animal>> afterMoveAnimals;
-
-    protected ArrayList<MapChangeListener> observers = new ArrayList<>();
     private HashMap<Vector2d, Plant> plants;
     private HashSet<Vector2d> plantsToEat;
     private final PlantPositionGenerator plantPositionGenerator;
@@ -355,13 +353,14 @@ public abstract class AbstractMap implements WorldMap {
         animalsToRemove.clear();
 
         if (beforeMoveAnimals.isEmpty()){
+            simulationStatistics = generateSimulationStatistics();
             return false;
         }
 
         totalEnergy -= getAliveAnimalCount();
 
-        mapChanged("It's a new day! update");
         simulationStatistics = generateSimulationStatistics();
+        //mapChanged("It's a new day! update");
         return true;
     }
 
@@ -599,14 +598,20 @@ public abstract class AbstractMap implements WorldMap {
         ArrayList<Animal> pos1 = this.beforeMoveAnimals.get(position);
         int energy=0;
         WorldElement strongest = null;
-        if(pos1==null){return strongest;}
+        if(pos1==null){
+
+            return strongest;
+        }
         for (Animal a : pos1){
             if(a.getEnergy()>energy && a.getDeath()==0){
                 energy=a.getEnergy();
                 strongest= (WorldElement) a;
             }
         }
-        return strongest;
+        if (strongest==null) {
+            System.out.print("no strongest animal on position" + position.toString());
+        }
+            return strongest;
     }
 
     public WorldElement getPlant(Vector2d position){
@@ -616,10 +621,12 @@ public abstract class AbstractMap implements WorldMap {
 
     public void addAnimalObserver (Animal animal){
         this.ObservedAnimal = animal;
-
     }
     public void removeAnimalObserver (Animal animal) {
         this.ObservedAnimal = null;
+    }
+    public Animal getAnimalObserver(){
+        return this.ObservedAnimal;
     }
 
 }

@@ -20,31 +20,31 @@
         <VBox alignment="TOP_LEFT">
 
             <Text fx:id="mapHeightText" text="Choose map height: " />
-            <TextField fx:id="mapHeightTextField" text="5" />
+            <TextField fx:id="mapHeightTextField" text="10" />
 
             <Text fx:id="mapWidthText" text="Choose map width: " />
-            <TextField fx:id="mapWidthTextField" text="5" />
+            <TextField fx:id="mapWidthTextField" text="10" />
 
             <Text fx:id="tunnelCountText" text="Choose number of tunnels: "/>
-            <TextField fx:id="tunnelCountTextField" text="10" />
+            <TextField fx:id="tunnelCountTextField" text="4" />
 
             <Text fx:id="startPlantCountText" text="Choose initial number of plants: " />
-            <TextField fx:id="startPlantCountTextField" text="2" />
+            <TextField fx:id="startPlantCountTextField" text="5" />
 
             <Text fx:id="plantsPerDayText" text="Choose daily number of new plants: " />
-            <TextField fx:id="plantsPerDayTextField" text="1" />
+            <TextField fx:id="plantsPerDayTextField" text="2" />
 
             <Text fx:id="energyPlantText" text="Choose energy from eating one plant: " />
             <TextField fx:id="energyPlantTextField" text="2" />
 
             <Text fx:id="startAnimalCountText" text="Choose initial number of animals: " />
-            <TextField fx:id="startAnimalCountTextField" text="2" />
+            <TextField fx:id="startAnimalCountTextField" text="4" />
 
             <Text fx:id="startAnimalEnergyText" text="Choose initial energy of animals: " />
             <TextField fx:id="startAnimalEnergyTextField" text="10" />
 
             <Text fx:id="minProcreateEnergyText" text="Choose minimal energy to procreate: " />
-            <TextField fx:id="minProcreateEnergyTextField" text="10" />
+            <TextField fx:id="minProcreateEnergyTextField" text="7" />
 
             <Text fx:id="procreateEnergyText" text="Choose energy used by procreating: " />
             <TextField fx:id="procreateEnergyTextField" text="5" />
@@ -56,7 +56,7 @@
             <TextField fx:id="maxMutationTextField" text="0" />
 
             <Text fx:id="genomeLengthText" text="Choose genome length: " />
-            <TextField fx:id="genomeLengthTextField" text="8" />
+            <TextField fx:id="genomeLengthTextField" text="3" />
 
         </VBox>
     </left>
