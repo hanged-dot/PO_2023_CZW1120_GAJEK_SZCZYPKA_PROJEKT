@@ -15,7 +15,7 @@ public class SimulationStatisticsSaver {
 
         String message = constructMessage(stats);
 
-        File file = new File("PO_2023_CZW1120_GAJEK_SZCZYPKA_PROJEKT/DarvinWorld/src/main/resources/statistics/map_"+worldMap.getID()+".csv");
+        File file = new File("src/main/resources/statistics/map_"+worldMap.getID()+".csv");
         if(!file.exists() && !file.isDirectory()) {
             try{
                 file.createNewFile();

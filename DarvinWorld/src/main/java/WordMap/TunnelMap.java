@@ -17,7 +17,7 @@ public class TunnelMap extends AbstractMap {
                      AnimalProperties animalProperties, SimulationPresenter simPresenter) {
 
         super(mapProperties, animalProperties, simPresenter);
-        tunnels = new HashMap<>();
+        this.tunnels = new HashMap<>();
         this.tunnelCount = mapProperties.tunnelCount();
 
         while (tunnelCount > 0){
@@ -54,6 +54,9 @@ public class TunnelMap extends AbstractMap {
             animal.setTransferredThroughTunnel(false);
             return super.getNextPosition(animal);
         }
+    }
+    public HashMap<Vector2d, Vector2d> getTunnels(){
+        return this.tunnels;
     }
 
 }

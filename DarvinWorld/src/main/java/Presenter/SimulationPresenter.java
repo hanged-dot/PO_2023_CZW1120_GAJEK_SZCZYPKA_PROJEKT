@@ -3,6 +3,7 @@ package Presenter;
 import Records.Boundary;
 import Records.PositionAbundance;
 import Records.SimulationStatistics;
+import WordMap.TunnelMap;
 import WordMap.Vector2d;
 import WordMap.WorldMap;
 import Simulation.Simulation;
@@ -19,9 +20,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import javax.swing.text.html.parser.Parser;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -93,19 +97,27 @@ public class SimulationPresenter implements MapChangeListener{
         Boundary bounds = worldMap.getCurrentBounds();
 
 
-        for (int x = 0; x<=bounds.rightX(); x++){
-            for (int y=1; y<=bounds.upperY()+1; y++){
+        for (int x = 1; x<=bounds.rightX(); x++){
+            for (int y=0; y<=bounds.upperY()+1; y++){
                  {
-                    Vector2d current = new Vector2d(bounds.rightX()-x, y-1);
+                    Vector2d current = new Vector2d(bounds.rightX()-x+1, y);
                     WorldElement plant = worldMap.getPlant(current);
                     WorldElement strongest = worldMap.getStrongest(current);
                     if (strongest!=null) {
                         WorldElementBox animalBox = new WorldElementBox(strongest);
-                        mapGrid.add(animalBox.getvBox(),y ,x);
+                        mapGrid.add(animalBox.getvBox(),x ,y);
                     }
                     else if (plant!=null){
                         WorldElementBox plantBox = new WorldElementBox(plant);
-                        mapGrid.add(plantBox.getvBox(),y,x);
+                        mapGrid.add(plantBox.getvBox(),x,y);
+                    }
+                    if (simulation.isTunnel()){
+                        TunnelMap tunnelMap = (TunnelMap) this.mapa;
+                        if(tunnelMap.getTunnels().containsKey(current)){
+                            Rectangle tunnel = new Rectangle(CELL_WIDTH,CELL_HEIGHT);
+                            tunnel.setFill(Color.SANDYBROWN);
+                            mapGrid.add(tunnel,x,y);
+                        }
                     }
                 }
             }

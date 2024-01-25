@@ -21,6 +21,7 @@ import static java.lang.Thread.sleep;
 
 public abstract class Simulation implements Runnable{
 
+    private SimulationProperties simulationProperties;
     protected WorldMap map;
     private List<Animal> animals;
     boolean isPaused=false;
@@ -31,7 +32,7 @@ public abstract class Simulation implements Runnable{
 
 // w konstruktorze przekazujemy wszystkie parametry czytane z okna startowego
     public Simulation(SimulationProperties simulationProperties){
-
+        this.simulationProperties=simulationProperties;
         simulating = true;
         Stage stage = new Stage();
         FXMLLoader loader = new FXMLLoader();
@@ -63,6 +64,7 @@ public abstract class Simulation implements Runnable{
 
         animals = new ArrayList<>();
     }
+    public boolean isTunnel(){return this.simulationProperties.hasTunnels();}
 
     public Animal getAnimal(int x){
         return this.animals.get(x);
