@@ -130,4 +130,7 @@ public class PlantPositionGenerator {
         return positions;
     }
 
+    public Boundary getEquatorBoundary() {
+        return equatorBoundary;
+    }
 }

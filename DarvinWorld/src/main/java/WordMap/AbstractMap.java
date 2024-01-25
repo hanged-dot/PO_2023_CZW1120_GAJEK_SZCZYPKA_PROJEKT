@@ -106,6 +106,10 @@ public abstract class AbstractMap implements WorldMap {
     public UUID getID() {
         return identifier;
     }
+    @Override
+    public PlantPositionGenerator getPlantPositionGenerator(){
+        return this.plantPositionGenerator;
+    }
 
     @Override
     public int getDay() {return this.day;}

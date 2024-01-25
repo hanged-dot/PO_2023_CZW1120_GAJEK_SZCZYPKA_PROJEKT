@@ -97,7 +97,7 @@ public class SimulationPresenter implements MapChangeListener{
         Boundary bounds = worldMap.getCurrentBounds();
 
 
-        for (int x = 1; x<=bounds.rightX(); x++){
+        for (int x = 1; x<=bounds.rightX()+1; x++){
             for (int y=0; y<=bounds.upperY()+1; y++){
                  {
                     Vector2d current = new Vector2d(bounds.rightX()-x+1, y);
@@ -214,13 +214,13 @@ public class SimulationPresenter implements MapChangeListener{
     public void preferredPositions(){
         drawBounds(this.mapa);
         Boundary bounds = this.mapa.getCurrentBounds();
-
+        Boundary equator = this.mapa.getPlantPositionGenerator().getEquatorBoundary();
         ArrayList<PositionAbundance>  positionAbundances = mapa.getPositionsPreferredByPlants();
 
-        for (int x=0;x<=bounds.rightX();x++){
-            for (int y=1;y<=bounds.upperY()+1;y++){
+        for (int x=1;x<=bounds.rightX()+1;x++){
+            for (int y=0;y<=bounds.upperY();y++){
                 {
-                    Vector2d current = new Vector2d(bounds.rightX()-x, y-1);
+                    Vector2d current = new Vector2d(bounds.rightX()-x+1, y);
 
                     Optional <PositionAbundance> elOpt = positionAbundances.stream().filter(e-> e.position().equals(current)).findFirst();
 
@@ -228,7 +228,14 @@ public class SimulationPresenter implements MapChangeListener{
                         var el = elOpt.get();
                         Label plantnr = new Label();
                         plantnr.setText(Integer.toString(el.numberOfPlants()));
-                        mapGrid.add(plantnr, y, x);
+                        mapGrid.add(plantnr, x,y);
+                    }
+                    else {
+                        if (current.follows(new Vector2d(equator.leftX(),equator.lowerY())) && current.precedes(new Vector2d(equator.rightX(),equator.upperY()))){
+                            Rectangle equatorRectanle = new Rectangle(CELL_WIDTH,CELL_HEIGHT);
+                            equatorRectanle.setFill(Color.LAWNGREEN);
+                            mapGrid.add(equatorRectanle,x,y);
+                        }
                     }
 
                 }
@@ -242,15 +249,15 @@ public class SimulationPresenter implements MapChangeListener{
 
         ArrayList<Animal> animals = mapa.getAnimalsWithDominantGenotype();
 
-        for (int x = 0; x <= bounds.rightX(); x++) {
-            for (int y = 1; y <= bounds.upperY() + 1; y++) {
+        for (int x = 1; x <= bounds.rightX()+1; x++) {
+            for (int y = 0; y <= bounds.upperY() ; y++) {
                 {
-                    Vector2d current = new Vector2d(bounds.rightX() - x, y - 1);
+                    Vector2d current = new Vector2d(bounds.rightX() - x+1, y );
                     Optional <Animal> elOpt = animals.stream().filter(e-> e.getPosition().equals(current)).findFirst();
                     if (elOpt.isPresent()) {
                         WorldElement dominantGenomeAnimal = (WorldElement) elOpt.get();
                         WorldElementBox animalBox = new WorldElementBox(dominantGenomeAnimal);
-                        mapGrid.add(animalBox.getvBox(), y, x);
+                        mapGrid.add(animalBox.getvBox(), x,y);
                     }
                 }
             }

@@ -5,6 +5,7 @@ import Records.PositionAbundance;
 import Records.SimulationStatistics;
 import WorldElement.Animal;
 import WorldElement.WorldElement;
+import WorldElement.PlantPositionGenerator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,9 @@ public interface WorldMap {
     public WorldElement getStrongest(Vector2d position);
     public WorldElement getPlant(Vector2d position);
     UUID getID();
+
+    PlantPositionGenerator getPlantPositionGenerator();
+
     int getDay();
     void addAnimalObserver(Animal animal);
 
